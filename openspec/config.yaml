@@ -1,0 +1,26 @@
+schema: spec-driven
+
+context: |
+  GeekPlayer is a cross-platform multimedia player built with Flutter (Dart).
+  License: Apache-2.0. Monorepo layout: app/ holds the Flutter project.
+  v0.1 targets macOS / Windows / Android. v0.2 adds Linux / iOS / iPadOS plus
+  books (PDF/EPUB) and manga ZIP. v1.0 introduces AI upscaling.
+
+  Architecture: Clean Architecture-lite with features/<name>/{data,domain,presentation}.
+  Hybrid media engine — video via media_kit (libmpv), audio via just_audio +
+  audio_service — abstracted behind a MediaSession interface (ADR-0002).
+  Online novels: 公式 API for narou/noctune, RSS + HTML parse for kakuyomu
+  under the responsible-scraping policy (ADR-0001).
+
+  UI language: ja-first (v0.1 ships ja only; en scaffold present via intl).
+  State management: Riverpod v2. Storage: single drift SQLite DB.
+  Distribution: OSS only, GitHub Releases — no App Store / Play Store.
+
+  Commit style: conventional commits (feat: / fix: / chore: / docs: / refactor: / test:).
+
+rules:
+  proposal:
+    - 'Always include a "Non-goals" section'
+    - 'Cite affected files with file_path:line_number references'
+  tasks:
+    - 'Use checkbox list, toggle [ ] -> [x] one at a time as work completes'

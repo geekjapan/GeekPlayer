@@ -1,0 +1,39 @@
+# Third-Party Notices
+
+GeekPlayer は以下のサードパーティライブラリを利用しています。各ライブラリの完全な
+ライセンス条文はリンク先を参照してください。
+
+## ランタイム依存
+
+| ライブラリ | ライセンス | 用途 |
+|---|---|---|
+| [Flutter SDK](https://github.com/flutter/flutter) | BSD-3-Clause | UI フレームワーク |
+| [media_kit](https://github.com/media-kit/media-kit) | MIT | 動画再生のラッパー |
+| [libmpv](https://github.com/mpv-player/mpv) (via media_kit) | LGPL-2.1+ | 動画デコード/再生エンジン（**動的リンク**） |
+| [just_audio](https://github.com/ryanheise/just_audio) | MIT | 音楽再生 |
+| [audio_service](https://github.com/ryanheise/audio_service) | MIT | OS の MediaSession 統合 |
+| [drift](https://github.com/simolus3/drift) | MIT | SQLite ORM |
+| [dio](https://github.com/cfug/dio) | MIT | HTTP クライアント |
+| [riverpod](https://github.com/rrousselGit/riverpod) | MIT | 状態管理 |
+| [html](https://github.com/dart-lang/html) | BSD-3-Clause | HTML パース |
+| [webfeed](https://pub.dev/packages/webfeed) | MIT | RSS/Atom パース |
+
+## libmpv (LGPL) について
+
+libmpv は LGPL-2.1+ で配布されており、本アプリでは media_kit を介して **動的
+リンク** で利用しています。LGPL の条件を満たすため:
+
+- GeekPlayer 本体は **Apache-2.0** で配布される
+- libmpv のソースコードは [上流リポジトリ](https://github.com/mpv-player/mpv) で
+  入手可能
+- 本アプリは **App Store / Play Store 等の閉鎖型ストア配布を行わない**（OSS / GitHub
+  Releases ベースの直接配布のみ）
+
+iOS / iPadOS 対応（v0.2 計画）で App Store 配布を視野に入れる場合、この方針は
+[ADR-0002](adr/0002-hybrid-media-engine.md) と共に再評価する必要があります。
+
+## 完全なライセンス情報
+
+依存ライブラリのバージョン別ライセンス情報は、ビルド時に `flutter pub deps
+--style=tree` で生成される依存ツリーと、各パッケージの `LICENSE` ファイルを
+合わせて参照してください。
