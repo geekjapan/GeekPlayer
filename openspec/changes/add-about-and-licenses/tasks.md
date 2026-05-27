@@ -21,11 +21,11 @@
 
 ## 3. ドメイン / データ層 (`features/about`)
 
-- [ ] 3.1 `app/lib/features/about/domain/license_entry.dart` に `LicenseEntry` 値オブジェクト（`name`, `version`, `licenseText`, `homepageUrl?`）を実装
-- [ ] 3.2 `app/lib/features/about/data/oss_license_repository.dart` に `OssLicenseRepository.fetchEntries()` を実装し、`lib/oss_licenses.dart` を読み出して `LicenseEntry` のソート済みリストを返す
-- [ ] 3.3 `app/lib/features/about/data/app_info_provider.dart` に `package_info_plus` の `PackageInfo.fromPlatform()` をラップした Riverpod provider を実装
-- [ ] 3.4 `app/lib/features/about/data/build_info.dart` に `const String kGitSha = String.fromEnvironment('GIT_SHA', defaultValue: 'unknown');` と、UI 用の `String formattedGitSha()`（`unknown` → `(dev build)`）を実装
-- [ ] 3.5 `OssLicenseRepository` の単体テストを `app/test/features/about/oss_license_repository_test.dart` に追加（ソート / 重複排除 / 空文字 license のフィルタ）
+- [x] 3.1 `app/lib/features/about/domain/license_entry.dart` に `LicenseEntry` 値オブジェクト（`name`, `version`, `licenseText`, `homepageUrl?`）を実装
+- [x] 3.2 `app/lib/features/about/data/oss_license_repository.dart` に `OssLicenseRepository.fetchEntries()` を実装し、`lib/oss_licenses.dart` を読み出して `LicenseEntry` のソート済みリストを返す
+- [x] 3.3 `app/lib/features/about/data/app_info_provider.dart` に `package_info_plus` の `PackageInfo.fromPlatform()` をラップした Riverpod provider を実装
+- [x] 3.4 `app/lib/features/about/data/build_info.dart` に `const String kGitSha = String.fromEnvironment('GIT_SHA', defaultValue: 'unknown');` と、UI 用の `String formattedGitSha()`（`unknown` → `(dev build)`）を実装
+- [x] 3.5 `OssLicenseRepository` の単体テストを `app/test/features/about/oss_license_repository_test.dart` に追加（ソート / 重複排除 / 空文字 license のフィルタ）
 
 ## 4. About 画面実装
 
