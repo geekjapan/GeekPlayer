@@ -5,12 +5,12 @@
 
 ## 1. 依存とプラットフォーム設定
 
-- [ ] 1.1 `app/pubspec.yaml` に `just_audio`、`audio_service`、`audio_metadata_reader` を `flutter pub add` で追加し、`flutter pub get` がクリーン
-- [ ] 1.2 `app/android/app/src/main/AndroidManifest.xml` に `audio_service` の `<service android:name="com.ryanheise.audioservice.AudioService" .../>` と `<receiver android:name="com.ryanheise.audioservice.MediaButtonReceiver" .../>` を追加
-- [ ] 1.3 `AndroidManifest.xml` に `POST_NOTIFICATIONS`（API 33+）と `FOREGROUND_SERVICE` / `FOREGROUND_SERVICE_MEDIA_PLAYBACK` の `<uses-permission>` を追加
-- [ ] 1.4 `app/macos/Runner/Info.plist` の `LSBackgroundModes` に `audio` を追加
-- [ ] 1.5 `app/macos/Runner/DebugProfile.entitlements` と `Release.entitlements` に audio 背景再生 entitlement（`com.apple.security.device.audio-input` ではなく `com.apple.developer.audio-background` 相当）を追加
-- [ ] 1.6 `flutter analyze` と `flutter test` が依存変更後にクリーン
+- [x] 1.1 `app/pubspec.yaml` に `just_audio`、`audio_service`、`audio_metadata_reader` を `flutter pub add` で追加し、`flutter pub get` がクリーン
+- [x] 1.2 `app/android/app/src/main/AndroidManifest.xml` に `audio_service` の `<service android:name="com.ryanheise.audioservice.AudioService" .../>` と `<receiver android:name="com.ryanheise.audioservice.MediaButtonReceiver" .../>` を追加
+- [x] 1.3 `AndroidManifest.xml` に `POST_NOTIFICATIONS`（API 33+）と `FOREGROUND_SERVICE` / `FOREGROUND_SERVICE_MEDIA_PLAYBACK` の `<uses-permission>` を追加
+- [x] 1.4 `app/macos/Runner/Info.plist` の `LSBackgroundModes` に `audio` を追加
+- [x] 1.5 macOS では `LSBackgroundModes=audio` (Info.plist) がバックグラウンド再生の実ゲート。`com.apple.developer.audio-background` は iOS 専用 key で macOS では無効のため、`DebugProfile.entitlements` / `Release.entitlements` への追記は不要 (既存の sandbox + user-selected.read-only を維持)。
+- [x] 1.6 `flutter analyze` と `flutter test` が依存変更後にクリーン
 
 ## 2. AudioSession 実装 (`core/media`)
 
