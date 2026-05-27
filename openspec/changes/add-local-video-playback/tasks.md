@@ -4,10 +4,10 @@
 
 ## 1. 依存とプラットフォーム設定
 
-- [ ] 1.1 `app/pubspec.yaml` に `file_picker` を `flutter pub add` で追加し、`flutter pub get` がクリーン
-- [ ] 1.2 `app/android/app/src/main/AndroidManifest.xml` に `READ_MEDIA_VIDEO`（API 33+）と `READ_EXTERNAL_STORAGE`（API < 33, `maxSdkVersion=32`）の `<uses-permission>` を追加
-- [ ] 1.3 `app/macos/Runner/DebugProfile.entitlements` と `Release.entitlements` に `com.apple.security.files.user-selected.read-only = true` を追加
-- [ ] 1.4 `flutter analyze` と `flutter test` が依存変更後にクリーン
+- [x] 1.1 `app/pubspec.yaml` に `file_picker` を `flutter pub add` で追加し、`flutter pub get` がクリーン
+- [x] 1.2 `app/android/app/src/main/AndroidManifest.xml` に `READ_MEDIA_VIDEO`（API 33+）と `READ_EXTERNAL_STORAGE`（API < 33, `maxSdkVersion=32`）の `<uses-permission>` を追加
+- [x] 1.3 `app/macos/Runner/DebugProfile.entitlements` と `Release.entitlements` に `com.apple.security.files.user-selected.read-only = true` を追加
+- [x] 1.4 `flutter analyze` と `flutter test` が依存変更後にクリーン
 
 ## 2. MediaSession 抽象 (`core/media`)
 

@@ -51,6 +51,7 @@ dependencies:
   logger: ^2.7.0
   path: ^1.9.1
   path_provider: ^2.1.5
+  file_picker: ^3.0.4
 
 dev_dependencies:
   flutter_test:
