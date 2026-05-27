@@ -13,11 +13,11 @@
 
 ## 2. ドメインモデル (`features/novel_narou/domain`)
 
-- [ ] 2.1 `narou_genre.dart` に `enum NarouGenre`（恋愛 / ファンタジー / SF / 文学 / その他 等、API の `biggenre` / `genre` 数値コードへの `code` getter 付き）を定義
-- [ ] 2.2 `narou_ranking_type.dart` に `enum NarouRankingType { daily, weekly, monthly, quarterly, yearly, allTime }` と各値の API パスパラメタを定義
-- [ ] 2.3 `narou_work_query.dart` に `NarouSearchOptions extends WorkQuery` を定義（genres / minChars / maxChars / lastUpdatedAfter / completed / pickup / longRunning フィールド + `toQueryParameters()` メソッド）
-- [ ] 2.4 `narou_work_summary.dart` / `narou_work_detail.dart` / `narou_episode.dart` を `freezed` で定義し、共通 `Work` / `Episode` への変換 mapper を実装
-- [ ] 2.5 上記すべてのユニットテストを `app/test/features/novel_narou/domain/` に追加（特に `toQueryParameters()` の安定順序とバリデーション）
+- [x] 2.1 `narou_genre.dart` に `enum NarouGenre`（恋愛 / ファンタジー / SF / 文学 / その他 等、API の `biggenre` / `genre` 数値コードへの `code` getter 付き）を定義
+- [x] 2.2 `narou_ranking_type.dart` に `enum NarouRankingType { daily, weekly, monthly, quarterly, yearly, allTime }` と各値の API パスパラメタを定義
+- [x] 2.3 `narou_work_query.dart` に `NarouSearchOptions extends WorkQuery` を定義（genres / minChars / maxChars / lastUpdatedAfter / completed / pickup / longRunning フィールド + `toQueryParameters()` メソッド）
+- [x] 2.4 `narou_work_summary.dart` / `narou_work_detail.dart` / `narou_episode.dart` を `freezed` で定義し、共通 `Work` / `Episode` への変換 mapper を実装 — freezed は dev_deps 未導入のため、`@immutable` + 手書き == / hashCode で同等のものを実装
+- [x] 2.5 上記すべてのユニットテストを `app/test/features/novel_narou/domain/` に追加（特に `toQueryParameters()` の安定順序とバリデーション）
 
 ## 3. API クライアント層 (`features/novel_narou/data`)
 
