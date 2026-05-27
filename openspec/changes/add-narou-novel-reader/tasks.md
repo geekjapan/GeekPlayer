@@ -5,10 +5,10 @@
 
 ## 1. 前提と依存
 
-- [ ] 1.1 `add-online-novel-library` change が apply 済みで `NovelRepository` / `Work` / `Episode` / `Site` / `WorkQuery` / `SiteConsentRepository` / `LibraryRepository` / `RateLimiter` / `site_consents` テーブル / `novel_bookmarks` テーブル / `NovelHomeSection` interface が利用可能であることを確認
-- [ ] 1.2 `app_settings` テーブル（`add-app-settings` 提供）が利用可能であることを確認。リーダー設定は `novel.reader.*` key 名前空間に保存
-- [ ] 1.3 `app/pubspec.yaml` に `html_unescape` を `flutter pub add` で追加（既に存在すれば冪等に skip）し、`flutter pub get` がクリーン
-- [ ] 1.4 `app/macos/Runner/DebugProfile.entitlements` / `Release.entitlements` に `com.apple.security.network.client = true` を追加（既に動画 change で入っていれば skip）
+- [x] 1.1 `add-online-novel-library` change が apply 済みで `NovelRepository` / `Work` / `Episode` / `Site` / `WorkQuery` / `SiteConsentRepository` / `LibraryRepository` / `RateLimiter` / `site_consents` テーブル / `novel_bookmarks` テーブル / `NovelHomeSection` interface が利用可能であることを確認
+- [x] 1.2 `app_settings` テーブル（`add-app-settings` 提供）が利用可能であることを確認。リーダー設定は `novel.reader.*` key 名前空間に保存 — 並列実装中で未存在のため、in-memory + Riverpod でフォールバック (v0.2 で app_settings バックエンドに切り替え)
+- [x] 1.3 `app/pubspec.yaml` に `html_unescape` を `flutter pub add` で追加（既に存在すれば冪等に skip）し、`flutter pub get` がクリーン
+- [x] 1.4 `app/macos/Runner/DebugProfile.entitlements` / `Release.entitlements` に `com.apple.security.network.client = true` を追加（既に動画 change で入っていれば skip）
 - [ ] 1.5 `flutter analyze` / `flutter test` が変更後にクリーン
 
 ## 2. ドメインモデル (`features/novel_narou/domain`)
