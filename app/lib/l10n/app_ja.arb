@@ -1,0 +1,63 @@
+{
+  "@@locale": "ja",
+  "errorNetworkUnreachable": "ネットワークに接続できません。接続を確認してください。",
+  "@errorNetworkUnreachable": {
+    "description": "Shown when a network call fails because the device is offline or the host is unreachable."
+  },
+  "errorRateLimit": "リクエストが多すぎます。{seconds}秒後に再試行してください。",
+  "@errorRateLimit": {
+    "description": "Shown when an upstream returns 429 / Retry-After. Interpolates seconds remaining before retry.",
+    "placeholders": {
+      "seconds": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "errorSiteConsentRequired": "{site}の利用にはサイト固有の同意が必要です。設定から同意してください。",
+  "@errorSiteConsentRequired": {
+    "description": "Shown when a site requires the user to grant explicit consent (e.g. kakuyomu).",
+    "placeholders": {
+      "site": {
+        "type": "String",
+        "example": "kakuyomu"
+      }
+    }
+  },
+  "errorRobotsDisallowed": "このページは robots.txt によりアクセスが禁止されています。",
+  "@errorRobotsDisallowed": {
+    "description": "Shown when robots.txt forbids fetching the requested path."
+  },
+  "errorHtmlParse": "ページの解析に失敗しました。サイト構造が変わった可能性があります。",
+  "@errorHtmlParse": {
+    "description": "Shown when an HTML parser cannot extract the expected fields."
+  },
+  "errorFileNotFound": "ファイルが見つかりません。移動・削除された可能性があります。",
+  "@errorFileNotFound": {
+    "description": "Shown when a local file referenced by the app no longer exists."
+  },
+  "errorUnsupportedFormat": "このファイル形式には対応していません。",
+  "@errorUnsupportedFormat": {
+    "description": "Shown when the user opens a file whose format the app cannot decode."
+  },
+  "errorUpstreamUnavailable": "サーバーに接続できません。時間をおいて再度お試しください。",
+  "@errorUpstreamUnavailable": {
+    "description": "Shown when an upstream API returns 5xx or otherwise fails."
+  },
+  "errorStorageQuota": "ストレージ容量が不足しています。空き容量を確保してください。",
+  "@errorStorageQuota": {
+    "description": "Shown when local storage cannot accommodate a write (e.g. drift DB / cache)."
+  },
+  "errorUnknown": "予期しないエラーが発生しました。",
+  "@errorUnknown": {
+    "description": "Generic fallback for errors that do not match any specific variant."
+  },
+  "actionRetry": "再試行",
+  "@actionRetry": {
+    "description": "Button / SnackBarAction label asking the user to retry the failed operation."
+  },
+  "errorBoundaryRestartPrompt": "アプリを再起動してください",
+  "@errorBoundaryRestartPrompt": {
+    "description": "Shown by the release-mode ErrorBoundary fallback when widget build fails."
+  }
+}
