@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../novel_kakuyomu/presentation/kakuyomu_settings_section.dart';
 import 'settings_section.dart';
 
 /// Standalone screen hosting [NovelSettingsSection].
@@ -16,7 +17,14 @@ class NovelSettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('オンライン小説 設定')),
-      body: const SingleChildScrollView(child: NovelSettingsSection()),
+      body: const SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            NovelSettingsSection(),
+            KakuyomuSettingsSection(),
+          ],
+        ),
+      ),
     );
   }
 }
