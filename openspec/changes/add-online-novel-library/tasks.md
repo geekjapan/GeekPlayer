@@ -39,15 +39,15 @@
 
 ## 5. drift スキーマ拡張
 
-- [ ] 5.1 `app/lib/core/storage/tables/novel_works.dart` に `NovelWorks` テーブル（複合主キー `{site, externalId}`）を定義
-- [ ] 5.2 `app/lib/core/storage/tables/novel_episodes.dart` に `NovelEpisodes` テーブル（複合主キー `{site, externalId, episodeIndex}`）を定義
-- [ ] 5.3 `app/lib/core/storage/tables/novel_bookmarks.dart` に `NovelBookmarks` テーブル（複合主キー `{site, externalId}`、`scrollFraction REAL`）を定義
-- [ ] 5.4 `app/lib/core/storage/tables/site_consents.dart` に `SiteConsents` テーブル（主キー `site`、`granted BOOL`, `policyVersion TEXT`）を定義
-- [ ] 5.5 `app/lib/core/storage/database.dart` の `@DriftDatabase(tables: [...])` に 4 テーブルを追加し、`add-local-video-playback` のスキーマ v1 を維持
-- [ ] 5.6 `flutter pub run build_runner build --delete-conflicting-outputs` を実行し `database.g.dart` を再生成、コミット
-- [ ] 5.7 `NovelWorksDao` / `NovelEpisodesDao` / `NovelBookmarksDao` / `SiteConsentsDao` を実装（upsert / get / list / delete、Work 削除時の cascade トランザクション）
+- [x] 5.1 `app/lib/core/storage/tables/novel_works.dart` に `NovelWorks` テーブル（複合主キー `{site, externalId}`）を定義
+- [x] 5.2 `app/lib/core/storage/tables/novel_episodes.dart` に `NovelEpisodes` テーブル（複合主キー `{site, externalId, episodeIndex}`）を定義
+- [x] 5.3 `app/lib/core/storage/tables/novel_bookmarks.dart` に `NovelBookmarks` テーブル（複合主キー `{site, externalId}`、`scrollFraction REAL`）を定義
+- [x] 5.4 `app/lib/core/storage/tables/site_consents.dart` に `SiteConsents` テーブル（主キー `site`、`granted BOOL`, `policyVersion TEXT`）を定義
+- [x] 5.5 `app/lib/core/storage/database.dart` の `@DriftDatabase(tables: [...])` に 4 テーブルを追加し、`add-local-video-playback` のスキーマ v1 を維持
+- [x] 5.6 `flutter pub run build_runner build --delete-conflicting-outputs` を実行し `database.g.dart` を再生成、コミット
+- [x] 5.7 `NovelWorksDao` / `NovelEpisodesDao` / `NovelBookmarksDao` / `SiteConsentsDao` を実装（upsert / get / list / delete、Work 削除時の cascade トランザクション）
 - [ ] 5.8 `app/test/core/storage/novel_dao_test.dart` を in-memory drift で書き、複合主キーの一意性、Work cascade 削除、idempotent upsert を検証
-- [ ] 5.9 `SiteConsentsDao` の `policyVersion` 比較ヘルパ（`hasFreshConsent(Site, currentVersion) -> bool`）と単体テスト
+- [x] 5.9 `SiteConsentsDao` の `policyVersion` 比較ヘルパ（`hasFreshConsent(Site, currentVersion) -> bool`）と単体テスト
 
 ## 6. PageSession と media-session 拡張
 
