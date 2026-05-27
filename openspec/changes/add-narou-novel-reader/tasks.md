@@ -45,13 +45,13 @@
 
 ## 5. R18 年齢確認 (`features/age_gate`)
 
-- [ ] 5.1 `age_gate_dialog.dart` に `AgeGateDialog` を実装（タイトル「年齢確認」、説明文、はい / いいえ ボタン、barrier-dismissible false）
-- [ ] 5.2 `showAgeGate(BuildContext)` ヘルパ関数を提供し、同意取得時に `SiteConsentRepository.grant(Site.noc)` を呼ぶ
-- [ ] 5.3 `SiteConsentRepository.isGranted` が `false` の時の R18 surface 表示抑制を、Riverpod の `consentForNarou18Provider` で一元化
-- [ ] 5.4 `age_gate_settings_section.dart` に「年齢確認をやり直す」設定行を実装。現在の同意状態と grant 日時を表示
-- [ ] 5.5 revoke 時の確認ダイアログを実装し、確認後に `SiteConsentRepository.revoke(Site.noc)` を呼ぶ
-- [ ] 5.6 ウィジェットテスト: ダイアログの「はい」/「いいえ」分岐
-- [ ] 5.7 ウィジェットテスト: 設定画面で grant 状態が正しく表示され、revoke が反映される
+- [x] 5.1 `age_gate_dialog.dart` に `AgeGateDialog` を実装（タイトル「年齢確認」、説明文、はい / いいえ ボタン、barrier-dismissible false）
+- [x] 5.2 `showAgeGate(BuildContext)` ヘルパ関数を提供し、同意取得時に `SiteConsentRepository.grant(Site.noc)` を呼ぶ
+- [x] 5.3 `SiteConsentRepository.isGranted` が `false` の時の R18 surface 表示抑制を、Riverpod の `consentForNarou18Provider` で一元化
+- [x] 5.4 `age_gate_settings_section.dart` に「年齢確認をやり直す」設定行を実装。現在の同意状態と grant 日時を表示
+- [x] 5.5 revoke 時の確認ダイアログを実装し、確認後に `SiteConsentRepository.revoke(Site.noc)` を呼ぶ
+- [x] 5.6 ウィジェットテスト: ダイアログの「はい」/「いいえ」分岐
+- [x] 5.7 ウィジェットテスト: 設定画面で grant 状態が正しく表示され、revoke が反映される
 
 ## 6. 検索 / ランキング / 詳細画面 (`features/novel_narou/presentation`)
 
