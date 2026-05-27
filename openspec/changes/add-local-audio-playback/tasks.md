@@ -1,3 +1,8 @@
+> **Conventions**: [docs/CONVENTIONS.md](../../../docs/CONVENTIONS.md) と
+> [ADR-0004 (HomeScreen registry)](../../../docs/adr/0004-home-screen-section-registry.md)
+> を着手前に読むこと。`AudioHomeSection` / `MiniPlayer` は `homeSectionsProvider` に
+> サブプロバイダとして登録する（`HomeScreen` 直接編集禁止）。
+
 ## 1. 依存とプラットフォーム設定
 
 - [ ] 1.1 `app/pubspec.yaml` に `just_audio`、`audio_service`、`audio_metadata_reader` を `flutter pub add` で追加し、`flutter pub get` がクリーン

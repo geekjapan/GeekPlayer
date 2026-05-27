@@ -43,9 +43,9 @@ should append new questions with the next available number per category.
 | Confidence | Total | Resolved | Remaining |
 |---|---|---|---|
 | HIGH | 6 | 6 | 0 |
-| MEDIUM | 19 | 9 | 10 |
+| MEDIUM | 19 | 14 | 5 |
 | LOW | 13 | 1 | 12 |
-| **Total** | **38** | **16** | **22** |
+| **Total** | **38** | **21** | **17** |
 
 By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, RISK=1, UX=1.
 
@@ -53,6 +53,7 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
 
 - **2026-05-27 (initial)**: 38 findings identified, all unresolved.
 - **2026-05-27 (round 1)**: HIGH-priority sweep applied. Q-CROSS-001/002/005/006/007/011/014/015/016 plus Q-GAP-002 auto-applied. Q-NOV-001 attempted (defer PageSession) but user reversed — PageSession kept in v0.1 with `part of` layout per Q-CROSS-011. Q-NAR-002 resolved via new ADR-0003. Q-GAP-001 resolved by spawning a new propose (`add-error-ux-infra`). See `## Applied Edits` for the per-file changelog.
+- **2026-05-27 (Wave 0)**: Parallelization prep round. Q-CROSS-013 resolved via new ADR-0004 (HomeScreen section registry). Q-CROSS-017/018/019/020 resolved by introducing `docs/CONVENTIONS.md` and patching all 8 change `tasks.md` to point at it. Foundation tasks for `HomeScreen` + registry now owned by `add-local-video-playback` Section 5. See Edits #18-#19.
 
 ---
 
@@ -243,8 +244,8 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
 - **Question**: `HomeScreen` の所有権と複数 change の同居方法は?
 - **My answer**: `HomeScreen` は **`features/library/home_screen.dart` 上のセクション集約コンテナ**として書き、各 change は **自身のセクションウィジェットを `home_section_registry` に登録するだけ**にする。Riverpod の `homeSectionsProvider` が登録済みセクションを順序付きリストで返し、`HomeScreen` はそれを `ListView` で描画。これにより各 change は他 change を編集せず追加可能。AppBar アイコンも同様に `homeAppBarActionsProvider` で集約。
 - **Confidence**: MEDIUM（軽い設計追加だが各 change の tasks に整合させる必要）
-- **Action**: 新規 ADR-0003 候補「Home screen composition via registry providers」を立てる、各 change の design.md にこのパターンを反映
-- **Resolved**: [ ]
+- **Action**: applied (Edit #18) — ADR-0004 を起こし、各 change の tasks.md に CONVENTIONS.md と ADR-0004 への参照を追加。video tasks Section 5 を foundation 実装に書き換え
+- **Resolved**: [x] 2026-05-27 (Wave 0)
 
 ### Q-CROSS-014 — Riverpod v2 と v3 の API が混在
 
@@ -300,8 +301,8 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
 - **Question**: 各 change が AndroidManifest を編集する apply 時の競合をどう避けるか?
 - **My answer**: apply 順序を documented：video → audio → novel-library → narou → kakuyomu → app-settings → about の通り適用すれば conflict なし（accumulate のみ）。各 tasks の「AndroidManifest 編集」task に **既存セクションの保持** を明記。あるいは `flutter_native_splash` のような注入式ツールは使わず、手動編集で十分。
 - **Confidence**: MEDIUM
-- **Action**: 各 change tasks に「既存 manifest との差分のみを追加する」注記を入れる
-- **Resolved**: [ ]
+- **Action**: applied (Edit #19) — CONVENTIONS.md §3 で `AndroidManifest.xml` を append-only / 既存維持 / 冪等とする規約を文書化。各 change tasks.md のプリアンブルに CONVENTIONS.md 参照を追加
+- **Resolved**: [x] 2026-05-27 (Wave 0)
 
 ### Q-CROSS-018 — macOS entitlements の累積管理
 
@@ -315,8 +316,8 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
 - **Question**: macOS の sandbox entitlements / Info.plist 変更の累積方法は?
 - **My answer**: Q-CROSS-017 と同じ問題。apply 順序通りに重ねれば OK。ただし macOS の `DebugProfile.entitlements` と `Release.entitlements` の **両方** を編集する必要があり、忘れやすい。各 tasks に両方への明記が必要。
 - **Confidence**: MEDIUM
-- **Action**: 各 change tasks の macOS 編集 task に「Debug + Release の両方の `.entitlements`」を明示
-- **Resolved**: [ ]
+- **Action**: applied (Edit #19) — CONVENTIONS.md §4 で「Debug + Release の両方を編集」を明示。各 tasks.md プリアンブルから参照
+- **Resolved**: [x] 2026-05-27 (Wave 0)
 
 ### Q-CROSS-019 — `package_info_plus` を複数 change が同時に追加しようとする
 
@@ -328,8 +329,8 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
 - **Question**: 同一依存追加 task の冪等性はどう担保するか?
 - **My answer**: 各 tasks に「`flutter pub add <pkg>` を実行し、既に追加されていれば pubspec が変わらないことを確認」と書く。あるいは「依存追加を専用の最小 change `add-shared-deps` にまとめる」案もあるが、過剰設計。各 change の 1.1 task に「冪等」を明記すれば十分。
 - **Confidence**: HIGH
-- **Action**: 該当 tasks に冪等性 note を追加
-- **Resolved**: [ ]
+- **Action**: applied (Edit #19) — CONVENTIONS.md §2 で `flutter pub add` を冪等とする規約。`add-online-novel-library` と `add-about-and-licenses` のタスクに「冪等」を明記
+- **Resolved**: [x] 2026-05-27 (Wave 0)
 
 ### Q-CROSS-020 — `url_launcher` を 2 change が追加しようとする
 
@@ -341,8 +342,8 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
 - **Question**: Q-CROSS-019 と同じ
 - **My answer**: 同上、冪等 note で対応
 - **Confidence**: HIGH
-- **Action**: tasks に冪等 note 追加
-- **Resolved**: [ ]
+- **Action**: applied (Edit #19) — CONVENTIONS.md §2 で `flutter pub add` を冪等とする規約
+- **Resolved**: [x] 2026-05-27 (Wave 0)
 
 ---
 
@@ -552,6 +553,16 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
 - [x] Q-GAP-001 → `add-error-ux-infra` propose 起動 (background sub-agent)
 - [x] Q-GAP-002
 
+### Resolved in Wave 0 (2026-05-27)
+
+並列化準備ラウンド:
+
+- [x] Q-CROSS-013 → ADR-0004 new (HomeScreen section registry)
+- [x] Q-CROSS-017 → CONVENTIONS.md §3 (AndroidManifest append-only)
+- [x] Q-CROSS-018 → CONVENTIONS.md §4 (macOS Debug+Release 両対応)
+- [x] Q-CROSS-019 → CONVENTIONS.md §2 (pubspec 冪等)
+- [x] Q-CROSS-020 → CONVENTIONS.md §2 (pubspec 冪等)
+
 ### Remaining for next round — HIGH-priority
 
 （HIGH の未解決はなし。round 1 で全消化）
@@ -560,11 +571,6 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
 
 - [ ] Q-CROSS-010 — 小説作品を `recent_items` に乗せるか
 - [ ] Q-CROSS-012 — `EpisodeId` を sealed 化（int + string ハイブリッド）
-- [ ] Q-CROSS-013 — `HomeScreen` をセクションレジストリ方式に（ADR-0004 候補）
-- [ ] Q-CROSS-017 — AndroidManifest 累積編集の冪等性方針
-- [ ] Q-CROSS-018 — macOS entitlements Debug/Release 両対応の明示
-- [ ] Q-CROSS-019 — `package_info_plus` 冪等追加
-- [ ] Q-CROSS-020 — `url_launcher` 冪等追加
 - [ ] Q-AUD-001 — macOS audio entitlement のキー名訂正
 - [ ] Q-AUD-002 — アートワーク placeholder asset の用意
 - [ ] Q-NAR-003 — R18 同意取消時の R18 キャッシュ削除動作
@@ -694,6 +700,25 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
   - `openspec/changes/add-narou-novel-reader/proposal.md` (top に Related ADRs 追加)
   - `openspec/changes/add-narou-novel-reader/design.md` (規範参照を ADR-0001 → ADR-0003 に切替、Q-D1 を解決済みに)
 - **Diff summary**: ユーザー判断により、なろう / ノクターン系の本文取得方針を独立 ADR (`docs/adr/0003-narou-content-fetch-policy.md`) として記録。レート制限 1 req/sec、`*.syosetu.com` 共通バケット、`robots.txt` 24h TTL、429/503 で 6 回バックオフを明文化。
+
+### Edit #18 (motivated by Q-CROSS-013, Wave 0)
+- **Files**:
+  - `docs/adr/0004-home-screen-section-registry.md` (new)
+  - `openspec/changes/add-local-video-playback/tasks.md` (Section 5 rewrite to foundation)
+- **Diff summary**: HomeScreen をセクションレジストリ方式で構成する ADR-0004 を起案。Riverpod の `homeSectionsProvider` / `homeAppBarActionsProvider` に各 change がサブプロバイダで登録するパターン。video tasks Section 5 を「HomeScreen + Section レジストリ foundation」として書き換え、後続 6 change の土台を構築する責務を明確化。`order` 規約（100 刻み）も明文化。
+
+### Edit #19 (motivated by Q-CROSS-017/018/019/020, Wave 0)
+- **Files**:
+  - `docs/CONVENTIONS.md` (new) — 10 セクション: HomeScreen registry / pubspec idempotency / AndroidManifest append-only / macOS Debug+Release entitlements / drift versioning / Riverpod v3 / テスト / 命名 / commits / sealed class part-of
+  - `openspec/changes/add-local-video-playback/tasks.md` (preamble)
+  - `openspec/changes/add-local-audio-playback/tasks.md` (preamble)
+  - `openspec/changes/add-online-novel-library/tasks.md` (preamble + 1.1 冪等性追記)
+  - `openspec/changes/add-narou-novel-reader/tasks.md` (preamble)
+  - `openspec/changes/add-kakuyomu-novel-reader/tasks.md` (preamble)
+  - `openspec/changes/add-app-settings/tasks.md` (preamble)
+  - `openspec/changes/add-about-and-licenses/tasks.md` (preamble + 1.1 冪等性追記)
+  - `openspec/changes/add-error-ux-infra/tasks.md` (preamble)
+- **Diff summary**: 全 8 change のタスクファイル冒頭に **CONVENTIONS.md と ADR-0004 への参照** をプリアンブルとして追加。並列 Wave 実装時に各エージェントが共通規約を踏み外さないようにする。
 
 ### Edit #17 (motivated by Q-GAP-001, user choice)
 - **Files** (new change):

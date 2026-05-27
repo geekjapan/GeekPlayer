@@ -1,3 +1,8 @@
+> **Conventions**: [docs/CONVENTIONS.md](../../../docs/CONVENTIONS.md) と
+> [ADR-0004 (HomeScreen registry)](../../../docs/adr/0004-home-screen-section-registry.md)
+> を着手前に読むこと。Settings 画面の AppBar エントリ（gear アイコン）は
+> `homeAppBarActionsProvider` にサブプロバイダとして登録する（`HomeScreen` 直接編集禁止）。
+
 ## 1. 依存とプロジェクト準備
 
 - [ ] 1.1 `app/pubspec.yaml` に `package_info_plus` を追加（About セクションの

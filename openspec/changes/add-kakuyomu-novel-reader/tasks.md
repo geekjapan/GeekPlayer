@@ -1,3 +1,8 @@
+> **Conventions**: [docs/CONVENTIONS.md](../../../docs/CONVENTIONS.md) と
+> [ADR-0004 (HomeScreen registry)](../../../docs/adr/0004-home-screen-section-registry.md)
+> を着手前に読むこと。`KakuyomuSection` は `homeSectionsProvider` 配下の
+> `NovelHomeSection` 内のタブとして組み込む（`HomeScreen` 直接編集禁止）。
+
 ## 1. 依存と前提
 
 - [ ] 1.1 `add-online-novel-library` で `NovelRepository` / `LibraryRepository` / `RateLimiter` / `SiteConsentRepository` / `Site` enum / `Work` / `Episode` / drift `novel_works` / `novel_episodes` / `novel_bookmarks` / `site_consents` テーブルが定義されていることを確認

@@ -1,6 +1,11 @@
+> **Conventions**: [docs/CONVENTIONS.md](../../../docs/CONVENTIONS.md) と
+> [ADR-0004 (HomeScreen registry)](../../../docs/adr/0004-home-screen-section-registry.md)
+> を着手前に読むこと。About 画面の AppBar エントリ（info アイコン）は
+> `homeAppBarActionsProvider` にサブプロバイダとして登録する（`HomeScreen` 直接編集禁止）。
+
 ## 1. 依存追加とビルド構成
 
-- [ ] 1.1 `app/pubspec.yaml` に `package_info_plus` と `url_launcher` を `dependencies` で追加し、`flutter pub get` がクリーン
+- [ ] 1.1 `app/pubspec.yaml` に `package_info_plus` と `url_launcher` を **冪等に**（既に存在すれば skip、CONVENTIONS.md §2 参照）`flutter pub add` で追加し、`flutter pub get` がクリーン
 - [ ] 1.2 `app/pubspec.yaml` の `dev_dependencies` に `flutter_oss_licenses` を追加
 - [ ] 1.3 `app/android/app/src/main/AndroidManifest.xml` に `<queries>` ブロックを追加し、`https` スキームを宣言（Android 11+ で `url_launcher` が必須）
 - [ ] 1.4 リリース手順書（`docs/release.md` 新規 or 既存 README） に `flutter build <target> --dart-define=GIT_SHA=$(git rev-parse --short HEAD)` を必須コマンドとして明文化

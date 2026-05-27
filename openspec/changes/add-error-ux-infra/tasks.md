@@ -1,3 +1,6 @@
+> **Conventions**: [docs/CONVENTIONS.md](../../../docs/CONVENTIONS.md) を着手前に読むこと。
+> 本 change は HomeScreen には触らず、`app/lib/core/errors/` のみを成立させる。
+
 ## 1. 依存と l10n 骨組み
 
 - [ ] 1.1 `app/pubspec.yaml` に `logger ^2.5.0` を `flutter pub add` で追加（冪等: 既に存在すればバージョンだけ揃える）

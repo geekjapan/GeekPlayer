@@ -209,12 +209,42 @@ drift スキーマのマイグレーション順序前提:
 
 ## 9. 次に何をすべきか（後続の人/エージェントへ）
 
+並列 Wave 戦略は [GRILL-REPORT.md](GRILL-REPORT.md) と [ADR-0004](adr/0004-home-screen-section-registry.md) を参照。
+
+### Wave 1（foundation、sequential）
+
 1. **`add-local-video-playback` を apply 開始** — `/opsx:apply add-local-video-playback`
-2. tasks.md のチェックボックスを 1 つずつ消化、完了即 `- [x]` に
+2. 特に **Section 5 (HomeScreen + Section レジストリ foundation)** が wave 2/3 並列実行の前提
 3. 全 task 完了で `flutter analyze` / `flutter test` / `dart format` がクリーンを確認
-4. **実機検証** — macOS / Windows / Android 3 OS で動作確認（tasks のセクション 7 参照）
-5. `/opsx:archive add-local-video-playback` で `openspec/specs/` に確定
-6. 次の change（audio）に進む
+4. **実機検証** — macOS / Windows / Android 3 OS で動作確認
+5. `/opsx:archive add-local-video-playback` で `openspec/specs/` に確定し、main に merge
+
+### Wave 2（video merge 後、3 並列）
+
+```bash
+git worktree add ../GeekPlayer-audio          -b feature/audio main
+git worktree add ../GeekPlayer-novel-library  -b feature/novel-library main
+git worktree add ../GeekPlayer-error-ux       -b feature/error-ux main
+```
+
+各 worktree でサブエージェント or 人が `/opsx:apply <change>` を並走。
+
+### Wave 3（wave 2 merge 後、3 並列）
+
+```bash
+git worktree add ../GeekPlayer-narou         -b feature/narou         main
+git worktree add ../GeekPlayer-kakuyomu      -b feature/kakuyomu      main
+git worktree add ../GeekPlayer-app-settings  -b feature/app-settings  main
+```
+
+### Wave 4（最後）
+
+```bash
+git worktree add ../GeekPlayer-about         -b feature/about         main
+```
+
+並列実装中は **[docs/CONVENTIONS.md](CONVENTIONS.md)** を全エージェントが遵守すること
+（HomeScreen レジストリ / pubspec 冪等 / AndroidManifest append-only 等）。
 
 途中で設計上の疑問が出たら、`design.md` の **Open Questions** セクションを更新するか、
 新しい ADR を起こす。

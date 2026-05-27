@@ -1,3 +1,8 @@
+> **Conventions**: [docs/CONVENTIONS.md](../../../docs/CONVENTIONS.md) と
+> [ADR-0004 (HomeScreen registry)](../../../docs/adr/0004-home-screen-section-registry.md)
+> を着手前に読むこと。`NarouHomeSection` は `homeSectionsProvider` 配下の
+> `NovelHomeSection` 内のタブとして組み込む（`HomeScreen` 直接編集禁止）。
+
 ## 1. 前提と依存
 
 - [ ] 1.1 `add-online-novel-library` change が apply 済みで `NovelRepository` / `Work` / `Episode` / `Site` / `WorkQuery` / `SiteConsentRepository` / `LibraryRepository` / `RateLimiter` / `site_consents` テーブル / `novel_bookmarks` テーブル / `NovelHomeSection` interface が利用可能であることを確認

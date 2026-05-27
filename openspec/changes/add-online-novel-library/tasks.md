@@ -1,6 +1,11 @@
+> **Conventions**: [docs/CONVENTIONS.md](../../../docs/CONVENTIONS.md) と
+> [ADR-0004 (HomeScreen registry)](../../../docs/adr/0004-home-screen-section-registry.md)
+> を着手前に読むこと。`NovelHomeSection` は `homeSectionsProvider` にサブプロバイダ
+> として登録する（`HomeScreen` 直接編集禁止）。
+
 ## 1. 依存とプラットフォーム設定
 
-- [ ] 1.1 `app/pubspec.yaml` に `dio ^5.0.0`、`package_info_plus`、`html`、`xml`、`collection` を `flutter pub add` で追加し、`flutter pub get` がクリーン
+- [ ] 1.1 `app/pubspec.yaml` に `dio`、`package_info_plus`、`html`、`xml`、`collection` を `flutter pub add` で **冪等に**追加（既に存在すれば skip。CONVENTIONS.md §2 参照）し、`flutter pub get` がクリーン
 - [ ] 1.2 `app/android/app/src/main/AndroidManifest.xml` に `<uses-permission android:name="android.permission.INTERNET"/>` を追加（既存ならスキップ）
 - [ ] 1.3 `app/macos/Runner/DebugProfile.entitlements` と `Release.entitlements` に `com.apple.security.network.client = true` を追加
 - [ ] 1.4 `flutter analyze` と `flutter test` が依存変更後にクリーン

@@ -1,3 +1,7 @@
+> **Conventions**: [docs/CONVENTIONS.md](../../../docs/CONVENTIONS.md) と
+> [ADR-0004 (HomeScreen registry)](../../../docs/adr/0004-home-screen-section-registry.md)
+> を着手前に読むこと。この change は HomeScreen と Section レジストリの **foundation** を担う。
+
 ## 1. 依存とプラットフォーム設定
 
 - [ ] 1.1 `app/pubspec.yaml` に `file_picker` を `flutter pub add` で追加し、`flutter pub get` がクリーン
@@ -38,11 +42,17 @@
 - [ ] 4.9 `app/lib/features/video/presentation/home_section.dart` に「動画を開く」ボタン + "最近開いた" リストを実装（空状態の placeholder 文言含む）
 - [ ] 4.10 stale entry（ファイルが消えた）タップ時のエラーハンドリングと `recent_items` からの削除
 
-## 5. ホーム画面の置き換え
+## 5. HomeScreen + Section レジストリ foundation（ADR-0004）
 
-- [ ] 5.1 `app/lib/main.dart:1` の `_HelloScreen` を `HomeScreen` に置き換える（`HomeScreen` は `lib/features/library/home_screen.dart`、`VideoHomeSection` をコンポジット）
-- [ ] 5.2 `HomeScreen` を ja-first で実装（ハードコード文言を `intl` の ARB に切り出すのは v0.2 の別 change）
-- [ ] 5.3 `app/test/widget_test.dart` を新 `HomeScreen` 用に更新（既存の "Hello, GeekPlayer" アサーションを削除）
+この change で **後続 6 change が乗せる土台** を構築する。
+
+- [ ] 5.1 `app/lib/features/library/home_section.dart` に `abstract class HomeSection { String get id; int get order; Widget build(BuildContext, WidgetRef); }` を定義。`HomeAppBarAction` も同様に定義
+- [ ] 5.2 `app/lib/features/library/home_section_registry.dart` に `@Riverpod(keepAlive: true) List<HomeSection> homeSections(...)` と `@Riverpod(keepAlive: true) List<HomeAppBarAction> homeAppBarActions(...)` を実装（spread で複数サブプロバイダから集約、`order` 順にソート）
+- [ ] 5.3 `app/lib/features/library/home_screen.dart` に `ConsumerWidget HomeScreen` を実装（AppBar + ListView 構成、各セクションは `s.build(context, ref)`）
+- [ ] 5.4 `app/lib/features/video/presentation/video_home_section.dart` に `VideoHomeSection implements HomeSection`（order = 200）と `@Riverpod` サブプロバイダを実装
+- [ ] 5.5 `app/lib/main.dart:1` の `_HelloScreen` を `HomeScreen` に置き換え、`ProviderScope` で囲んだまま起動できることを確認
+- [ ] 5.6 `app/test/widget_test.dart` を新 `HomeScreen` 用に更新（"動画を開く" ボタン存在 + "最近開いた" 空状態文言を確認、既存の "Hello, GeekPlayer" アサーションを削除）
+- [ ] 5.7 `build_runner` で `*.g.dart` を生成、`flutter analyze` / `flutter test` クリーン
 
 ## 6. ウィジェットテスト
 
