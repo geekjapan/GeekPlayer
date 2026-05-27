@@ -61,7 +61,11 @@ class NarouRubyParser {
         }
         final String base = text.substring(next + 1, kOpen);
         final String ruby = text.substring(kOpen + 1, kClose);
-        out.add(WidgetSpan(child: _Ruby(base: base, ruby: ruby, style: baseStyle)));
+        out.add(
+          WidgetSpan(
+            child: _Ruby(base: base, ruby: ruby, style: baseStyle),
+          ),
+        );
         i = kClose + 1;
         continue;
       }
@@ -90,7 +94,11 @@ class NarouRubyParser {
             continue;
           }
           final String ruby = text.substring(next + 1, kClose);
-          out.add(WidgetSpan(child: _Ruby(base: base, ruby: ruby, style: baseStyle)));
+          out.add(
+            WidgetSpan(
+              child: _Ruby(base: base, ruby: ruby, style: baseStyle),
+            ),
+          );
           i = kClose + 1;
           continue;
         }
@@ -151,13 +159,7 @@ class _Ruby extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        Text(
-          ruby,
-          style: effective.copyWith(
-            fontSize: rubySize,
-            height: 1.0,
-          ),
-        ),
+        Text(ruby, style: effective.copyWith(fontSize: rubySize, height: 1.0)),
         Text(base, style: effective),
       ],
     );

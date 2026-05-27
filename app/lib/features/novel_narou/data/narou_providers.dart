@@ -109,10 +109,7 @@ Future<NarouNovelRepository> narouNovelRepository(Ref ref) async {
   final NarouEpisodeFetcher fetcher = await ref.watch(
     narouGeneralEpisodeFetcherProvider.future,
   );
-  return NarouNovelRepository(
-    apiClient: client,
-    episodeFetcher: fetcher,
-  );
+  return NarouNovelRepository(apiClient: client, episodeFetcher: fetcher);
 }
 
 /// R18 用リポジトリ。

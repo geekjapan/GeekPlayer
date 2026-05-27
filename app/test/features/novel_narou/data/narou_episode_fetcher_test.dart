@@ -14,19 +14,16 @@ class _FakeBodyInterceptor extends Interceptor {
   void onRequest(RequestOptions options, RequestInterceptorHandler h) {
     requested.add(options.uri);
     h.resolve(
-      Response<String>(
-        requestOptions: options,
-        statusCode: 200,
-        data: html,
-      ),
+      Response<String>(requestOptions: options, statusCode: 200, data: html),
     );
   }
 }
 
 void main() {
   test('短編 (episodeIndex=1) は <div id="novel_honbun"> から本文を抽出する', () async {
-    final String html =
-        await File('test/fixtures/narou/episode_body.html').readAsString();
+    final String html = await File(
+      'test/fixtures/narou/episode_body.html',
+    ).readAsString();
     final _FakeBodyInterceptor fake = _FakeBodyInterceptor(html);
     final Dio dio = Dio()..interceptors.add(fake);
     final NarouEpisodeFetcher fetcher = NarouEpisodeFetcher(
@@ -43,8 +40,9 @@ void main() {
   });
 
   test('連載 (episodeIndex=N) で異なる URL を叩く', () async {
-    final String html =
-        await File('test/fixtures/narou/episode_body.html').readAsString();
+    final String html = await File(
+      'test/fixtures/narou/episode_body.html',
+    ).readAsString();
     final _FakeBodyInterceptor fake = _FakeBodyInterceptor(html);
     final Dio dio = Dio()..interceptors.add(fake);
     final NarouEpisodeFetcher fetcher = NarouEpisodeFetcher(
@@ -58,8 +56,9 @@ void main() {
   });
 
   test('RateLimiter で連続呼び出しが直列化される', () async {
-    final String html =
-        await File('test/fixtures/narou/episode_body.html').readAsString();
+    final String html = await File(
+      'test/fixtures/narou/episode_body.html',
+    ).readAsString();
     final _FakeBodyInterceptor fake = _FakeBodyInterceptor(html);
     final Dio dio = Dio()..interceptors.add(fake);
     final RateLimiter limited = RateLimiter(

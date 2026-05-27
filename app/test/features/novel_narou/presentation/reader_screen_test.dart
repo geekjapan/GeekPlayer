@@ -56,8 +56,7 @@ class _FakeReaderSettingsPanel extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ReaderTheme theme = ref.watch(readerThemeProvider);
-    final ReaderThemeNotifier notifier =
-        ref.read(readerThemeProvider.notifier);
+    final ReaderThemeNotifier notifier = ref.read(readerThemeProvider.notifier);
     return Scaffold(
       body: Column(
         children: <Widget>[

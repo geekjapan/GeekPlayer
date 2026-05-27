@@ -25,7 +25,13 @@ class NarouWorkDetailScreen extends ConsumerWidget {
     final NarouRubyParser ruby = const NarouRubyParser();
 
     return Scaffold(
-      appBar: AppBar(title: Text(summary.title, maxLines: 1, overflow: TextOverflow.ellipsis)),
+      appBar: AppBar(
+        title: Text(
+          summary.title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
       body: ListView(
         children: <Widget>[
           Padding(
@@ -61,14 +67,19 @@ class NarouWorkDetailScreen extends ConsumerWidget {
                     runSpacing: 4,
                     children: <Widget>[
                       for (final String k in summary.keywords)
-                        Chip(label: Text(k), visualDensity: VisualDensity.compact),
+                        Chip(
+                          label: Text(k),
+                          visualDensity: VisualDensity.compact,
+                        ),
                     ],
                   ),
                 const SizedBox(height: 12),
                 Text('文字数: ${summary.length}'),
                 Text('話数: ${summary.generalAllNo}'),
                 if (summary.lastUp != null)
-                  Text('最終更新: ${DateFormat('yyyy-MM-dd HH:mm').format(summary.lastUp!.toLocal())}'),
+                  Text(
+                    '最終更新: ${DateFormat('yyyy-MM-dd HH:mm').format(summary.lastUp!.toLocal())}',
+                  ),
                 const SizedBox(height: 16),
                 FilledButton.icon(
                   key: const Key('narou-add-to-library'),
@@ -134,25 +145,25 @@ class NarouWorkDetailScreen extends ConsumerWidget {
         ? await ref.read(narouR18NovelRepositoryProvider.future)
         : await ref.read(narouNovelRepositoryProvider.future);
     final LibraryRepository lib = ref.read(libraryRepositoryProvider);
-    // ignore: use_build_context_synchronously
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Library に追加中…')),
-    );
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Library に追加中…')));
     try {
       await lib.addToLibrary(
         repo,
         WorkId(site: summary.site, externalId: summary.ncode),
       );
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Library に追加しました')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Library に追加しました')));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('追加に失敗しました: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('追加に失敗しました: $e')));
       }
     }
   }

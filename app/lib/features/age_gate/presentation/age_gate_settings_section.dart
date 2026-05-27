@@ -103,9 +103,7 @@ class _AgeGateSettingsSectionState
 
   void _showInfoNotGranted() {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('現在は未同意です。ノクターン系統のタブをタップすると確認ダイアログが開きます。'),
-      ),
+      const SnackBar(content: Text('現在は未同意です。ノクターン系統のタブをタップすると確認ダイアログが開きます。')),
     );
   }
 }

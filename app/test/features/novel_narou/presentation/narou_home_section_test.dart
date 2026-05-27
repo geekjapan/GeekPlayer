@@ -11,12 +11,8 @@ import 'package:geekplayer/features/novel_narou/presentation/narou_home_section.
 
 Widget _wrap({required AppDatabase db}) {
   return ProviderScope(
-    overrides: [
-      appDatabaseProvider.overrideWith((Ref ref) => db),
-    ],
-    child: const MaterialApp(
-      home: Scaffold(body: NarouHomeSection()),
-    ),
+    overrides: [appDatabaseProvider.overrideWith((Ref ref) => db)],
+    child: const MaterialApp(home: Scaffold(body: NarouHomeSection())),
   );
 }
 
@@ -48,9 +44,7 @@ void main() {
     expect(find.textContaining('要確認'), findsOneWidget);
   });
 
-  testWidgets('R18 grant 後にラベルが "ノクターン" に切り替わる', (
-    WidgetTester tester,
-  ) async {
+  testWidgets('R18 grant 後にラベルが "ノクターン" に切り替わる', (WidgetTester tester) async {
     final ConsentRepository repo = ConsentRepository(db.siteConsentsDao);
     await repo.grant(Site.noc);
     await tester.pumpWidget(_wrap(db: db));

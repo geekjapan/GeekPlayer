@@ -83,9 +83,7 @@ void main() {
       consentStream: ctrl.stream,
     );
     // 通常の search は (本テストでは中身 0 件だが) StateError は出ない。
-    await repo.searchWorks(
-      const WorkQueryWrapper(),
-    );
+    await repo.searchWorks(const WorkQueryWrapper());
     await repo.dispose();
     await ctrl.close();
   });

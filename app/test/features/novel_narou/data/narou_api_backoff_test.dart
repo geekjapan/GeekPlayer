@@ -28,10 +28,7 @@ void main() {
       computeBackoffDelay(15, policy) <= const Duration(minutes: 5),
       isTrue,
     );
-    expect(
-      computeBackoffDelay(50, policy),
-      const Duration(minutes: 5),
-    );
+    expect(computeBackoffDelay(50, policy), const Duration(minutes: 5));
   });
 
   test('リトライ上限は ADR-0003 規範どおり', () {

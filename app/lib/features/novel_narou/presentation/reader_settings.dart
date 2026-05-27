@@ -49,16 +49,16 @@ class ReaderTheme {
   }
 
   Color get background => switch (colorScheme) {
-        ReaderColorScheme.light => Colors.white,
-        ReaderColorScheme.sepia => const Color(0xFFF5ECD7),
-        ReaderColorScheme.dark => const Color(0xFF121212),
-      };
+    ReaderColorScheme.light => Colors.white,
+    ReaderColorScheme.sepia => const Color(0xFFF5ECD7),
+    ReaderColorScheme.dark => const Color(0xFF121212),
+  };
 
   Color get foreground => switch (colorScheme) {
-        ReaderColorScheme.light => Colors.black87,
-        ReaderColorScheme.sepia => const Color(0xFF3E2E1F),
-        ReaderColorScheme.dark => Colors.white.withValues(alpha: 0.88),
-      };
+    ReaderColorScheme.light => Colors.black87,
+    ReaderColorScheme.sepia => const Color(0xFF3E2E1F),
+    ReaderColorScheme.dark => Colors.white.withValues(alpha: 0.88),
+  };
 }
 
 /// Riverpod state for [ReaderTheme]. keepAlive で全画面再入場時に保持。

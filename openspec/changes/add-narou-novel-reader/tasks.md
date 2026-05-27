@@ -9,7 +9,7 @@
 - [x] 1.2 `app_settings` テーブル（`add-app-settings` 提供）が利用可能であることを確認。リーダー設定は `novel.reader.*` key 名前空間に保存 — 並列実装中で未存在のため、in-memory + Riverpod でフォールバック (v0.2 で app_settings バックエンドに切り替え)
 - [x] 1.3 `app/pubspec.yaml` に `html_unescape` を `flutter pub add` で追加（既に存在すれば冪等に skip）し、`flutter pub get` がクリーン
 - [x] 1.4 `app/macos/Runner/DebugProfile.entitlements` / `Release.entitlements` に `com.apple.security.network.client = true` を追加（既に動画 change で入っていれば skip）
-- [ ] 1.5 `flutter analyze` / `flutter test` が変更後にクリーン
+- [x] 1.5 `flutter analyze` / `flutter test` が変更後にクリーン — 298 tests passing, 0 analyzer issues
 
 ## 2. ドメインモデル (`features/novel_narou/domain`)
 
@@ -86,13 +86,13 @@
 
 ## 9. テスト全般と CI
 
-- [ ] 9.1 `app/test/fixtures/narou/` に代表的 API レスポンス JSON（一般検索 / R18 検索 / detail / rankget / 本文 HTML）を 5 件以上保存
-- [ ] 9.2 `flutter test` でユニット + ウィジェットテストが全て pass
-- [ ] 9.3 `app/integration_test/narou_smoke_test.dart` に実 API を 1 回ずつ叩く smoke test（CI では skip タグ、ローカル / リリース前に手動実行）
-- [ ] 9.4 `flutter analyze` クリーン、`dart format --set-exit-if-changed .` 通過
+- [x] 9.1 `app/test/fixtures/narou/` に代表的 API レスポンス JSON（一般検索 / R18 検索 / detail / rankget / 本文 HTML）を 5 件以上保存 — 5 fixtures (general / r18 / detail / rankget / body.html)
+- [x] 9.2 `flutter test` でユニット + ウィジェットテストが全て pass — 298 tests passing
+- [x] 9.3 `app/integration_test/narou_smoke_test.dart` に実 API を 1 回ずつ叩く smoke test（CI では skip タグ、ローカル / リリース前に手動実行） — `@Tags(['integration'])` で CI から除外
+- [x] 9.4 `flutter analyze` クリーン、`dart format --set-exit-if-changed .` 通過
 
 ## 10. ドキュメントと締め
 
-- [ ] 10.1 `README.md` に「対応サイト: 小説家になろう / ノクターン系統」と R18 同意の注意書きを追加
-- [ ] 10.2 ADR-0001 を読み返し、注意書きの 4 箇所（README / 初回起動 / Settings / `KakuyomuHtmlSource` docstring）のうち、本 change で扱う該当箇所が更新されていることを確認
-- [ ] 10.3 すべての task の `- [ ]` を `- [x]` に更新し、`/opsx:archive` で本 change をアーカイブ
+- [x] 10.1 `README.md` に「対応サイト: 小説家になろう / ノクターン系統」と R18 同意の注意書きを追加
+- [x] 10.2 ADR-0001 を読み返し、注意書きの 4 箇所（README / 初回起動 / Settings / `KakuyomuHtmlSource` docstring）のうち、本 change で扱う該当箇所が更新されていることを確認 — README + AgeGateDialog 説明文 + AgeGateSettingsSection 行 + `NarouEpisodeFetcher` docstring (ADR-0003 §取得方針-3 言及) の 4 箇所をカバー
+- [ ] 10.3 すべての task の `- [ ]` を `- [x]` に更新し、`/opsx:archive` で本 change をアーカイブ — Wave 3 並列実装ガイドにより push / merge / archive は実施しない

@@ -52,9 +52,7 @@ class NarouRankingRepository {
     }
     if (dropped > 0) {
       // ignore: avoid_print
-      print(
-        '[NarouRankingRepository] dropped $dropped entries without detail',
-      );
+      print('[NarouRankingRepository] dropped $dropped entries without detail');
     }
     return out;
   }

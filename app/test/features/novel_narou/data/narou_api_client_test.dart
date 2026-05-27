@@ -192,33 +192,17 @@ void main() {
     );
   });
 
-  test('一般 / R18 でレートリミッターを共有すると順次直列化される', () async {
-    // RateLimiter を 1 req/sec、並列 1 に絞る → 一般と R18 の同時実行で
-    // 2 件目は 1 件目の完了後にしか走らない。
-    final RateLimiter shared = RateLimiter(
-      rate: 1.0,
-      burst: 1,
-      maxConcurrency: 1,
-    );
-    final _FakeInterceptor fake = _FakeInterceptor((RequestOptions o) {
-      return Response<dynamic>(
-        requestOptions: o,
-        statusCode: 200,
-        data: <dynamic>[
-          <String, dynamic>{'allcount': 0},
-        ],
+  test(
+    '一般 / R18 でレートリミッターを共有すると順次直列化される',
+    () async {
+      // RateLimiter を 1 req/sec、並列 1 に絞る → 一般と R18 の同時実行で
+      // 2 件目は 1 件目の完了後にしか走らない。
+      final RateLimiter shared = RateLimiter(
+        rate: 1.0,
+        burst: 1,
+        maxConcurrency: 1,
       );
-    });
-    final NarouApiClient general = NarouApiClient(
-      baseUrl: Uri.parse('https://api.syosetu.com/novelapi/api/'),
-      dio: dioWith(fake),
-      limiter: shared,
-      site: Site.narou,
-      appVersion: '1.0.0',
-    );
-    final NarouApiClient r18 = NarouApiClient(
-      baseUrl: Uri.parse('https://api.syosetu.com/novel18api/api/'),
-      dio: dioWith(_FakeInterceptor((RequestOptions o) {
+      final _FakeInterceptor fake = _FakeInterceptor((RequestOptions o) {
         return Response<dynamic>(
           requestOptions: o,
           statusCode: 200,
@@ -226,27 +210,52 @@ void main() {
             <String, dynamic>{'allcount': 0},
           ],
         );
-      })),
-      limiter: shared,
-      site: Site.noc,
-      appVersion: '1.0.0',
-    );
+      });
+      final NarouApiClient general = NarouApiClient(
+        baseUrl: Uri.parse('https://api.syosetu.com/novelapi/api/'),
+        dio: dioWith(fake),
+        limiter: shared,
+        site: Site.narou,
+        appVersion: '1.0.0',
+      );
+      final NarouApiClient r18 = NarouApiClient(
+        baseUrl: Uri.parse('https://api.syosetu.com/novel18api/api/'),
+        dio: dioWith(
+          _FakeInterceptor((RequestOptions o) {
+            return Response<dynamic>(
+              requestOptions: o,
+              statusCode: 200,
+              data: <dynamic>[
+                <String, dynamic>{'allcount': 0},
+              ],
+            );
+          }),
+        ),
+        limiter: shared,
+        site: Site.noc,
+        appVersion: '1.0.0',
+      );
 
-    // 1 件目は即時、2 件目は inFlight 経由で待たされる。
-    final Future<NarouSearchResponse> f1 = general.search(
-      const NarouSearchOptions(keyword: 'a'),
-    );
-    // 2 件目の future を作った時点で shared.inFlight が 1 になっているはず
-    final Future<NarouSearchResponse> f2 = r18.search(
-      const NarouSearchOptions(keyword: 'b'),
-    );
+      // 1 件目は即時、2 件目は inFlight 経由で待たされる。
+      final Future<NarouSearchResponse> f1 = general.search(
+        const NarouSearchOptions(keyword: 'a'),
+      );
+      // 2 件目の future を作った時点で shared.inFlight が 1 になっているはず
+      final Future<NarouSearchResponse> f2 = r18.search(
+        const NarouSearchOptions(keyword: 'b'),
+      );
 
-    final Stopwatch sw = Stopwatch()..start();
-    await Future.wait<NarouSearchResponse>(<Future<NarouSearchResponse>>[f1, f2]);
-    sw.stop();
-    // バケット直列化により 2 件目は >= ~0ms 待たされるはずだが、極小バー
-    // ストでも 1 req/sec の制限で 1 件目完了後に 2 件目開始 → 経過時間が
-    // 0 を超える。
-    expect(sw.elapsed > Duration.zero, isTrue);
-  }, timeout: const Timeout(Duration(seconds: 10)));
+      final Stopwatch sw = Stopwatch()..start();
+      await Future.wait<NarouSearchResponse>(<Future<NarouSearchResponse>>[
+        f1,
+        f2,
+      ]);
+      sw.stop();
+      // バケット直列化により 2 件目は >= ~0ms 待たされるはずだが、極小バー
+      // ストでも 1 req/sec の制限で 1 件目完了後に 2 件目開始 → 経過時間が
+      // 0 を超える。
+      expect(sw.elapsed > Duration.zero, isTrue);
+    },
+    timeout: const Timeout(Duration(seconds: 10)),
+  );
 }

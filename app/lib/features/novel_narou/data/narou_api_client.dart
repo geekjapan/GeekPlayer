@@ -129,19 +129,14 @@ class NarouApiClient {
   Future<NarouWorkDetail> detailOne(String ncode) async {
     final List<NarouWorkSummary> all = await detail(<String>[ncode]);
     if (all.isEmpty) {
-      throw NarouResponseError(
-        'no detail returned for ncode=$ncode',
-      );
+      throw NarouResponseError('no detail returned for ncode=$ncode');
     }
     return NarouWorkDetail(summary: all.first);
   }
 
   /// ランキング取得。`rankget` は本来 `api.syosetu.com/rank/rankget/`
   /// なので、コンストラクタの `baseUrl` ではなく **絶対 URL** で叩く。
-  Future<List<NarouRankEntry>> rankget(
-    NarouRankingType type,
-    DateTime date,
-  ) {
+  Future<List<NarouRankEntry>> rankget(NarouRankingType type, DateTime date) {
     return _limiter.run<List<NarouRankEntry>>(() async {
       // YYYYMMDD-<suffix>
       final String y = date.year.toString().padLeft(4, '0');

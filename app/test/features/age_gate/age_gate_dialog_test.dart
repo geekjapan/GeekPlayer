@@ -11,9 +11,7 @@ import 'package:geekplayer/features/novel/data/consent_repository.dart';
 
 Widget _wrap({required AppDatabase db, required Widget child}) {
   return ProviderScope(
-    overrides: [
-      appDatabaseProvider.overrideWith((Ref ref) => db),
-    ],
+    overrides: [appDatabaseProvider.overrideWith((Ref ref) => db)],
     child: MaterialApp(home: Scaffold(body: child)),
   );
 }
@@ -81,9 +79,7 @@ void main() {
     expect(await repo.hasFreshConsent(Site.noc), isFalse);
   });
 
-  testWidgets('既に同意済なら即座に true (ダイアログを開かない)', (
-    WidgetTester tester,
-  ) async {
+  testWidgets('既に同意済なら即座に true (ダイアログを開かない)', (WidgetTester tester) async {
     final ConsentRepository repo = ConsentRepository(db.siteConsentsDao);
     await repo.grant(Site.noc);
     bool? result;

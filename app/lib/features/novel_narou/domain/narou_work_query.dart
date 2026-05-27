@@ -86,8 +86,7 @@ class NarouSearchOptions extends WorkQuery {
       params['length'] = '$lo-$hi';
     }
     if (lastUpdatedAfter != null) {
-      final int secs =
-          lastUpdatedAfter!.toUtc().millisecondsSinceEpoch ~/ 1000;
+      final int secs = lastUpdatedAfter!.toUtc().millisecondsSinceEpoch ~/ 1000;
       params['lastup'] = secs.toString();
     }
     if (completed == true) params['type'] = 'er'; // er = 完結 + 短編

@@ -28,10 +28,7 @@ class NarouHomeSection extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(
-            '小説家になろう',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
+          Text('小説家になろう', style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
@@ -74,8 +71,8 @@ class NarouHomeSection extends ConsumerWidget {
                 },
               ),
               // R18 ボタンは "未同意でも見せる" が、タップしたら必ず
-                  // showAgeGate を通す (仕様 "Granting R18 consent reveals the
-                  // R18 tab" — entrypoint をタップした瞬間にダイアログ)。
+              // showAgeGate を通す (仕様 "Granting R18 consent reveals the
+              // R18 tab" — entrypoint をタップした瞬間にダイアログ)。
               _NarouShortcut(
                 key: const Key('narou-shortcut-r18'),
                 icon: Icons.lock_outline,

@@ -53,6 +53,5 @@ class NarouResponseError implements Exception {
   final int? entryIndex;
 
   @override
-  String toString() =>
-      'NarouResponseError(entryIndex=$entryIndex): $message';
+  String toString() => 'NarouResponseError(entryIndex=$entryIndex): $message';
 }

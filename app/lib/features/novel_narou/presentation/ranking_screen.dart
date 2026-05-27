@@ -16,8 +16,7 @@ class NarouRankingScreen extends ConsumerStatefulWidget {
   const NarouRankingScreen({super.key});
 
   @override
-  ConsumerState<NarouRankingScreen> createState() =>
-      _NarouRankingScreenState();
+  ConsumerState<NarouRankingScreen> createState() => _NarouRankingScreenState();
 }
 
 class _NarouRankingScreenState extends ConsumerState<NarouRankingScreen>
@@ -93,8 +92,7 @@ class _RankingList extends ConsumerWidget {
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute<void>(
-                    builder: (_) =>
-                        NarouWorkDetailScreen(summary: rw.summary),
+                    builder: (_) => NarouWorkDetailScreen(summary: rw.summary),
                   ),
                 );
               },

@@ -26,9 +26,12 @@ class NarouEpisodeFetcher {
     required RateLimiter limiter,
     required Uri bodyBaseUrl,
     required String appVersion,
-  }) : _dio = dio, // ignore: prefer_initializing_formals
-       _limiter = limiter, // ignore: prefer_initializing_formals
-       _bodyBaseUrl = bodyBaseUrl { // ignore: prefer_initializing_formals
+    // ignore: prefer_initializing_formals
+  }) : _dio = dio,
+       // ignore: prefer_initializing_formals
+       _limiter = limiter,
+       // ignore: prefer_initializing_formals
+       _bodyBaseUrl = bodyBaseUrl {
     _dio.options = _dio.options.copyWith(
       headers: <String, dynamic>{
         ..._dio.options.headers,
@@ -52,9 +55,7 @@ class NarouEpisodeFetcher {
   Future<String> fetchBody(String ncode, int episodeIndex) {
     return _limiter.run<String>(() async {
       final String lower = ncode.toLowerCase();
-      final Uri url = _bodyBaseUrl.replace(
-        path: '/$lower/$episodeIndex/',
-      );
+      final Uri url = _bodyBaseUrl.replace(path: '/$lower/$episodeIndex/');
       final Response<String> res = await _dio.getUri<String>(
         url,
         options: Options(responseType: ResponseType.plain),
@@ -73,10 +74,7 @@ class NarouEpisodeFetcher {
     if (honbun == null) {
       // 新 DOM (2023 以降の novelview) では `.p-novel__body` 等にスイッチ
       // した報告がある。fallback として代表的なクラスを順に試す。
-      final List<String> fallbacks = <String>[
-        '.p-novel__body',
-        '.novel_view',
-      ];
+      final List<String> fallbacks = <String>['.p-novel__body', '.novel_view'];
       for (final String sel in fallbacks) {
         final dom.Element? alt = doc.querySelector(sel);
         if (alt != null) {

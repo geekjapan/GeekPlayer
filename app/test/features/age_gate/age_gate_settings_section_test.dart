@@ -11,12 +11,8 @@ import 'package:geekplayer/features/novel/data/consent_repository.dart';
 
 Widget _wrap({required AppDatabase db}) {
   return ProviderScope(
-    overrides: [
-      appDatabaseProvider.overrideWith((Ref ref) => db),
-    ],
-    child: const MaterialApp(
-      home: Scaffold(body: AgeGateSettingsSection()),
-    ),
+    overrides: [appDatabaseProvider.overrideWith((Ref ref) => db)],
+    child: const MaterialApp(home: Scaffold(body: AgeGateSettingsSection())),
   );
 }
 
@@ -37,9 +33,7 @@ void main() {
     expect(find.text('未同意'), findsOneWidget);
   });
 
-  testWidgets('同意済を日付付きで表示し、取り消し確認で revoke される', (
-    WidgetTester tester,
-  ) async {
+  testWidgets('同意済を日付付きで表示し、取り消し確認で revoke される', (WidgetTester tester) async {
     final ConsentRepository repo = ConsentRepository(db.siteConsentsDao);
     await repo.grant(Site.noc);
     await tester.pumpWidget(_wrap(db: db));

@@ -201,8 +201,7 @@ class _ReaderSettingsSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ReaderTheme theme = ref.watch(readerThemeProvider);
-    final ReaderThemeNotifier notifier =
-        ref.read(readerThemeProvider.notifier);
+    final ReaderThemeNotifier notifier = ref.read(readerThemeProvider.notifier);
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -218,15 +217,13 @@ class _ReaderSettingsSheet extends ConsumerWidget {
                 const SizedBox(width: 8),
                 IconButton(
                   key: const Key('reader-font-down'),
-                  onPressed: () =>
-                      notifier.setFontSize(theme.fontSize - 2),
+                  onPressed: () => notifier.setFontSize(theme.fontSize - 2),
                   icon: const Icon(Icons.text_decrease),
                 ),
                 Text('${theme.fontSize.toInt()} pt'),
                 IconButton(
                   key: const Key('reader-font-up'),
-                  onPressed: () =>
-                      notifier.setFontSize(theme.fontSize + 2),
+                  onPressed: () => notifier.setFontSize(theme.fontSize + 2),
                   icon: const Icon(Icons.text_increase),
                 ),
               ],

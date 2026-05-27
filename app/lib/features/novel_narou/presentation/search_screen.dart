@@ -56,8 +56,7 @@ class _NarouSearchScreenState extends ConsumerState<NarouSearchScreen> {
   }
 
   void _onScroll() {
-    if (_scroll.position.pixels >=
-            _scroll.position.maxScrollExtent - 200 &&
+    if (_scroll.position.pixels >= _scroll.position.maxScrollExtent - 200 &&
         !_loading &&
         !_done) {
       _fetch();
@@ -65,16 +64,16 @@ class _NarouSearchScreenState extends ConsumerState<NarouSearchScreen> {
   }
 
   NarouSearchOptions get _opts => NarouSearchOptions(
-        site: widget.site,
-        keyword: _keyword.text.isEmpty ? null : _keyword.text,
-        limit: _pageSize,
-        offset: _offset,
-        genres: _genres,
-        minChars: _minChars,
-        maxChars: _maxChars,
-        completed: _completed,
-        pickup: _pickup,
-      );
+    site: widget.site,
+    keyword: _keyword.text.isEmpty ? null : _keyword.text,
+    limit: _pageSize,
+    offset: _offset,
+    genres: _genres,
+    minChars: _minChars,
+    maxChars: _maxChars,
+    completed: _completed,
+    pickup: _pickup,
+  );
 
   Future<void> _runNewSearch() async {
     setState(() {
@@ -210,8 +209,7 @@ class _NarouSearchScreenState extends ConsumerState<NarouSearchScreen> {
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute<void>(
-                              builder: (_) =>
-                                  NarouWorkDetailScreen(summary: s),
+                              builder: (_) => NarouWorkDetailScreen(summary: s),
                             ),
                           );
                         },
@@ -232,10 +230,7 @@ class _EmptyPlaceholder extends StatelessWidget {
     return const Padding(
       padding: EdgeInsets.all(24),
       child: Center(
-        child: Text(
-          '該当する作品が見つかりませんでした',
-          key: Key('narou-empty-placeholder'),
-        ),
+        child: Text('該当する作品が見つかりませんでした', key: Key('narou-empty-placeholder')),
       ),
     );
   }
