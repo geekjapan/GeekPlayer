@@ -46,7 +46,7 @@
 - [x] 5.5 `app/lib/core/storage/database.dart` の `@DriftDatabase(tables: [...])` に 4 テーブルを追加し、`add-local-video-playback` のスキーマ v1 を維持
 - [x] 5.6 `flutter pub run build_runner build --delete-conflicting-outputs` を実行し `database.g.dart` を再生成、コミット
 - [x] 5.7 `NovelWorksDao` / `NovelEpisodesDao` / `NovelBookmarksDao` / `SiteConsentsDao` を実装（upsert / get / list / delete、Work 削除時の cascade トランザクション）
-- [ ] 5.8 `app/test/core/storage/novel_dao_test.dart` を in-memory drift で書き、複合主キーの一意性、Work cascade 削除、idempotent upsert を検証
+- [x] 5.8 `app/test/core/storage/novel_dao_test.dart` を in-memory drift で書き、複合主キーの一意性、Work cascade 削除、idempotent upsert を検証 (+ migration v1->v2 test)
 - [x] 5.9 `SiteConsentsDao` の `policyVersion` 比較ヘルパ（`hasFreshConsent(Site, currentVersion) -> bool`）と単体テスト
 
 ## 6. PageSession と media-session 拡張
