@@ -29,26 +29,26 @@
 
 ## 4. About 画面実装
 
-- [ ] 4.1 `app/lib/features/about/presentation/about_screen.dart` に AppBar + ヘッダー（アプリ名 / バージョン / ビルド番号 / コミット SHA）を実装
-- [ ] 4.2 About 画面に Apache-2.0 NOTICE 行 (`Copyright 2026 GeekPlayer Contributors`) を表示
-- [ ] 4.3 About 画面に GitHub リポジトリ / Roadmap / Full License の 3 リンクボタンを実装し、`url_launcher` の `launchUrl(uri, mode: LaunchMode.externalApplication)` で開く
-- [ ] 4.4 `url_launcher` 失敗時に SnackBar で「リンクを開けませんでした」を表示
-- [ ] 4.5 「OSS ライセンス」ボタンから `LicenseListScreen` に遷移
-- [ ] 4.6 `app/lib/main.dart:1` の `HomeScreen` AppBar に「アプリ情報」アイコンボタンを追加し、About 画面へ `Navigator.push`
+- [x] 4.1 `app/lib/features/about/presentation/about_screen.dart` に AppBar + ヘッダー（アプリ名 / バージョン / ビルド番号 / コミット SHA）を実装
+- [x] 4.2 About 画面に Apache-2.0 NOTICE 行 (`Copyright 2026 GeekPlayer Contributors`) を表示
+- [x] 4.3 About 画面に GitHub リポジトリ / Roadmap / Full License の 3 リンクボタンを実装し、`url_launcher` の `launchUrl(uri, mode: LaunchMode.externalApplication)` で開く
+- [x] 4.4 `url_launcher` 失敗時に SnackBar で「リンクを開けませんでした」を表示
+- [x] 4.5 「OSS ライセンス」ボタンから `LicenseListScreen` に遷移
+- [x] 4.6 ADR-0004 準拠: `home_screen.dart` 直接編集ではなく `aboutAppBarActionsProvider` 経由で info アイコンを `homeAppBarActionsProvider` に登録（HomeScreen / main.dart は無編集）。`add-app-settings` の `about_section.dart` の placeholder も `AboutScreen` への `Navigator.push` に置き換え
 
 ## 5. OSS Licenses 画面実装
 
-- [ ] 5.1 `app/lib/features/about/presentation/license_screen.dart` に `LicenseListScreen` を実装し、最上部に LGPL Notice Section、その下に Apache-2.0 NOTICE Section、その下に依存パッケージ ListView を配置
-- [ ] 5.2 ListView は `OssLicenseRepository.fetchEntries()` の結果を表示、各エントリ (`name`, `version`) をタップで詳細画面に遷移
-- [ ] 5.3 `app/lib/features/about/presentation/license_detail_screen.dart` に `LicenseDetailScreen` を実装し、`SelectableText` でライセンス本文を表示
-- [ ] 5.4 「ライセンス全文」リンクから `assets/legal/LICENSE` を `rootBundle.loadString` で読み出して `LicenseDetailScreen` 風に表示
+- [x] 5.1 `app/lib/features/about/presentation/license_screen.dart` に `LicenseListScreen` を実装し、最上部に LGPL Notice Section、その下に Apache-2.0 NOTICE Section、その下に依存パッケージ ListView を配置
+- [x] 5.2 ListView は `OssLicenseRepository.fetchEntries()` の結果を表示、各エントリ (`name`, `version`) をタップで詳細画面に遷移
+- [x] 5.3 `app/lib/features/about/presentation/license_detail_screen.dart` に `LicenseDetailScreen` を実装し、`SelectableText` でライセンス本文を表示
+- [x] 5.4 「ライセンス全文」リンクから `assets/legal/LICENSE` を `rootBundle.loadString` で読み出して `LicenseDetailScreen` 風に表示
 
 ## 6. LGPL 通知セクション実装
 
-- [ ] 6.1 `app/lib/features/about/presentation/lgpl_notice_section.dart` を実装し、libmpv が LGPL-2.1+ で動的リンクされていること、利用者の権利、上流ソース URL (`https://github.com/mpv-player/mpv`) を `SelectableText` で表示
-- [ ] 6.2 OS 別差し替え手順（macOS: `Contents/Frameworks/`、Windows: `mpv-2.dll`、Android: `lib/<abi>/libmpv.so` + APK 再署名）を箇条書きで表示
-- [ ] 6.3 「詳細は THIRD_PARTY_NOTICES を参照」リンクを `https://github.com/geekjapan/GeekPlayer/blob/main/THIRD_PARTY_NOTICES.md` へ `url_launcher` で開く
-- [ ] 6.4 「LGPL-2.1 全文」リンクから `assets/legal/LGPL-2.1.txt` を `rootBundle.loadString` で読み出して詳細画面に遷移
+- [x] 6.1 `app/lib/features/about/presentation/lgpl_notice_section.dart` を実装し、libmpv が LGPL-2.1+ で動的リンクされていること、利用者の権利、上流ソース URL (`https://github.com/mpv-player/mpv`) を `SelectableText` で表示
+- [x] 6.2 OS 別差し替え手順（macOS: `Contents/Frameworks/`、Windows: `mpv-2.dll`、Android: `lib/<abi>/libmpv.so` + APK 再署名）を箇条書きで表示
+- [x] 6.3 「詳細は THIRD_PARTY_NOTICES を参照」リンクを `https://github.com/geekjapan/GeekPlayer/blob/main/THIRD_PARTY_NOTICES.md` へ `url_launcher` で開く
+- [x] 6.4 「LGPL-2.1 全文」リンクから `assets/legal/LGPL-2.1.txt` を `rootBundle.loadString` で読み出して詳細画面に遷移
 - [ ] 6.5 `LgplNoticeSection` のウィジェットテストを `app/test/features/about/lgpl_notice_section_test.dart` に追加（URL / "LGPL-2.1+" / "動的リンク" / "差し替える権利" / OS 別パス文字列が描画されること）
 
 ## 7. ウィジェットテストと CI 整備

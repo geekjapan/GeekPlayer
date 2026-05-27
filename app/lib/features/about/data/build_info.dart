@@ -5,7 +5,7 @@
 /// literal text `(dev build)` in place of the SHA.
 ///
 /// Release builds:
-///   flutter build <target> --dart-define=GIT_SHA=$(git rev-parse --short HEAD)
+///   `flutter build <target> --dart-define=GIT_SHA=$(git rev-parse --short HEAD)`
 ///
 /// See `docs/release.md`.
 library;
