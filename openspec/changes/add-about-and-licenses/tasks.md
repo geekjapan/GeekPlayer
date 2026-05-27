@@ -13,11 +13,11 @@
 
 ## 2. ライセンスデータ生成とアセット
 
-- [ ] 2.1 `dart run flutter_oss_licenses:generate -o lib/oss_licenses.dart` を実行し、生成物を VCS にコミット
-- [ ] 2.2 `app/assets/legal/LICENSE` に Apache-2.0 全文 (`/LICENSE` のコピー) を配置し、`app/pubspec.yaml` の `flutter.assets` に追加
-- [ ] 2.3 `app/assets/legal/LGPL-2.1.txt` に FSF 公式の LGPL-2.1 本文を配置し、`flutter.assets` に追加
-- [ ] 2.4 `app/assets/legal/checksums.txt` に `LGPL-2.1.txt` の SHA-256 を記録
-- [ ] 2.5 主要依存 (`media_kit`, `just_audio`, `drift`, `dio`, `riverpod`, `html`, `webfeed`) が `lib/oss_licenses.dart` に含まれることをスナップショットテスト (`app/test/features/about/oss_licenses_snapshot_test.dart`) で検証
+- [x] 2.1 `dart run flutter_oss_licenses:generate -o lib/oss_licenses.dart` を実行し、生成物を VCS にコミット
+- [x] 2.2 `app/assets/legal/LICENSE` に Apache-2.0 全文 (`/LICENSE` のコピー) を配置し、`app/pubspec.yaml` の `flutter.assets` に追加
+- [x] 2.3 `app/assets/legal/LGPL-2.1.txt` に FSF 公式の LGPL-2.1 本文を配置し、`flutter.assets` に追加
+- [x] 2.4 `app/assets/legal/checksums.txt` に `LGPL-2.1.txt` の SHA-256 を記録
+- [x] 2.5 主要依存 (`media_kit`, `just_audio`, `drift`, `dio`, `riverpod`, `html`, `webfeed`) が `lib/oss_licenses.dart` に含まれることをスナップショットテスト (`app/test/features/about/oss_licenses_snapshot_test.dart`) で検証
 
 ## 3. ドメイン / データ層 (`features/about`)
 

@@ -94,6 +94,13 @@ flutter:
   # https://docs.flutter.dev/ui/accessibility-and-internationalization/internationalization
   generate: true
 
+  # Bundled legal text (about-and-licenses). The LGPL-2.1 body is verified
+  # in CI against assets/legal/checksums.txt for integrity.
+  assets:
+    - assets/legal/LICENSE
+    - assets/legal/LGPL-2.1.txt
+    - assets/legal/checksums.txt
+
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
