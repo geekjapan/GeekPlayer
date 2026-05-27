@@ -16,8 +16,8 @@ void main() {
         await db.playbackPositionsDao.getByUri('file:///nonexistent');
         final List<dynamic> recents = await db.recentItemsDao.list();
         expect(recents, isEmpty);
-        // v2 — `add-online-novel-library` bumped from 1.
-        expect(db.schemaVersion, 2);
+        // v3 — `add-app-settings` bumped from 2.
+        expect(db.schemaVersion, 3);
       },
     );
   });

@@ -105,21 +105,25 @@
 
 ## 7. 既存 feature への統合
 
-- [ ] 7.1 `app/lib/features/library/home_screen.dart:1` の `AppBar` に歯車
-  `IconButton` を追加し、`SettingsScreen` への `Navigator.push` を配線
-- [ ] 7.2 `app/lib/features/library/home_screen.dart` の "最近開いた" 表示前に
-  `recent_items` を `AppSettings.recentItemsCap` に prune する処理を追加
-- [ ] 7.3 `app/lib/features/video/presentation/player_screen.dart:1` の `MediaSession`
-  初期化箇所で `AppSettings.defaultPlaybackSpeed` と `AppSettings.subtitlesByDefault`
-  を初期値に使う
-- [ ] 7.4 `app/lib/features/audio/presentation/audio_player_notifier.dart:1` で
-  `AppSettings.audioBackgroundPlayback` / `audioNotificationPersistent` を購読
-  し `audio_service` の設定を更新（`add-local-audio-playback` 完了前は
-  スタブ呼び出しで配線）
+- [x] 7.1 `homeAppBarActionsProvider` 経由で歯車 `IconButton` を登録
+  （`features/settings/presentation/settings_app_bar_action.dart`）、
+  `home_section_registry.dart` の `homeAppBarActions` に
+  `...ref.watch(settingsAppBarActionsProvider)` を追加し
+  `SettingsScreen` への `Navigator.push` を配線  *（HomeScreen 本体は ADR-0004 に従い非編集）*
+- [x] 7.2 `recent_items` の prune 処理を `recentItemsPruneProvider`
+  （`features/settings/presentation/recent_items_pruner.dart`）として実装、
+  `homeSectionsProvider` から `ref.watch` で参照することで
+  HomeScreen 描画時に `AppSettings.recentItemsCap` 上限へ prune
+- [x] 7.3 `app/lib/features/video/presentation/video_controller_notifier.dart`
+  の `MediaSession` 初期化箇所で `AppSettings.defaultPlaybackSpeed` を
+  初期値に適用  *（字幕デフォルトは video session API が次回起動扱いのため UI helper のみ表示）*
+- [x] 7.4 `app/lib/features/audio/presentation/audio_controller_notifier.dart`
+  の `_loadCurrentAndPlay` で `AppSettings.defaultPlaybackSpeed` を購読し
+  audio session に初期適用。バックグラウンド再生 / 通知継続表示の audio_service
+  API 呼び直しは値変更のみ実装（実時間 API 呼び直しは v0.2 へ deferred）
 - [ ] 7.5 `app/lib/features/novel/presentation/novel_reader_screen.dart:1` で
   小説関連 5 フィールド（writing mode / font size / line height / font family
-  / background）を `.select` で個別購読し即時反映（`add-online-novel-library`
-  完了前は配線のみ）
+  / background）を `.select` で個別購読し即時反映  *（novel_reader_screen は `add-narou-novel-reader` / `add-kakuyomu-novel-reader` で実装予定、本 wave では deferred）*
 
 ## 8. ウィジェットテストと統合テスト
 

@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../audio/presentation/audio_home_section.dart';
 import '../novel/presentation/novel_home_section.dart';
+import '../settings/presentation/recent_items_pruner.dart';
 import '../settings/presentation/settings_app_bar_action.dart';
 import '../video/presentation/video_home_section.dart';
 import 'home_section.dart';
@@ -14,6 +15,13 @@ part 'home_section_registry.g.dart';
 /// list, satisfying ADR-0004's conflict-free contract.
 @Riverpod(keepAlive: true)
 List<HomeSection> homeSections(Ref ref) {
+  // Trigger the recent-items prune lazily on home render. The pruner
+  // provider re-runs whenever `recentItemsCap` changes in AppSettings
+  // (spec add-app-settings Requirement "Library section caps recent
+  // items and supports history clear" — "the next time the home screen
+  // renders, the system MUST prune `recent_items` down to the new cap").
+  ref.watch(recentItemsPruneProvider);
+
   final List<HomeSection> all = <HomeSection>[
     ...ref.watch(videoHomeSectionsProvider),
     ...ref.watch(audioHomeSectionsProvider),
