@@ -116,10 +116,9 @@ class _DefaultFilePicker extends FilePickerDelegate {
   Future<String?> pickSingleFile({
     required List<String> allowedExtensions,
   }) async {
-    final FilePickerResult? result = await FilePicker.platform.pickFiles(
+    final FilePickerResult? result = await FilePicker.pickFiles(
       type: FileType.custom,
       allowedExtensions: allowedExtensions,
-      allowMultiple: false,
     );
     if (result == null) return null;
     final PlatformFile file = result.files.single;

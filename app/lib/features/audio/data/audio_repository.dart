@@ -187,10 +187,9 @@ class _DefaultFilePicker extends AudioPickerDelegate {
     // file_picker's API does not allow "file OR folder" in a single
     // call. We bias to file-pick first; the home section also exposes
     // a separate "フォルダを開く" affordance via [expandFolderToQueue].
-    final FilePickerResult? result = await FilePicker.platform.pickFiles(
+    final FilePickerResult? result = await FilePicker.pickFiles(
       type: FileType.custom,
       allowedExtensions: kSupportedAudioExtensions.toList(growable: false),
-      allowMultiple: false,
     );
     if (result == null) return null;
     final PlatformFile file = result.files.single;
@@ -214,7 +213,7 @@ extension AudioRepositoryFolderPick on AudioRepository {
   /// queue. Returns `null` on cancel or when the folder has no playable
   /// audio file.
   Future<AudioPickResult?> pickFolder() async {
-    final String? folder = await FilePicker.platform.getDirectoryPath();
+    final String? folder = await FilePicker.getDirectoryPath();
     if (folder == null) return null;
     return expandFolderToQueue(folder);
   }
