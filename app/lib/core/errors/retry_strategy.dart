@@ -26,11 +26,7 @@ final class _Indefinite extends RetryStrategy {
 final class _Bounded extends RetryStrategy {
   _Bounded(this.maxAttempts) {
     if (maxAttempts < 1) {
-      throw ArgumentError.value(
-        maxAttempts,
-        'maxAttempts',
-        'must be >= 1',
-      );
+      throw ArgumentError.value(maxAttempts, 'maxAttempts', 'must be >= 1');
     }
   }
   final int maxAttempts;
@@ -141,7 +137,8 @@ Duration _computeDelay({
   if (jitter == 0) {
     return Duration(microseconds: clamped);
   }
-  final jitterFactor = (rng.nextDouble() * 2 - 1) * jitter; // [-jitter, +jitter]
+  final jitterFactor =
+      (rng.nextDouble() * 2 - 1) * jitter; // [-jitter, +jitter]
   final adjusted = clamped + (clamped * jitterFactor).round();
   return Duration(microseconds: adjusted < 0 ? 0 : adjusted);
 }

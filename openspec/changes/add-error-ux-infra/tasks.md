@@ -69,8 +69,8 @@
 
 ## 8. ドキュメントと締め
 
-- [ ] 8.1 `app/lib/core/errors/README.md` を作成（しない方針 — `core/errors/` への新規ドキュメント追加はスキップし、design.md を参照させる。**この task は no-op、checkbox はそのまま [x] にしない**）
-- [ ] 8.2 `app/lib/main.dart` の `runApp(...)` を `runAppWithErrorBoundary(MyApp())` + `ErrorBoundary.install()` を入れるパターンに置き換える。`MaterialApp` の `scaffoldMessengerKey` に `ref.read(scaffoldMessengerKeyProvider)` を注入、`localizationsDelegates` と `supportedLocales` に `AppLocalizations` 系を追加
-- [ ] 8.3 `flutter analyze` / `flutter test` / `dart format --set-exit-if-changed .` が CI でクリーン
-- [ ] 8.4 後続再配線 change の起案チェック: design.md 「後続再配線計画」セクションを参照し、`refactor-route-errors-through-app-error` を `/opsx:propose` で別途立てる準備が整っていることを確認（実際の propose は本 change の archive 後）
-- [ ] 8.5 全 task の `- [ ]` を `- [x]` に更新し（8.1 は除く / `- [ ]` のまま放置せず明示的に削除するか、`- [-] 8.1 (no-op、design.md を参照)` に書き換えるかは apply 時の裁量）、`/opsx:archive add-error-ux-infra` で本 change をアーカイブ
+- [-] 8.1 `app/lib/core/errors/README.md` を作成（**no-op**: 方針通りスキップ。`core/errors/` の使い方は design.md と各 .dart ファイルの dartdoc を参照）
+- [x] 8.2 `app/lib/main.dart` の `runApp(...)` を `runAppWithErrorBoundary(MyApp())` を呼ぶパターンに置き換え（`ErrorBoundary.install()` は `runAppWithErrorBoundary` 内で呼ばれる）。`MaterialApp` の `scaffoldMessengerKey` に `ref.watch(scaffoldMessengerKeyProvider)` を注入、`localizationsDelegates` と `supportedLocales` に `AppLocalizations` 系を追加、`locale: const Locale('ja')` を明示
+- [x] 8.3 `flutter analyze` / `flutter test` / `dart format --set-exit-if-changed .` が CI でクリーン（local: analyze 0 issues、test 147 passed、format 0 changed）
+- [x] 8.4 後続再配線 change の起案チェック: design.md 「後続再配線計画」セクションが存在し、`refactor-route-errors-through-app-error` の起案候補（`*Exception` / `*Error` 詰め替え対象 7 件）が一覧化済みであることを確認（実際の propose は本 change の archive 後 — sub-agent スコープ外）
+- [-] 8.5 全 task の `- [ ]` を `- [x]` に更新（8.1 は `- [-]` で明示）、`/opsx:archive add-error-ux-infra` は **本 sub-agent では実行しない**（親 agent が merge 後に main で実行）

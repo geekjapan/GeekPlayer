@@ -82,20 +82,23 @@ void main() {
   });
 
   group('AppError equality & hashCode', () {
-    test('equal RobotsDisallowedError with different cause are still equal', () {
-      final a = RobotsDisallowedError(
-        message: 'denied',
-        path: '/admin/',
-        cause: Exception('first'),
-      );
-      final b = RobotsDisallowedError(
-        message: 'denied',
-        path: '/admin/',
-        cause: Exception('second'),
-      );
-      expect(a, equals(b));
-      expect(a.hashCode, b.hashCode);
-    });
+    test(
+      'equal RobotsDisallowedError with different cause are still equal',
+      () {
+        final a = RobotsDisallowedError(
+          message: 'denied',
+          path: '/admin/',
+          cause: Exception('first'),
+        );
+        final b = RobotsDisallowedError(
+          message: 'denied',
+          path: '/admin/',
+          cause: Exception('second'),
+        );
+        expect(a, equals(b));
+        expect(a.hashCode, b.hashCode);
+      },
+    );
 
     test('RateLimitError equality discriminates retryAfter', () {
       const a = RateLimitError(message: 'x', retryAfter: Duration(seconds: 5));

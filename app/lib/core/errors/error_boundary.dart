@@ -146,10 +146,7 @@ Future<void> runAppWithErrorBoundary(Widget app) async {
     }
   };
 
-  runZonedGuarded<void>(
-    () => runApp(app),
-    (error, stack) {
-      AppErrorLogger.log(UnknownError(error, stackTrace: stack));
-    },
-  );
+  runZonedGuarded<void>(() => runApp(app), (error, stack) {
+    AppErrorLogger.log(UnknownError(error, stackTrace: stack));
+  });
 }

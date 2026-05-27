@@ -31,7 +31,10 @@ void main() {
       message: 'fallback rate',
       retryAfter: Duration(seconds: 30),
     ),
-    const SiteConsentRequiredError(message: 'fallback consent', site: 'kakuyomu'),
+    const SiteConsentRequiredError(
+      message: 'fallback consent',
+      site: 'kakuyomu',
+    ),
     const RobotsDisallowedError(message: 'fallback robots', path: '/x'),
     const HtmlParseError(message: 'fallback parse'),
     FileNotFoundError(message: 'fallback file', uri: Uri.parse('file:///a')),
@@ -46,8 +49,11 @@ void main() {
       testWidgets('${error.runtimeType}', (tester) async {
         final text = await _localize(tester, error);
         expect(text, isNotEmpty);
-        expect(text, isNot(equals(error.message)),
-            reason: 'localized string should differ from the raw fallback');
+        expect(
+          text,
+          isNot(equals(error.message)),
+          reason: 'localized string should differ from the raw fallback',
+        );
       });
     }
   });
@@ -55,10 +61,7 @@ void main() {
   testWidgets('RateLimitError interpolates retryAfter seconds', (tester) async {
     final text = await _localize(
       tester,
-      const RateLimitError(
-        message: 'raw',
-        retryAfter: Duration(seconds: 30),
-      ),
+      const RateLimitError(message: 'raw', retryAfter: Duration(seconds: 30)),
     );
     expect(text, contains('30'));
     expect(text, contains('秒'));

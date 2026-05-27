@@ -30,10 +30,12 @@ void main() {
   });
 
   test('RateLimitError logs at warning level with retryAfter payload', () {
-    AppErrorLogger.log(const RateLimitError(
-      message: 'too many',
-      retryAfter: Duration(seconds: 5),
-    ));
+    AppErrorLogger.log(
+      const RateLimitError(
+        message: 'too many',
+        retryAfter: Duration(seconds: 5),
+      ),
+    );
 
     expect(filter.events, hasLength(1));
     final event = filter.events.single;

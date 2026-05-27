@@ -18,29 +18,28 @@ void main() {
     expect(ErrorBoundary.isInstalled, isTrue);
   });
 
-  testWidgets(
-    'buildErrorWidget never produces nested release fallbacks',
-    (tester) async {
-      debugIsReleaseModeOverride = true;
-      // Call the function directly; do not touch ErrorWidget.builder so the
-      // flutter_test binding's "builder unchanged" invariant is preserved.
-      final widget = ErrorBoundary.buildErrorWidget(
-        FlutterErrorDetails(
-          exception: Exception('boom'),
-          stack: StackTrace.current,
-        ),
-      );
-      await tester.pumpWidget(
-        MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('ja'),
-          home: widget,
-        ),
-      );
-      // Exactly one localized prompt + one icon — never doubled.
-      expect(find.text('アプリを再起動してください'), findsOneWidget);
-      expect(find.byIcon(Icons.error_outline), findsOneWidget);
-    },
-  );
+  testWidgets('buildErrorWidget never produces nested release fallbacks', (
+    tester,
+  ) async {
+    debugIsReleaseModeOverride = true;
+    // Call the function directly; do not touch ErrorWidget.builder so the
+    // flutter_test binding's "builder unchanged" invariant is preserved.
+    final widget = ErrorBoundary.buildErrorWidget(
+      FlutterErrorDetails(
+        exception: Exception('boom'),
+        stack: StackTrace.current,
+      ),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('ja'),
+        home: widget,
+      ),
+    );
+    // Exactly one localized prompt + one icon — never doubled.
+    expect(find.text('アプリを再起動してください'), findsOneWidget);
+    expect(find.byIcon(Icons.error_outline), findsOneWidget);
+  });
 }

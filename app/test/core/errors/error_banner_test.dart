@@ -24,9 +24,9 @@ void main() {
         // The banner must render at least one non-empty text node.
         final texts = find.byType(Text);
         expect(texts, findsWidgets);
-        final hasNonEmpty = tester.widgetList<Text>(texts).any(
-          (t) => (t.data ?? '').isNotEmpty,
-        );
+        final hasNonEmpty = tester
+            .widgetList<Text>(texts)
+            .any((t) => (t.data ?? '').isNotEmpty);
         expect(hasNonEmpty, isTrue);
       });
     }
@@ -36,10 +36,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         ErrorBanner(
-          error: FileNotFoundError(
-            message: 'm',
-            uri: Uri.parse('file:///x'),
-          ),
+          error: FileNotFoundError(message: 'm', uri: Uri.parse('file:///x')),
         ),
       ),
     );

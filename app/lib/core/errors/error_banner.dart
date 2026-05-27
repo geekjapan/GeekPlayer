@@ -85,10 +85,7 @@ class ErrorBanner extends StatelessWidget {
             Icon(icon, color: foreground),
             const SizedBox(width: 12),
             Expanded(
-              child: Text(
-                message,
-                style: TextStyle(color: foreground),
-              ),
+              child: Text(message, style: TextStyle(color: foreground)),
             ),
             if (onRetry != null)
               TextButton(

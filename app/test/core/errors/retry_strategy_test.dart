@@ -15,11 +15,7 @@ void main() {
       expect(
         () => RetryStrategy.bounded(0),
         throwsA(
-          isA<ArgumentError>().having(
-            (e) => e.name,
-            'name',
-            'maxAttempts',
-          ),
+          isA<ArgumentError>().having((e) => e.name, 'name', 'maxAttempts'),
         ),
       );
     });
@@ -39,13 +35,10 @@ void main() {
   group('withRetry — happy path & give-up behaviour', () {
     test('successful first attempt invokes task exactly once', () async {
       var calls = 0;
-      final result = await withRetry(
-        () async {
-          calls++;
-          return 42;
-        },
-        RetryStrategy.bounded(3),
-      );
+      final result = await withRetry(() async {
+        calls++;
+        return 42;
+      }, RetryStrategy.bounded(3));
       expect(result, 42);
       expect(calls, 1);
     });
@@ -53,13 +46,10 @@ void main() {
     test('none retries zero times even for retriable errors', () async {
       var calls = 0;
       await expectLater(
-        withRetry(
-          () async {
-            calls++;
-            throw const NetworkUnreachableError(message: 'x');
-          },
-          const RetryStrategy.none(),
-        ),
+        withRetry(() async {
+          calls++;
+          throw const NetworkUnreachableError(message: 'x');
+        }, const RetryStrategy.none()),
         throwsA(isA<NetworkUnreachableError>()),
       );
       expect(calls, 1);
@@ -86,21 +76,23 @@ void main() {
         final waits = <Duration>[];
         var calls = 0;
         String? settled;
-        unawaited(withRetry<String>(
-          () async {
-            calls++;
-            if (calls <= 3) {
-              throw const UpstreamUnavailableError(message: 'x');
-            }
-            return 'ok';
-          },
-          RetryStrategy.bounded(5),
-          initialDelay: const Duration(seconds: 1),
-          jitter: 0.0,
-          sleep: (d) async {
-            waits.add(d);
-          },
-        ).then((value) => settled = value));
+        unawaited(
+          withRetry<String>(
+            () async {
+              calls++;
+              if (calls <= 3) {
+                throw const UpstreamUnavailableError(message: 'x');
+              }
+              return 'ok';
+            },
+            RetryStrategy.bounded(5),
+            initialDelay: const Duration(seconds: 1),
+            jitter: 0.0,
+            sleep: (d) async {
+              waits.add(d);
+            },
+          ).then((value) => settled = value),
+        );
         async.elapse(const Duration(seconds: 10));
         async.flushMicrotasks();
 
@@ -182,24 +174,26 @@ void main() {
       fakeAsync((async) {
         final waits = <Duration>[];
         var calls = 0;
-        unawaited(withRetry<String>(
-          () async {
-            calls++;
-            if (calls == 1) {
-              throw const RateLimitError(
-                message: 'x',
-                retryAfter: Duration(seconds: 30),
-              );
-            }
-            return 'ok';
-          },
-          RetryStrategy.bounded(3),
-          initialDelay: const Duration(seconds: 1),
-          jitter: 0.5,
-          sleep: (d) async {
-            waits.add(d);
-          },
-        ));
+        unawaited(
+          withRetry<String>(
+            () async {
+              calls++;
+              if (calls == 1) {
+                throw const RateLimitError(
+                  message: 'x',
+                  retryAfter: Duration(seconds: 30),
+                );
+              }
+              return 'ok';
+            },
+            RetryStrategy.bounded(3),
+            initialDelay: const Duration(seconds: 1),
+            jitter: 0.5,
+            sleep: (d) async {
+              waits.add(d);
+            },
+          ),
+        );
         async.elapse(const Duration(seconds: 60));
         async.flushMicrotasks();
         expect(waits, [const Duration(seconds: 30)]);
@@ -211,21 +205,23 @@ void main() {
       fakeAsync((async) {
         final waits = <Duration>[];
         var calls = 0;
-        unawaited(withRetry<String>(
-          () async {
-            calls++;
-            if (calls == 1) {
-              throw const RateLimitError(message: 'x', retryAfter: null);
-            }
-            return 'ok';
-          },
-          RetryStrategy.bounded(3),
-          initialDelay: const Duration(seconds: 1),
-          jitter: 0.0,
-          sleep: (d) async {
-            waits.add(d);
-          },
-        ));
+        unawaited(
+          withRetry<String>(
+            () async {
+              calls++;
+              if (calls == 1) {
+                throw const RateLimitError(message: 'x', retryAfter: null);
+              }
+              return 'ok';
+            },
+            RetryStrategy.bounded(3),
+            initialDelay: const Duration(seconds: 1),
+            jitter: 0.0,
+            sleep: (d) async {
+              waits.add(d);
+            },
+          ),
+        );
         async.elapse(const Duration(seconds: 5));
         async.flushMicrotasks();
         expect(waits, [const Duration(seconds: 1)]);
@@ -238,20 +234,22 @@ void main() {
       fakeAsync((async) {
         final waits = <Duration>[];
         var calls = 0;
-        unawaited(withRetry<String>(
-          () async {
-            calls++;
-            if (calls < 5) throw const UpstreamUnavailableError(message: 'x');
-            return 'ok';
-          },
-          RetryStrategy.bounded(10),
-          initialDelay: const Duration(seconds: 1),
-          maxDelay: const Duration(minutes: 10),
-          jitter: 0.0,
-          sleep: (d) async {
-            waits.add(d);
-          },
-        ));
+        unawaited(
+          withRetry<String>(
+            () async {
+              calls++;
+              if (calls < 5) throw const UpstreamUnavailableError(message: 'x');
+              return 'ok';
+            },
+            RetryStrategy.bounded(10),
+            initialDelay: const Duration(seconds: 1),
+            maxDelay: const Duration(minutes: 10),
+            jitter: 0.0,
+            sleep: (d) async {
+              waits.add(d);
+            },
+          ),
+        );
         async.elapse(const Duration(minutes: 5));
         async.flushMicrotasks();
         expect(waits, [
@@ -267,20 +265,24 @@ void main() {
       fakeAsync((async) {
         Duration? lastWait;
         var calls = 0;
-        unawaited(withRetry<String>(
-          () async {
-            calls++;
-            if (calls < 11) throw const UpstreamUnavailableError(message: 'x');
-            return 'ok';
-          },
-          RetryStrategy.bounded(20),
-          initialDelay: const Duration(seconds: 1),
-          maxDelay: const Duration(minutes: 5),
-          jitter: 0.0,
-          sleep: (d) async {
-            lastWait = d;
-          },
-        ));
+        unawaited(
+          withRetry<String>(
+            () async {
+              calls++;
+              if (calls < 11) {
+                throw const UpstreamUnavailableError(message: 'x');
+              }
+              return 'ok';
+            },
+            RetryStrategy.bounded(20),
+            initialDelay: const Duration(seconds: 1),
+            maxDelay: const Duration(minutes: 5),
+            jitter: 0.0,
+            sleep: (d) async {
+              lastWait = d;
+            },
+          ),
+        );
         async.elapse(const Duration(hours: 1));
         async.flushMicrotasks();
         // The 10th wait would naively be 2^9 = 512s; clamped to 300s.
@@ -292,20 +294,22 @@ void main() {
       fakeAsync((async) {
         final waits = <Duration>[];
         var calls = 0;
-        unawaited(withRetry<String>(
-          () async {
-            calls++;
-            if (calls < 4) throw const NetworkUnreachableError(message: 'x');
-            return 'ok';
-          },
-          RetryStrategy.bounded(10),
-          initialDelay: const Duration(seconds: 1),
-          jitter: 0.2,
-          random: _seededRng(),
-          sleep: (d) async {
-            waits.add(d);
-          },
-        ));
+        unawaited(
+          withRetry<String>(
+            () async {
+              calls++;
+              if (calls < 4) throw const NetworkUnreachableError(message: 'x');
+              return 'ok';
+            },
+            RetryStrategy.bounded(10),
+            initialDelay: const Duration(seconds: 1),
+            jitter: 0.2,
+            random: _seededRng(),
+            sleep: (d) async {
+              waits.add(d);
+            },
+          ),
+        );
         async.elapse(const Duration(seconds: 30));
         async.flushMicrotasks();
         expect(waits.length, 3);
@@ -316,19 +320,21 @@ void main() {
         ];
         for (var i = 0; i < waits.length; i++) {
           final base = baseline[i].inMicroseconds;
-          expect(waits[i].inMicroseconds, greaterThanOrEqualTo((base * 0.8).round()));
-          expect(waits[i].inMicroseconds, lessThanOrEqualTo((base * 1.2).round()));
+          expect(
+            waits[i].inMicroseconds,
+            greaterThanOrEqualTo((base * 0.8).round()),
+          );
+          expect(
+            waits[i].inMicroseconds,
+            lessThanOrEqualTo((base * 1.2).round()),
+          );
         }
       });
     });
 
     test('jitter < 0 throws ArgumentError', () async {
       await expectLater(
-        withRetry(
-          () async => 1,
-          const RetryStrategy.none(),
-          jitter: -0.1,
-        ),
+        withRetry(() async => 1, const RetryStrategy.none(), jitter: -0.1),
         throwsArgumentError,
       );
     });
@@ -339,18 +345,20 @@ void main() {
       fakeAsync((async) {
         var calls = 0;
         String? settled;
-        unawaited(withRetry<String>(
-          () async {
-            calls++;
-            if (calls < 13) throw const RateLimitError(message: 'x');
-            return 'ok';
-          },
-          const RetryStrategy.indefinite(),
-          initialDelay: const Duration(milliseconds: 1),
-          maxDelay: const Duration(milliseconds: 1),
-          jitter: 0.0,
-          sleep: (_) async {},
-        ).then((value) => settled = value));
+        unawaited(
+          withRetry<String>(
+            () async {
+              calls++;
+              if (calls < 13) throw const RateLimitError(message: 'x');
+              return 'ok';
+            },
+            const RetryStrategy.indefinite(),
+            initialDelay: const Duration(milliseconds: 1),
+            maxDelay: const Duration(milliseconds: 1),
+            jitter: 0.0,
+            sleep: (_) async {},
+          ).then((value) => settled = value),
+        );
         async.elapse(const Duration(seconds: 5));
         async.flushMicrotasks();
         expect(calls, 13);

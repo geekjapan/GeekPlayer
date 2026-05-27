@@ -17,7 +17,10 @@ void main() {
 
     expect(notifier.shouldSuppress(sig, now: t0), isFalse);
     expect(
-      notifier.shouldSuppress(sig, now: t0.add(const Duration(milliseconds: 200))),
+      notifier.shouldSuppress(
+        sig,
+        now: t0.add(const Duration(milliseconds: 200)),
+      ),
       isTrue,
     );
   });
@@ -35,7 +38,10 @@ void main() {
 
     expect(notifier.shouldSuppress(sig, now: t0), isFalse);
     expect(
-      notifier.shouldSuppress(sig, now: t0.add(const Duration(milliseconds: 1500))),
+      notifier.shouldSuppress(
+        sig,
+        now: t0.add(const Duration(milliseconds: 1500)),
+      ),
       isFalse,
     );
   });
