@@ -1,3 +1,5 @@
+> **Related ADRs**: [ADR-0001](../../../docs/adr/0001-online-novel-fetch-policy.md) (online novel fetch policy), [ADR-0003](../../../docs/adr/0003-narou-content-fetch-policy.md) (narou content fetch policy)
+
 ## Why
 
 GeekPlayer v0.1 のオンライン小説機能のうち、最大の対象サイトである「小説家になろう」

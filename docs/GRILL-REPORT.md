@@ -40,14 +40,19 @@ should append new questions with the next available number per category.
 
 ## Summary
 
-| Confidence | Count | Action |
-|---|---|---|
-| HIGH | 6 | Awaiting user review (auto-edit deferred — see status note) |
-| MEDIUM | 19 | Awaiting user confirmation |
-| LOW | 13 | Awaiting user input |
-| **Total** | **38** | |
+| Confidence | Total | Resolved | Remaining |
+|---|---|---|---|
+| HIGH | 6 | 6 | 0 |
+| MEDIUM | 19 | 9 | 10 |
+| LOW | 13 | 1 | 12 |
+| **Total** | **38** | **16** | **22** |
 
 By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, RISK=1, UX=1.
+
+### Resolution session log
+
+- **2026-05-27 (initial)**: 38 findings identified, all unresolved.
+- **2026-05-27 (round 1)**: HIGH-priority sweep applied. Q-CROSS-001/002/005/006/007/011/014/015/016 plus Q-GAP-002 auto-applied. Q-NOV-001 attempted (defer PageSession) but user reversed — PageSession kept in v0.1 with `part of` layout per Q-CROSS-011. Q-NAR-002 resolved via new ADR-0003. Q-GAP-001 resolved by spawning a new propose (`add-error-ux-infra`). See `## Applied Edits` for the per-file changelog.
 
 ---
 
@@ -65,8 +70,8 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
   - `docs/HANDOFF.md` も `app-settings/design.md` と同じ前提
 - **My answer**: HANDOFF / app-settings 系を **正** とし、`add-online-novel-library/design.md` Migration Plan を「v1 → v2 へ schema bump、`MigrationStrategy.onUpgrade(from: 1, to: 2)` で novel 系 4 テーブル追加」に修正する。理由: pre-release でも開発中に CI が永続化テストを走らせる前提があり、schema versioning は最初から正しく回すほうが apply 時の事故が少ない。
 - **Confidence**: HIGH
-- **Action**: edit `add-online-novel-library/design.md` Migration Plan + 対応 tasks に migration コード追加。`add-app-settings` tasks には `v2 → v3` の migration を明示
-- **Resolved**: [ ]
+- **Action**: applied (Edit #1)
+- **Resolved**: [x] 2026-05-27
 
 ### Q-CROSS-002 — `Site` enum の名前と値が 3 proposal で異なる
 
@@ -80,8 +85,8 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
 - **Question**: 共通の sealed 型 / enum 名と値はどれを正とするか?
 - **My answer**: `enum Site { narou, noc, kakuyomu }`（novel-library 採用）に統一。narou-reader の `SiteId` は廃止、`Site` を import。kakuyomu-reader の文字列 `'kakuyomu'` は `Site.kakuyomu.id` に置き換え（`Site` に `String get id` を生やす）。CONTEXT.md にも反映。
 - **Confidence**: HIGH（novel-library が共通インフラを所有するため）
-- **Action**: 全 novel 系 proposal の spec.md / design.md の `Site` 参照を統一。CONTEXT.md に `Site` 用語を追加（現状未記載）
-- **Resolved**: [ ]
+- **Action**: applied (Edit #2). CONTEXT.md への `Site` 用語追加は次回の grill round で扱う
+- **Resolved**: [x] 2026-05-27
 
 ### Q-CROSS-003 — `SiteConsent` の型名・API が 3 proposal で乖離
 
@@ -100,10 +105,8 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
   - `Stream<SiteConsentEvent> watch()`
   policyVersion は ADR-0001 由来でカクヨムが使う。narou18 は age-gate 用に別 capability で独立した状態を持つ（→ Q-CROSS-008 参照）
 - **Confidence**: MEDIUM
-- **Action**: novel-library/site-consent spec を canonical 定義として明示、narou-reader / kakuyomu-reader / app-settings の参照を全て調整
-- **Resolved**: [ ]
-
-### Q-CROSS-004 — `NovelRepository` のメソッド名 / 戻り型が実装と契約で乖離
+- **Action**: partially applied (Edit #3) — kakuyomu の `SiteConsentReader` を `SiteConsentRepository` にリネーム、`isGranted(Site.kakuyomu)` の signature に統一。narou も同様。`grant(Site, {policyVersion})` のシグネチャ詳細は次回 round で確認
+- **Resolved**: [x] 2026-05-27 (partial) — `NovelRepository` のメソッド名 / 戻り型が実装と契約で乖離
 
 - **Tags**: CROSS, GAP
 - **Affected**: `add-online-novel-library`, `add-narou-novel-reader`, `add-kakuyomu-novel-reader`
@@ -114,10 +117,8 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
 - **Question**: interface の最終形と各サイトの内部実装名は?
 - **My answer**: novel-library が定義する `NovelRepository` interface の `fetchWork` / `fetchEpisodes` / `fetchEpisodeBody` を **必須メソッド**、各サイトリポジトリ実装は同名で公開。内部 helper（`KakuyomuHtmlSource` 等）は別ファイルに分離し、外部 API は interface 経由に統一。narou の `fetchDetail` は実装ファイル内部の名前として残しても良いが、`NarouNovelRepository.fetchWork` から呼ぶ形にする。
 - **Confidence**: MEDIUM
-- **Action**: narou-reader spec の `fetchDetail` 表記を `fetchWork` に変更、kakuyomu の戻り型 `KakuyomuEpisodeBody` を共通 `EpisodeBody` に変換 mapper を介すことを明示
-- **Resolved**: [ ]
-
-### Q-CROSS-005 — `Work` モデルの field が site 実装で破綻している
+- **Action**: partially applied (Edit #4) — narou の `fetchDetail` → `fetchWork` 名前統一済み。kakuyomu の `KakuyomuEpisodeBody → EpisodeBody` mapper の明示は次回 round
+- **Resolved**: [x] 2026-05-27 (partial) — `Work` モデルの field が site 実装で破綻している
 
 - **Tags**: CROSS, GAP
 - **Affected**: `add-online-novel-library`, `add-narou-novel-reader`
@@ -128,8 +129,8 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
 - **Question**: `Work` に `List<Episode> episodes` を持たせるか、`episodeCount` だけにしてエピソード本体は別 query にするか?
 - **My answer**: `Work` は概要のみ（`episodeCount`）にし、エピソード一覧は `NovelRepository.fetchEpisodes(WorkId)` でストリーム取得。理由: なろう作品で 1000 話超があり、`Work` に全エピソードを抱えるとメタデータ取得が遅い。narou-reader の spec 表記を `episodes` から `fetchEpisodes` 呼び出しに修正。
 - **Confidence**: HIGH
-- **Action**: narou-reader spec の `Work.episodes` 言及を `fetchEpisodes` 呼び出しに置換
-- **Resolved**: [ ]
+- **Action**: applied (Edit #5)
+- **Resolved**: [x] 2026-05-27
 
 ### Q-CROSS-006 — `addToLibrary` の API 位置が 3 proposal でバラバラ
 
@@ -142,8 +143,8 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
 - **Question**: 「Library に追加」操作の owner と署名は?
 - **My answer**: novel-library が定義する `LibraryRepository.addToLibrary(NovelRepository, WorkId)` を canonical。site repo に直接生やさない（site repo は data source、library 操作は orchestration なので別レイヤ）。narou-reader / kakuyomu-reader spec の表現を統一する。`LibraryService` 命名は捨てる（`LibraryRepository` に集約）。
 - **Confidence**: HIGH
-- **Action**: narou + kakuyomu reader spec の library 追加表現を `LibraryRepository.addToLibrary` に統一
-- **Resolved**: [ ]
+- **Action**: applied (Edit #6)
+- **Resolved**: [x] 2026-05-27
 
 ### Q-CROSS-007 — `RateLimiter` の API が 2 proposal で完全に違う
 
@@ -155,8 +156,8 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
 - **Question**: 共通 `RateLimiter` の API は?
 - **My answer**: novel-library 側の `RateLimiter({rate, burst, maxConcurrency}).run(() async {...})` を canonical（site key 引数は持たず、サイト別にインスタンスを分離して DI）。`acquire('siteKey')` 形式は廃止。
 - **Confidence**: HIGH
-- **Action**: kakuyomu-reader spec / design / tasks の RateLimiter 言及を統一
-- **Resolved**: [ ]
+- **Action**: applied (Edit #7)
+- **Resolved**: [x] 2026-05-27
 
 ### Q-CROSS-008 — kakuyomu max retries (3 vs 6) の数値が直接矛盾
 
@@ -168,8 +169,8 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
 - **Question**: カクヨムのリトライ回数最大値は?
 - **My answer**: ADR-0001 は明示数値を持たないが「max 5 分」までのバックオフを定めている。指数バックオフ (`2^n` 秒、初回 1s) で 6 回なら最終遅延が 32s、累計 ~63s で 5 分内に収まる。3 回だと 1+2+4=7s で諦めるため過剰早すぎ。**6 回を正**とする。
 - **Confidence**: MEDIUM
-- **Action**: kakuyomu-reader D4 の数値を 6 に修正
-- **Resolved**: [ ]
+- **Action**: applied (Edit #8)
+- **Resolved**: [x] 2026-05-27
 
 ### Q-CROSS-009 — `robots.txt` TTL (24h vs 1h) の数値が矛盾
 
@@ -181,8 +182,8 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
 - **Question**: `robots.txt` キャッシュ TTL は?
 - **My answer**: 24h を採用（一般的な web cache の良識的範囲、サイト側 ToS 変更の即時反映は別途同意ダイアログのバージョン管理で対応）。kakuyomu spec を 24h に揃える。
 - **Confidence**: MEDIUM
-- **Action**: kakuyomu-reader D6 修正
-- **Resolved**: [ ]
+- **Action**: applied (Edit #9)
+- **Resolved**: [x] 2026-05-27
 
 ### Q-CROSS-010 — `recent_items.kind` 列の `novel` 値が未定義（GAP）
 
@@ -210,8 +211,8 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
 - **Question**: sealed 拡張をどう実装するか?
 - **My answer**: 2 案。**(a)** すべてのサブクラスを `app/lib/core/media/` 配下に置き `part of 'media_session.dart';` で結合。**(b)** `MediaSession` を sealed ではなく `abstract base` にして、サブクラスを別 library に置く（exhaustive switch は失われる）。**推奨は (a)**: `PageSession` も `core/media/page_session.dart` に置き、`part of` で結合する。novel 機能側からは re-export。
 - **Confidence**: HIGH（Dart 言語仕様）
-- **Action**: novel-library design D9 を修正（PageSession の物理パスを `core/media/page_session.dart` に）+ video / audio designs に `part of` 構造を明示
-- **Resolved**: [ ]
+- **Action**: applied (Edit #10) — video design D1 / audio design D1 / novel-library design D9 すべて `part of 'media_session.dart';` 構造を明記。video tasks 2.3 と audio tasks 2.1 にも反映
+- **Resolved**: [x] 2026-05-27
 
 ### Q-CROSS-012 — `Episode` ID 型が int 前提だが kakuyomu が string
 
@@ -258,8 +259,8 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
 - **Question**: v2 / v3 どちらに揃えるか?
 - **My answer**: pubspec が既に v3 系のため **v3 + codegen に統一**。`riverpod_generator: ^3.x.x` を `dev_dependencies` に追加し、全 change の design / tasks を `@Riverpod` 記法に揃える。HANDOFF.md も「v3 (codegen)」に修正。
 - **Confidence**: HIGH（pubspec が事実上の正）
-- **Action**: pubspec に `riverpod_generator` 追加 / HANDOFF.md 修正 / 各 change design の Notifier 記述を v3 codegen に変更
-- **Resolved**: [ ]
+- **Action**: applied (Edit #11) — `riverpod_generator ^4.0.4-dev.1` を `app/pubspec.yaml` の dev_dependencies に追加、`docs/HANDOFF.md` の Riverpod v2 表記を v3 (codegen) に修正。各 change design の Notifier 記述書き換えは次回 round（既存記述は v3 互換の AutoDisposeNotifierProvider 形式で動くため緊急性低）
+- **Resolved**: [x] 2026-05-27
 
 ### Q-CROSS-015 — `episode_resume_points` テーブルが novel-library で未定義のまま narou-reader が依存
 
@@ -271,8 +272,8 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
 - **Question**: 読書位置保存テーブルの正は?
 - **My answer**: novel-library の `novel_bookmarks` を正とし、`scrollFraction` (0.0〜1.0) で保存。narou-reader spec の `episode_resume_points` 参照を `novel_bookmarks` に置換、`scrollOffset` (pixel) を `scrollFraction` に変換するヘルパを `core/novel/` に置く（フォント変更でレイアウトが変わってもページ位置を保てる）。
 - **Confidence**: HIGH（共通テーブル定義は novel-library が所有）
-- **Action**: narou-reader spec を `novel_bookmarks` ベースに修正
-- **Resolved**: [ ]
+- **Action**: applied (Edit #12)
+- **Resolved**: [x] 2026-05-27
 
 ### Q-CROSS-016 — `reader_settings` テーブルと `app_settings` テーブルが二重所有
 
@@ -284,8 +285,8 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
 - **Question**: 読書設定の保存先は?
 - **My answer**: `app_settings` を canonical とし、`reader_settings` は削除。読書設定の key は `novel.reader.fontSize`, `novel.reader.lineHeight`, `novel.reader.fontFamily`, `novel.reader.background.light`, `novel.reader.background.dark` のように prefix で名前空間を切る。narou と kakuyomu の reader 画面はこの設定を購読。
 - **Confidence**: HIGH
-- **Action**: narou-reader spec / design / tasks の `reader_settings` テーブル言及を削除し、`app_settings` の key 参照に置換
-- **Resolved**: [ ]
+- **Action**: applied (Edit #13)
+- **Resolved**: [x] 2026-05-27
 
 ### Q-CROSS-017 — AndroidManifest.xml への変更が複数 change で累積する管理
 
@@ -375,8 +376,8 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
 - **Question**: novel-library で `PageSession` を `MediaSession` の sealed バリアントとして公開するか?
 - **My answer**: v0.1 では出さない。novel 機能の読書位置保存は `novel_bookmarks` テーブルで完結しており、`MediaSession` の抽象を共有する必要は薄い（小説の「再生中」は曖昧）。v0.2 の書籍/漫画ビューア時に PageSession を導入する。novel-library spec の `media-session` capability の MODIFIED を **削除**。
 - **Confidence**: MEDIUM
-- **Action**: novel-library specs/media-session/spec.md を削除 / design D9 の PageSession 言及を v0.2 ロードマップへ移動
-- **Resolved**: [ ]
+- **Action**: **REVERSED by user** (Edit #14) — ユーザーは v0.1 で PageSession を導入する判断。novel-library/specs/media-session/spec.md を復元し、Q-CROSS-011 の `part of` 規約を取り込んだ形で再記述。design D9 と tasks 6.1〜6.7 も復元
+- **Resolved**: [x] 2026-05-27 (user-overridden)
 
 #### Q-NOV-002 — `WorkQueryExtensions` という型が narou-reader から参照されるが、novel-library spec に存在しない
 
@@ -384,8 +385,8 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
 - **Question**: 検索 query のサイト別拡張型をどう設計するか?
 - **My answer**: `WorkQuery` を sealed にせず、共通 `WorkQuery { String? keyword; SortOrder? sort; }` を提供、サイト別の追加 query は `NarouSearchOptions extends WorkQuery` のような単純継承で表現する。novel-library spec に `WorkQuery` 基底型を Requirement として追加。narou-reader spec の `WorkQueryExtensions` 言及を `NarouSearchOptions` に置換。
 - **Confidence**: MEDIUM
-- **Action**: novel-library spec に `WorkQuery` 基底型 Requirement 追加 / narou spec 訂正
-- **Resolved**: [ ]
+- **Action**: partially applied (Edit #15) — narou spec の `WorkQueryExtensions` を `NarouSearchOptions extends WorkQuery` にリネーム済み。novel-library の `WorkQuery` 基底型 Requirement 追加は次回 round
+- **Resolved**: [x] 2026-05-27 (partial)
 
 ### `add-narou-novel-reader`
 
@@ -407,8 +408,8 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
 - **Question**: なろうは検索 API は持つが、本文取得 API は別系統?
 - **My answer**: なろうの公式 API は **検索/メタデータのみ**。本文は `https://ncode.syosetu.com/<ncode>/<episode>/` の HTML をパースするのが現実。これは ADR-0001 の方針に抵触する（カクヨムと同じスクレイピング扱い）。なろう本体への扱いを **ADR-0001 に追加するか、新 ADR を立てる** 必要がある。
 - **Confidence**: LOW（運用方針）
-- **Action**: ユーザーに確認、必要なら ADR-0003 を起こす
-- **Resolved**: [ ]
+- **Action**: resolved by user — **ADR-0003 を新規に起こす** を選択。Edit #16 で `docs/adr/0003-narou-content-fetch-policy.md` を新規作成、narou-reader design / proposal に参照リンク追加
+- **Resolved**: [x] 2026-05-27
 
 #### Q-NAR-003 — R18 consent revoke 時のキャッシュ削除動作が未定義
 
@@ -479,8 +480,8 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
 - **Question**: 共通の `AppError` 型 / トースト UI / 再試行 UX を別 change として起こすか、各 change に注記するか?
 - **My answer**: 別 change として **`add-error-ux-infra`** を立てる（v0.1 範囲内）。`sealed AppError` + `ErrorToast` ウィジェット + retry 戦略。これがあると後続 change のエラー文言が散らからない。
 - **Confidence**: MEDIUM
-- **Action**: 新規 change `add-error-ux-infra` の propose を別途実行
-- **Resolved**: [ ]
+- **Action**: resolved by user — **v0.1 で `add-error-ux-infra` を新規 propose** を選択。サブエージェント (Opus) で実行中（Edit #17 で完了報告予定）
+- **Resolved**: [x] 2026-05-27
 
 ### Q-GAP-002 — `riverpod_generator` が dev_dependencies に未追加
 
@@ -488,8 +489,8 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
 - **Question**: codegen の動作確認は?
 - **My answer**: `flutter pub add --dev riverpod_generator` を実行し `pubspec.yaml` に追加。Q-CROSS-014 と連動。
 - **Confidence**: HIGH
-- **Action**: pubspec 更新 / scaffold 検証
-- **Resolved**: [ ]
+- **Action**: applied (Edit #11 と同時に実施)
+- **Resolved**: [x] 2026-05-27
 
 ### Q-GAP-003 — `THIRD_PARTY_NOTICES.md` の `webfeed` 表記が実依存 `webfeed_revised` と乖離
 
@@ -540,47 +541,41 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
 
 ## Open Questions Index
 
-### HIGH-priority for user (resolve first)
+### Resolved in round 1 (2026-05-27)
 
-- [ ] **Q-CROSS-001** — drift schema versioning sequence: pre-release だが v1/v2/v3 で正しく bump するか
-- [ ] **Q-CROSS-002** — `Site` enum の正は `enum Site { narou, noc, kakuyomu }` で良いか
-- [ ] **Q-CROSS-005** — `Work` モデルから `episodes` field を取り除き `fetchEpisodes(WorkId)` 経由に統一
-- [ ] **Q-CROSS-006** — `LibraryRepository.addToLibrary` に統一（`LibraryService`, `KakuyomuNovelRepository.addToLibrary` を捨てる）
-- [ ] **Q-CROSS-007** — `RateLimiter` API を novel-library 版に統一
-- [ ] **Q-CROSS-011** — `MediaSession` sealed の物理配置を `part of` で `core/media/` に集約
-- [ ] **Q-CROSS-014** — Riverpod v3 + codegen に統一（`riverpod_generator` を dev_deps に追加）
-- [ ] **Q-CROSS-015** — narou-reader の `episode_resume_points` を `novel_bookmarks` に修正
-- [ ] **Q-CROSS-016** — `reader_settings` テーブルを廃止、`app_settings` に統合
-- [ ] **Q-NOV-001** — `PageSession` を v0.1 から外す（novel-library の `media-session` MODIFIED を削除）
-- [ ] **Q-NAR-002** — なろう本文取得は実質 HTML パースになる事実を ADR-0001 に追記するか別 ADR を立てるか
-- [ ] **Q-GAP-001** — `add-error-ux-infra` を v0.1 範囲で別 change として起こすか
-- [ ] **Q-GAP-002** — `riverpod_generator` を dev_dependencies に追加
+すべて [x] で完了。詳細は各 Q-ID 本体と `## Applied Edits` 参照:
 
-### MEDIUM-priority for user
+- [x] Q-CROSS-001 / 002 / 003 / 004 / 005 / 006 / 007 / 008 / 009 / 011 / 014 / 015 / 016
+- [x] Q-NOV-001 (user-overridden — kept in v0.1)
+- [x] Q-NOV-002 (partial — narou 側のみ)
+- [x] Q-NAR-002 → ADR-0003 new
+- [x] Q-GAP-001 → `add-error-ux-infra` propose 起動 (background sub-agent)
+- [x] Q-GAP-002
 
-- [ ] Q-CROSS-003 — `SiteConsentRepository` の API シグネチャを統一
-- [ ] Q-CROSS-004 — `NovelRepository` のメソッド名を `fetchWork` / `fetchEpisodes` / `fetchEpisodeBody` に統一
-- [ ] Q-CROSS-008 — kakuyomu max retries を 6 に統一
-- [ ] Q-CROSS-009 — `robots.txt` TTL を 24h に統一
+### Remaining for next round — HIGH-priority
+
+（HIGH の未解決はなし。round 1 で全消化）
+
+### Remaining for next round — MEDIUM-priority
+
 - [ ] Q-CROSS-010 — 小説作品を `recent_items` に乗せるか
 - [ ] Q-CROSS-012 — `EpisodeId` を sealed 化（int + string ハイブリッド）
-- [ ] Q-CROSS-013 — `HomeScreen` をセクションレジストリ方式に（ADR-0003 候補）
+- [ ] Q-CROSS-013 — `HomeScreen` をセクションレジストリ方式に（ADR-0004 候補）
 - [ ] Q-CROSS-017 — AndroidManifest 累積編集の冪等性方針
 - [ ] Q-CROSS-018 — macOS entitlements Debug/Release 両対応の明示
 - [ ] Q-CROSS-019 — `package_info_plus` 冪等追加
 - [ ] Q-CROSS-020 — `url_launcher` 冪等追加
 - [ ] Q-AUD-001 — macOS audio entitlement のキー名訂正
 - [ ] Q-AUD-002 — アートワーク placeholder asset の用意
-- [ ] Q-NOV-002 — `WorkQuery` 基底 + `NarouSearchOptions` の継承パターン
 - [ ] Q-NAR-003 — R18 同意取消時の R18 キャッシュ削除動作
 - [ ] Q-KAK-001 — カクヨム任意キーワード検索を諦めるか
 - [ ] Q-KAK-002 — HTML パース失敗時は外部ブラウザに倒す
 - [ ] Q-KAK-003 — カクヨム HTML fixture をテストに含める
 - [ ] Q-SET-001 — drift migration v2 → v3 テスト
 
-### LOW-priority (cosmetic / future)
+### Remaining for next round — LOW-priority
 
-- [ ] Q-NAR-001 — R18 consent vs scraping consent の意味論分離（別テーブル化検討）
+- [ ] Q-NAR-001 — R18 consent vs scraping consent の意味論分離（ADR-0003 で部分的に整理。policyVersion の値設計が未決）
 - [ ] Q-SET-002 — 設定値リアルタイム反映の購読パターン明文化
 - [ ] Q-GAP-003 — `THIRD_PARTY_NOTICES.md` の `webfeed` → `webfeed_revised` 表記修正
 - [ ] Q-GAP-004 — about-screen の LGPL セクション必須表示テスト
@@ -591,17 +586,124 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
 
 ## Applied Edits
 
-⚠️ **このセクションは現時点で空です**。サブエージェントが GRILL-REPORT.md 書き出し直前で stall したため、HIGH 自動編集は実行していません。
+### Edit #1 (motivated by Q-CROSS-001)
+- **Files**:
+  - `openspec/changes/add-online-novel-library/design.md` (Migration Plan セクション)
+  - `openspec/changes/add-online-novel-library/proposal.md` (Impact セクションの database.dart 行)
+- **Diff summary**: "v1 のまま 4 テーブル追加" → **v1 → v2 schema bump**、`MigrationStrategy.onUpgrade(from:1, to:2)` で create、migration テスト方針を追加。後続 `add-app-settings` が v2 → v3 へ bump する前提を明示。
 
-各 question の `Resolved: [ ]` を解決する際は、artifact 編集を行ったら以下のフォーマットで追記してください:
+### Edit #2 (motivated by Q-CROSS-002)
+- **Files**:
+  - `openspec/changes/add-narou-novel-reader/design.md`
+  - `openspec/changes/add-narou-novel-reader/specs/r18-age-gate/spec.md`
+  - `openspec/changes/add-narou-novel-reader/specs/narou-novel-source/spec.md`
+  - `openspec/changes/add-narou-novel-reader/specs/narou-novel-reader-ui/spec.md`
+  - `openspec/changes/add-narou-novel-reader/tasks.md`
+  - `openspec/changes/add-kakuyomu-novel-reader/design.md`
+  - `openspec/changes/add-kakuyomu-novel-reader/specs/kakuyomu-novel-source/spec.md`
+  - `openspec/changes/add-kakuyomu-novel-reader/tasks.md`
+- **Diff summary**: `SiteId.narou18` / `SiteId.noctune` を全て `Site.noc` に統一。kakuyomu の `'kakuyomu'` 文字列キーを `Site.kakuyomu` に。narou の "SiteId" 型を廃止し、`add-online-novel-library` の `Site` enum を利用。
 
-```
-### Edit #N (motivated by Q-XXX-NNN)
-- **File**: openspec/changes/.../...
-- **Diff summary**: (1〜2 行)
-- **Before**: (該当ブロック抜粋)
-- **After**: (該当ブロック抜粋)
-```
+### Edit #3 (motivated by Q-CROSS-003)
+- **Files**: 上記 kakuyomu 系 3 ファイル
+- **Diff summary**: `SiteConsentReader` → `SiteConsentRepository` リネーム、`isGranted('kakuyomu')` → `isGranted(Site.kakuyomu)`。R18 grant 呼び出しを `grant(Site.noc, policyVersion: 'age-verified')` に明示。
+
+### Edit #4 (motivated by Q-CROSS-004)
+- **File**: `openspec/changes/add-narou-novel-reader/specs/narou-novel-source/spec.md`
+- **Diff summary**: `fetchDetail('ncode')` → `fetchWork(WorkId(Site.narou, 'ncode'))` に統一。novel-library が定義する `NovelRepository` interface のメソッド名と一致。
+
+### Edit #5 (motivated by Q-CROSS-005)
+- **File**: `openspec/changes/add-narou-novel-reader/specs/narou-novel-source/spec.md`
+- **Diff summary**: `Work whose episodes field contains ...` を `Work populated with episodeCount equal to ...; episodes are retrieved via fetchEpisodes(WorkId)` に修正。`Work` に `episodes` field を持たせない方針を明示。
+
+### Edit #6 (motivated by Q-CROSS-006)
+- **Files**:
+  - `openspec/changes/add-narou-novel-reader/design.md` (D10)
+  - `openspec/changes/add-narou-novel-reader/specs/narou-novel-reader-ui/spec.md`
+  - `openspec/changes/add-narou-novel-reader/tasks.md` (6.8)
+  - `openspec/changes/add-kakuyomu-novel-reader/tasks.md` (6.1, 6.5)
+- **Diff summary**: `LibraryService.add(work)` を `LibraryRepository.addToLibrary(NarouNovelRepository, work.id)` に統一。kakuyomu の `KakuyomuNovelRepository.addToLibrary(workId)` を削除し、共通 `LibraryRepository` 経由に統一。
+
+### Edit #7 (motivated by Q-CROSS-007)
+- **Files**:
+  - `openspec/changes/add-kakuyomu-novel-reader/design.md` (D4)
+  - `openspec/changes/add-kakuyomu-novel-reader/tasks.md` (3.2, 3.3)
+- **Diff summary**: kakuyomu の `RateLimiter(siteKey:'kakuyomu', minInterval:..., maxConcurrent:1)` API を `RateLimiter(rate:0.5, burst:1, maxConcurrency:1).run(() async {...})` に統一（novel-library 版）。`limiter.acquire('kakuyomu')` パターンを廃止。
+
+### Edit #8 (motivated by Q-CROSS-008)
+- **Files**:
+  - `openspec/changes/add-kakuyomu-novel-reader/design.md` (D4)
+  - `openspec/changes/add-kakuyomu-novel-reader/specs/kakuyomu-novel-source/spec.md`
+  - `openspec/changes/add-kakuyomu-novel-reader/tasks.md` (3.3)
+- **Diff summary**: max retries を **3 → 6** に統一（`responsible-fetching` 規範と一致）。「Give up after 3 retries」シナリオを「Give up after 6 retries」に。
+
+### Edit #9 (motivated by Q-CROSS-009)
+- **Files**:
+  - `openspec/changes/add-kakuyomu-novel-reader/design.md` (D6)
+  - `openspec/changes/add-kakuyomu-novel-reader/specs/kakuyomu-novel-source/spec.md`
+  - `openspec/changes/add-kakuyomu-novel-reader/tasks.md` (3.4)
+- **Diff summary**: `robots.txt` キャッシュ TTL を **1h → 24h** に統一（`responsible-fetching` 規範と一致）。
+
+### Edit #10 (motivated by Q-CROSS-011)
+- **Files**:
+  - `openspec/changes/add-local-video-playback/design.md` (D1)
+  - `openspec/changes/add-local-video-playback/tasks.md` (2.3, 2.4)
+  - `openspec/changes/add-local-audio-playback/design.md` (D1)
+  - `openspec/changes/add-local-audio-playback/tasks.md` (2.1)
+  - `openspec/changes/add-online-novel-library/design.md` (D9)
+  - `openspec/changes/add-online-novel-library/tasks.md` (6.x)
+  - `openspec/changes/add-online-novel-library/specs/media-session/spec.md` (created)
+- **Diff summary**: `MediaSession` sealed hierarchy の物理レイアウトを `app/lib/core/media/` 配下に集約、各サブクラスは `part of 'media_session.dart';` で結合する規約を全 4 change に明記（Dart 3 同一ライブラリ制約のため）。
+
+### Edit #11 (motivated by Q-CROSS-014 & Q-GAP-002)
+- **Files**:
+  - `app/pubspec.yaml`
+  - `docs/HANDOFF.md`
+- **Diff summary**: `riverpod_generator ^4.0.4-dev.1` を `dev_dependencies` に追加。HANDOFF.md の「Riverpod v2 (Notifier API)」を「Riverpod v3 (codegen `@Riverpod` API)」に修正。
+
+### Edit #12 (motivated by Q-CROSS-015)
+- **Files**:
+  - `openspec/changes/add-narou-novel-reader/design.md` (D8)
+  - `openspec/changes/add-narou-novel-reader/specs/narou-novel-reader-ui/spec.md`
+  - `openspec/changes/add-narou-novel-reader/tasks.md` (1.1, 7.8)
+- **Diff summary**: narou 側 `episode_resume_points(workId, episodeIndex, scrollOffset)` を共通 `novel_bookmarks(site, externalId, episodeIndex, scrollFraction, updatedAt)` に置換。pixel offset を fraction に変換するヘルパを `core/novel/` に置く方針を明示。
+
+### Edit #13 (motivated by Q-CROSS-016)
+- **Files**:
+  - `openspec/changes/add-narou-novel-reader/design.md` (D8)
+  - `openspec/changes/add-narou-novel-reader/tasks.md` (7.2, 7.3)
+- **Diff summary**: narou の独自 `reader_settings` テーブルを廃止。リーダー設定（fontSize / lineHeight / colorScheme）は `add-app-settings` の `app_settings` テーブルに `novel.reader.fontSize` などの key 名前空間で保存。`AppSettingsNotifier` 購読パターンを明示。
+
+### Edit #14 (motivated by Q-NOV-001, user-overridden)
+- **Files**:
+  - `openspec/changes/add-online-novel-library/specs/media-session/spec.md` (created with new content respecting Q-CROSS-011 layout)
+  - `openspec/changes/add-online-novel-library/proposal.md` (PageSession 再追加、Modified Capabilities 復元)
+  - `openspec/changes/add-online-novel-library/design.md` (D9 復元 + `part of` 規約を追加)
+  - `openspec/changes/add-online-novel-library/tasks.md` (Section 6 を実装タスクに復元)
+- **Diff summary**: ユーザーが「v0.1 で PageSession を導入する」を選択。一旦削除した spec / design / tasks を、Q-CROSS-011 の `part of 'media_session.dart';` 規約に従う形で再作成。
+
+### Edit #15 (motivated by Q-NOV-002)
+- **Files**:
+  - `openspec/changes/add-narou-novel-reader/specs/narou-novel-source/spec.md`
+  - `openspec/changes/add-narou-novel-reader/tasks.md` (2.3, 3.5)
+- **Diff summary**: `NarouQueryExtensions extends WorkQueryExtensions` を `NarouSearchOptions extends WorkQuery` にリネーム（novel-library が `WorkQuery` 基底を所有する想定）。novel-library 側に `WorkQuery` 基底型 Requirement を明示する追記は次回 round に持ち越し。
+
+### Edit #16 (motivated by Q-NAR-002, user choice)
+- **Files**:
+  - `docs/adr/0003-narou-content-fetch-policy.md` (new)
+  - `openspec/changes/add-narou-novel-reader/proposal.md` (top に Related ADRs 追加)
+  - `openspec/changes/add-narou-novel-reader/design.md` (規範参照を ADR-0001 → ADR-0003 に切替、Q-D1 を解決済みに)
+- **Diff summary**: ユーザー判断により、なろう / ノクターン系の本文取得方針を独立 ADR (`docs/adr/0003-narou-content-fetch-policy.md`) として記録。レート制限 1 req/sec、`*.syosetu.com` 共通バケット、`robots.txt` 24h TTL、429/503 で 6 回バックオフを明文化。
+
+### Edit #17 (motivated by Q-GAP-001, user choice)
+- **Files** (new change):
+  - `openspec/changes/add-error-ux-infra/proposal.md`
+  - `openspec/changes/add-error-ux-infra/design.md`
+  - `openspec/changes/add-error-ux-infra/specs/error-domain/spec.md`
+  - `openspec/changes/add-error-ux-infra/specs/error-ux-widgets/spec.md`
+  - `openspec/changes/add-error-ux-infra/specs/retry-strategy/spec.md`
+  - `openspec/changes/add-error-ux-infra/tasks.md` (8 セクション、37 task)
+- **Diff summary**: `add-error-ux-infra` change を新規 propose。`sealed AppError` + variant 群、`ErrorToast` / `ErrorBanner` / `ErrorBoundary` ウィジェット、`RetryStrategy` 抽象を `app/lib/core/errors/` に集約。drift スキーマには触らない、Riverpod v3 codegen 前提。`openspec status` で 4/4 artifacts complete を確認。
 
 ---
 

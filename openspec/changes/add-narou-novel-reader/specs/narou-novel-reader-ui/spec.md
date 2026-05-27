@@ -6,7 +6,7 @@ The home screen SHALL expose a "なろう" section composed via the shared `Nove
 
 #### Scenario: First-run state shows general entry points only
 
-- **GIVEN** the app is launched for the first time and no `SiteConsent` for `SiteId.narou18` exists
+- **GIVEN** the app is launched for the first time and no `SiteConsent` for `Site.noc` exists
 - **WHEN** the home screen renders the なろう section
 - **THEN** the search box, ranking shortcut, and pickup shortcut are visible, and no R18 tab is shown
 
@@ -65,7 +65,7 @@ The system SHALL provide a ranking screen at `app/lib/features/novel_narou/prese
 
 ### Requirement: Work detail screen with metadata and episode list
 
-The system SHALL provide a work detail screen at `app/lib/features/novel_narou/presentation/work_detail_screen.dart` that displays the work title, author, synopsis, tags, total character count, total episode count, last-updated timestamp, and the full episode list. The screen MUST expose a "Library に追加" button that calls into the shared `LibraryService`. The screen MUST resolve and render any narou-specific ruby markup (`|漢字《かんじ》`) in the synopsis.
+The system SHALL provide a work detail screen at `app/lib/features/novel_narou/presentation/work_detail_screen.dart` that displays the work title, author, synopsis, tags, total character count, total episode count, last-updated timestamp, and the full episode list. The screen MUST expose a "Library に追加" button that calls into the shared `LibraryRepository`. The screen MUST resolve and render any narou-specific ruby markup (`|漢字《かんじ》`) in the synopsis.
 
 #### Scenario: Metadata fields are populated from the API
 
@@ -81,7 +81,7 @@ The system SHALL provide a work detail screen at `app/lib/features/novel_narou/p
 #### Scenario: Library 追加 triggers the active cache
 
 - **WHEN** the user taps "Library に追加"
-- **THEN** a confirmation dialog appears showing the expected download duration (episode count divided by 60, expressed in minutes), and on confirmation `LibraryService.add(work)` is called and the dialog dismisses
+- **THEN** a confirmation dialog appears showing the expected download duration (episode count divided by 60, expressed in minutes), and on confirmation `LibraryRepository.addToLibrary(NarouNovelRepository, work.id)` is called and the dialog dismisses
 
 #### Scenario: Ruby markup is rendered as ruby annotations
 
@@ -130,7 +130,7 @@ The system SHALL provide a reader screen at `app/lib/features/novel_narou/presen
 
 ### Requirement: Scroll-position bookmark per episode
 
-The reader SHALL persist the current scroll offset per `(workId, episodeIndex)` tuple to the shared `episode_resume_points` storage on every navigation away from the screen. On re-entry, the reader MUST restore the saved scroll offset within 500 ms of the screen first being painted, unless the saved offset would land within 5% of the bottom of the body — in which case the reader MUST reset to position 0.
+The reader SHALL persist the current scroll offset per `(workId, episodeIndex)` tuple to the shared `novel_bookmarks` storage on every navigation away from the screen. On re-entry, the reader MUST restore the saved scroll offset within 500 ms of the screen first being painted, unless the saved offset would land within 5% of the bottom of the body — in which case the reader MUST reset to position 0.
 
 #### Scenario: Reader resumes from saved scroll position
 
@@ -148,4 +148,4 @@ The reader SHALL persist the current scroll offset per `(workId, episodeIndex)` 
 
 - **GIVEN** the user is currently scrolled to 800 px in episode 2
 - **WHEN** the user navigates back or taps the next-episode button
-- **THEN** offset 800 is written to `episode_resume_points` for `(workId, 2)` before the new screen is rendered
+- **THEN** offset 800 is written to `novel_bookmarks` for `(workId, 2)` before the new screen is rendered

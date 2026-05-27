@@ -6,7 +6,7 @@ The system SHALL provide `NarouNovelRepository` at `app/lib/features/novel_narou
 
 #### Scenario: Searching for works returns the shared Work model
 
-- **WHEN** `NarouNovelRepository.search(WorkQuery(keyword: '魔法', extensions: NarouQueryExtensions(genres: {NarouGenre.fantasy})))` is called
+- **WHEN** `NarouNovelRepository.search(NarouSearchOptions(keyword: '魔法', genres: {NarouGenre.fantasy}))` is called
 - **THEN** the repository SHALL issue a GET against `https://api.syosetu.com/novelapi/api/` with `out=json`, the keyword as `word=魔法`, and `genre=201` (or the corresponding numeric code), and SHALL return a `List<Work>` populated with `Site.narou`
 
 #### Scenario: Empty result returns an empty list, not an error
@@ -16,29 +16,29 @@ The system SHALL provide `NarouNovelRepository` at `app/lib/features/novel_narou
 
 #### Scenario: Work detail fetch by ncode returns the merged metadata
 
-- **WHEN** `NarouNovelRepository.fetchDetail('n4830bu')` is called
-- **THEN** the repository SHALL issue a GET with `ncode=n4830bu&out=json` and SHALL return a `Work` whose `episodes` field contains an `Episode` for every `general_all_no` reported by the API
+- **WHEN** `NarouNovelRepository.fetchWork(WorkId(Site.narou, 'n4830bu'))` is called
+- **THEN** the repository SHALL issue a GET with `ncode=n4830bu&out=json` and SHALL return a `Work` populated with `episodeCount` equal to the API's `general_all_no`; the actual `Episode` instances are retrieved separately via `fetchEpisodes(WorkId)`
 
 ### Requirement: NarouR18NovelRepository targets the R18 endpoint and refuses construction without consent
 
-The system SHALL provide `NarouR18NovelRepository` at `app/lib/features/novel_narou/data/narou_r18_novel_repository.dart` targeting `https://api.syosetu.com/novel18api/api/`. The repository MUST refuse instantiation when no granted `SiteConsent` exists for `SiteId.narou18`, by throwing `StateError`. The repository MUST observe `SiteConsentRepository` changes and SHALL release internal resources when the consent is revoked.
+The system SHALL provide `NarouR18NovelRepository` at `app/lib/features/novel_narou/data/narou_r18_novel_repository.dart` targeting `https://api.syosetu.com/novel18api/api/`. The repository MUST refuse instantiation when no granted `SiteConsent` exists for `Site.noc`, by throwing `StateError`. The repository MUST observe `SiteConsentRepository` changes and SHALL release internal resources when the consent is revoked.
 
 #### Scenario: Construction without consent throws
 
-- **GIVEN** no `SiteConsent` is granted for `SiteId.narou18`
+- **GIVEN** no `SiteConsent` is granted for `Site.noc`
 - **WHEN** `NarouR18NovelRepository(...)` is constructed
 - **THEN** a `StateError` is thrown with a message identifying the missing consent
 
 #### Scenario: Construction after consent succeeds
 
-- **GIVEN** the user has previously granted consent for `SiteId.narou18` via the `AgeGateDialog`
+- **GIVEN** the user has previously granted consent for `Site.noc` via the `AgeGateDialog`
 - **WHEN** `NarouR18NovelRepository(...)` is constructed
 - **THEN** the instance is returned and a follow-up call to `search` succeeds without throwing
 
 #### Scenario: Revoking consent invalidates the repository
 
 - **GIVEN** an active `NarouR18NovelRepository` instance
-- **WHEN** `SiteConsentRepository.revoke(SiteId.narou18)` is called
+- **WHEN** `SiteConsentRepository.revoke(Site.noc)` is called
 - **THEN** subsequent calls on the repository SHALL throw `StateError`, and any Riverpod provider holding the repository SHALL be invalidated within 1 second
 
 ### Requirement: Shared low-level NarouApiClient with rate-limited dio
@@ -105,23 +105,23 @@ The system SHALL provide `NarouEpisodeFetcher` at `app/lib/features/novel_narou/
 - **WHEN** the queue is processed
 - **THEN** the actual outgoing request rate SHALL NOT exceed 1 request per second sustained across the origin `api.syosetu.com` and `ncode.syosetu.com` combined
 
-### Requirement: NarouWorkQuery extends the shared query model
+### Requirement: NarouSearchOptions extends the shared query model
 
-The system SHALL define `NarouQueryExtensions` at `app/lib/features/novel_narou/domain/narou_work_query.dart` as a subtype of the shared `WorkQueryExtensions`. The extensions MUST cover genre selection (multi-select from `NarouGenre`), minimum and maximum character counts, last-update date range, completed flag, pickup flag, and long-running flag. Each field MUST be optional; only the keyword on the parent `WorkQuery` is mandatory when no extension fields are set.
+The system SHALL define `NarouSearchOptions` at `app/lib/features/novel_narou/domain/narou_work_query.dart` as a subclass of the shared `WorkQuery` defined by `add-online-novel-library`. The extensions MUST cover genre selection (multi-select from `NarouGenre`), minimum and maximum character counts, last-update date range, completed flag, pickup flag, and long-running flag. Each field MUST be optional; only the keyword on the parent `WorkQuery` is mandatory when no extension fields are set.
 
 #### Scenario: Genre multi-select maps to comma-joined codes
 
-- **WHEN** `NarouQueryExtensions(genres: {NarouGenre.fantasy, NarouGenre.scifi})` is converted to query parameters
+- **WHEN** `NarouSearchOptions(genres: {NarouGenre.fantasy, NarouGenre.scifi})` is converted to query parameters
 - **THEN** the produced `genre` parameter is the comma-joined string of numeric codes (e.g., `201-301`) in stable ascending order
 
 #### Scenario: Character range maps to length parameter
 
-- **WHEN** `NarouQueryExtensions(minChars: 50000, maxChars: 200000)` is converted to query parameters
+- **WHEN** `NarouSearchOptions(minChars: 50000, maxChars: 200000)` is converted to query parameters
 - **THEN** the produced `length` parameter equals `50000-200000`
 
 #### Scenario: Last-updated-after maps to lastup parameter
 
-- **WHEN** `NarouQueryExtensions(lastUpdatedAfter: DateTime(2026, 1, 1))` is converted
+- **WHEN** `NarouSearchOptions(lastUpdatedAfter: DateTime(2026, 1, 1))` is converted
 - **THEN** the produced `lastup` parameter encodes the unix timestamp lower bound matching the API specification
 
 ### Requirement: Defensive mapping tolerates upstream schema drift

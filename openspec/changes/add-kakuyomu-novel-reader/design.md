@@ -66,10 +66,10 @@ final class KakuyomuNovelRepository implements NovelRepository {
   });
   final KakuyomuRssSource rssSource;
   final KakuyomuHtmlSource htmlSource;
-  final SiteConsentReader consent;
+  final SiteConsentRepository consent;
   // search / latest / ranking / workUpdates → rssSource
   // workDetail / episodeBody → htmlSource
-  // どのメソッドも consent.isGranted('kakuyomu') を先頭でチェック
+  // どのメソッドも consent.isGranted(Site.kakuyomu) を先頭でチェック
 }
 ```
 
@@ -111,15 +111,17 @@ class KakuyomuHtmlParser {
 
 ### D4. レート制限は共通 `RateLimiter` を Dio Interceptor 経由で適用
 
-`add-online-novel-library` の `RateLimiter` は site key を引数に取る前提で、
-カクヨム用 `KakuyomuRateLimiter` は `RateLimiter(siteKey: 'kakuyomu', minInterval:
-Duration(seconds: 2), maxConcurrent: 1)` で構築する。`Dio` の interceptor で
-全リクエスト前に `await limiter.acquire('kakuyomu')` を呼び、`onError` で
-429 / 503 を捕捉して指数バックオフ（初期 1s → 倍々、上限 5 分、Retry-After
-ヘッダがあれば優先）でリトライする。
+`add-online-novel-library` の `RateLimiter` は `RateLimiter({rate, burst, maxConcurrency})`
+の API でサイト別にインスタンスを分離して DI する。カクヨム用は
+`RateLimiter(rate: 0.5, burst: 1, maxConcurrency: 1)`（rate は req/sec、0.5 = 2 秒に 1 回）
+で Riverpod プロバイダから供給。`Dio` の interceptor で全リクエストを
+`limiter.run(() async { ... })` でラップし、`onError` で 429 / 503 を捕捉して
+指数バックオフ（初期 1s → 倍々、上限 5 分、Retry-After ヘッダがあれば優先）で
+最大 6 回リトライする。
 
-最大リトライ回数: **3 回**。3 回で諦め、UI には「カクヨムが混雑しています。
-時間を置いて再試行してください」を表示。
+最大リトライ回数: **6 回**（`add-online-novel-library/responsible-fetching` の規範と
+一致）。6 回で諦め、UI には「カクヨムが混雑しています。時間を置いて再試行して
+ください」を表示。
 
 ### D5. User-Agent は固定文字列でビルド時版から組み立てる
 
@@ -136,7 +138,8 @@ GeekPlayer/<version> (+https://github.com/geekjapan/GeekPlayer; personal-use)
 
 - アプリ起動後・カクヨム機能初回呼び出し時に `https://kakuyomu.jp/robots.txt` を
   1 回フェッチ（レート制限経由）
-- パース結果（disallow パス一覧）をプロセス内メモリに 1 時間キャッシュ
+- パース結果（disallow パス一覧）をプロセス内メモリに **24 時間** キャッシュ
+  （`add-online-novel-library/responsible-fetching` の TTL 規範と一致）
 - 全 HTTP リクエスト前に対象パスが disallow にマッチしないか評価
 - 評価で deny になったパスへのアクセスは `RobotsDisallowedException` を投げる
 - `robots.txt` 自体の取得に失敗した場合は **保守的に全 disallow** とせず、

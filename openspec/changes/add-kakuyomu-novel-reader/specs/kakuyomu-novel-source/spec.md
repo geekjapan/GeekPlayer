@@ -63,7 +63,7 @@ Every Kakuyomu request SHALL include a User-Agent header of exactly the form `Ge
 
 ### Requirement: robots.txt enforcement
 
-The system SHALL fetch `https://kakuyomu.jp/robots.txt` on first use of the Kakuyomu feature and cache the parsed disallow rules in process memory for **1 hour**. All Kakuyomu HTTP requests SHALL be evaluated against the cached rules before dispatch; requests matching a disallow pattern MUST throw `RobotsDisallowedException` without performing network I/O. If `robots.txt` cannot be fetched, the source MUST fall back to a hard-coded allowlist (`/works/{id}`, `/works/{id}/episodes/{id}`, and known RSS endpoints) and MUST NOT silently allow arbitrary paths.
+The system SHALL fetch `https://kakuyomu.jp/robots.txt` on first use of the Kakuyomu feature and cache the parsed disallow rules in process memory for **24 hours** (aligned with the shared `responsible-fetching` policy). All Kakuyomu HTTP requests SHALL be evaluated against the cached rules before dispatch; requests matching a disallow pattern MUST throw `RobotsDisallowedException` without performing network I/O. If `robots.txt` cannot be fetched, the source MUST fall back to a hard-coded allowlist (`/works/{id}`, `/works/{id}/episodes/{id}`, and known RSS endpoints) and MUST NOT silently allow arbitrary paths.
 
 #### Scenario: Disallowed path is blocked before network I/O
 
@@ -77,15 +77,15 @@ The system SHALL fetch `https://kakuyomu.jp/robots.txt` on first use of the Kaku
 - **WHEN** a request to a work page (`/works/123`) is attempted
 - **THEN** the request proceeds (allowlisted), but a request to an unlisted path is rejected with `RobotsDisallowedException`
 
-#### Scenario: robots.txt cache expires after 1 hour
+#### Scenario: robots.txt cache expires after 24 hours
 
-- **GIVEN** the `robots.txt` cache was populated 61 minutes ago
+- **GIVEN** the `robots.txt` cache was populated 25 hours ago
 - **WHEN** the next Kakuyomu request is evaluated
 - **THEN** `robots.txt` is re-fetched before evaluation
 
 ### Requirement: Exponential backoff on 429 / 503
 
-When a Kakuyomu HTTP response is **429 Too Many Requests** or **503 Service Unavailable**, the source SHALL retry the request with exponential backoff: initial delay 1 second, doubling each attempt, capped at **5 minutes** per delay. The `Retry-After` response header (delta-seconds or HTTP-date) MUST override the computed delay if present. After **3 failed retries**, the source MUST surface `KakuyomuUpstreamUnavailableException` and stop retrying.
+When a Kakuyomu HTTP response is **429 Too Many Requests** or **503 Service Unavailable**, the source SHALL retry the request with exponential backoff: initial delay 1 second, doubling each attempt, capped at **5 minutes** per delay. The `Retry-After` response header (delta-seconds or HTTP-date) MUST override the computed delay if present. After **6 failed retries** (aligned with `add-online-novel-library/responsible-fetching`), the source MUST surface `KakuyomuUpstreamUnavailableException` and stop retrying.
 
 #### Scenario: First retry waits at least 1 second
 
@@ -102,14 +102,14 @@ When a Kakuyomu HTTP response is **429 Too Many Requests** or **503 Service Unav
 - **WHEN** computed exponential delay would exceed 300 seconds
 - **THEN** the actual delay is exactly 300 seconds
 
-#### Scenario: Give up after 3 retries
+#### Scenario: Give up after 6 retries
 
-- **WHEN** all 3 retries return 429
+- **WHEN** all 6 retries return 429
 - **THEN** `KakuyomuUpstreamUnavailableException` is thrown and propagated to the UI layer
 
 ### Requirement: KakuyomuNovelRepository satisfies the shared NovelRepository interface
 
-The system SHALL provide `KakuyomuNovelRepository` that implements the `NovelRepository` interface defined by `add-online-novel-library`. The repository MUST compose `KakuyomuRssSource` and `KakuyomuHtmlSource`, and every method MUST check `SiteConsentReader.isGranted('kakuyomu')` before issuing any HTTP request.
+The system SHALL provide `KakuyomuNovelRepository` that implements the `NovelRepository` interface defined by `add-online-novel-library`. The repository MUST compose `KakuyomuRssSource` and `KakuyomuHtmlSource`, and every method MUST check `SiteConsentRepository.isGranted(Site.kakuyomu)` before issuing any HTTP request.
 
 #### Scenario: Repository composes RSS for search and HTML for work detail
 
@@ -118,7 +118,7 @@ The system SHALL provide `KakuyomuNovelRepository` that implements the `NovelRep
 
 #### Scenario: Consent denied short-circuits all repository methods
 
-- **GIVEN** `SiteConsentReader.isGranted('kakuyomu')` returns false
+- **GIVEN** `SiteConsentRepository.isGranted(Site.kakuyomu)` returns false
 - **WHEN** any method of `KakuyomuNovelRepository` is called
 - **THEN** `SiteConsentDeniedException` is thrown before any HTTP request is dispatched
 

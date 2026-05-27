@@ -194,9 +194,16 @@ HomeScreen(sections: [
 
 ### D9. `PageSession` は最小 API、`media-session` capability を拡張
 
+Dart 3 の `sealed class` は同一ライブラリ内のサブクラスに限定されるため
+(GRILL-REPORT Q-CROSS-011)、`PageSession` は
+`app/lib/core/media/page_session.dart` に置き、冒頭に `part of 'media_session.dart';`
+を書く。video / audio と同じ物理レイアウト規約に従う。
+
 `MediaSession` sealed hierarchy に追加:
 
 ```dart
+part of 'media_session.dart';
+
 sealed class PageSession extends MediaSession {
   Stream<PagePosition> get pagePositionStream;
   int get totalPages;
@@ -205,22 +212,25 @@ sealed class PageSession extends MediaSession {
 }
 
 class PagePosition {
-  final int pageIndex;
+  final int pageIndex;        // >= 1
   final double scrollFraction;   // 0.0..1.0
   const PagePosition({required this.pageIndex, required this.scrollFraction});
 }
 ```
 
-`MediaSession` 既存 API（`play` / `pause` / `seek` / `setSpeed` / streams）は no-op またはセマンティクスを再解釈:
+`MediaSession` 既存 API（`play` / `pause` / `seek` / `setSpeed` / streams）は
+no-op またはセマンティクスを再解釈:
 
 - `play` / `pause` → 自動スクロール開始/停止（オーディオブック化の伏線）
-- `seek(Duration)` → `Duration.inMilliseconds` を `pageIndex` に bijective 変換せず、`UnsupportedError` を投げる（明示的に `goToPage` を使わせる）
+- `seek(Duration)` → `UnsupportedError` を投げる（`goToPage` を明示的に使わせる）
 - `setSpeed` → 自動スクロール速度
 
-これで video / audio との sealed 性は維持され、book / manga が乗る v0.2 の `PageSession` 拡張に余地を残す。
+`dispose` 時に現在の `PagePosition` を `novel_bookmarks` テーブルへ upsert する。
+scrollFraction (0.0〜1.0) で保存し、pixel offset は使わない（フォント / レイアウト
+変更で位置を失わないため）。
 
-**代替案**: `PageSession` を `MediaSession` から独立させる
-→ ホーム画面の "現在進行中" UI が `MediaSession` 1 つで横断表示できなくなる。CONTEXT.md の「同一の MediaSession 抽象」も崩れる。
+これで video / audio との sealed 性は維持され、book / manga が乗る v0.2 の
+`PageSession` 拡張に余地を残す。
 
 ### D10. HTTP は `dio`、サイト別 instance、interceptor 多段
 
@@ -280,9 +290,11 @@ Dio buildSiteDio(Site site, RateLimiter limiter, RobotsRules robots) {
 ## Migration Plan
 
 - 既存ユーザーなし（新規プロジェクト）
-- drift スキーマは `add-local-video-playback` が v1 で `playback_positions` / `recent_items` を導入済み。本 change は **同じ v1 内で 4 テーブル追加**（プレリリース段階のため互換性破壊扱いではない）
-  - 実装順序の制約上、本 change の `database.dart` 編集は `add-local-video-playback` のマージ後を前提
-  - `add-local-video-playback` 未マージのまま本 change を進める場合、`database.dart` を空ベースから書き、後でマージ時に統合する
+- drift スキーマは `add-local-video-playback` が **v1** で `playback_positions` / `recent_items` を導入済み。本 change は **v1 → v2 の schema bump** を行い、`novel_works` / `novel_episodes` / `novel_bookmarks` / `site_consents` の 4 テーブルを追加する
+- `MigrationStrategy.onUpgrade(from: 1, to: 2)` で 4 テーブルを `create` する migration を `app/lib/core/storage/database.dart` に記述
+- migration テスト: in-memory v1 DB に `playback_positions` データを書き込んでから v2 にアップグレード → 既存データが消えないこと + 新 4 テーブルが空で作成されることを検証
+- 後続 `add-app-settings` change が **v2 → v3** で `app_settings` テーブルを追加する前提（連続マイグレーション）
+- 実装順序の制約上、本 change の `database.dart` 編集は `add-local-video-playback` のマージ後を前提
 - ロールバック: 本 change を revert すると `NovelHomeSection` がホームから外れ、`novel_*` テーブルは空のまま残る（drop は不要、未参照になるだけ）
 
 ## Open Questions

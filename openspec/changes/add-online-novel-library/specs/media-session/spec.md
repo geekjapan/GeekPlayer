@@ -1,65 +1,53 @@
 ## ADDED Requirements
 
-### Requirement: PageSession variant in the sealed hierarchy
+### Requirement: PageSession variant of MediaSession for reader feature
 
-The system SHALL extend the sealed `MediaSession` hierarchy (defined by `add-local-video-playback`) with a `PageSession` variant at `app/lib/core/novel/page_session.dart`. `PageSession` MUST be `sealed` itself so future book / manga variants can extend it without leaving the `MediaSession` exhaustivity guarantee. Adding the `PageSession` variant MUST require every existing pattern-match site over `MediaSession` to add a corresponding case.
+The system SHALL provide a `PageSession` concrete implementation of the `MediaSession` sealed type at `app/lib/core/media/page_session.dart` so that the home screen can render "in-progress" novel reading alongside in-progress video/audio uniformly. `PageSession` MUST be declared with `part of 'media_session.dart';` to satisfy the Dart 3 sealed-class same-library constraint (see GRILL-REPORT Q-CROSS-011).
 
-#### Scenario: Exhaustive switching includes PageSession
+#### Scenario: PageSession is a valid MediaSession variant
 
-- **WHEN** a `switch` statement over a `MediaSession` value is compiled after this change
-- **THEN** the analyzer reports `non_exhaustive_switch_expression` unless the switch includes a `PageSession` case in addition to the existing `VideoSession` (and future `AudioSession`) cases
+- **WHEN** a switch expression over `MediaSession` lists `case VideoSession()`, `case AudioSession()`, and `case PageSession()`
+- **THEN** the analyzer accepts the switch as exhaustive
 
-#### Scenario: PageSession is itself sealed
+#### Scenario: PageSession can be observed for reading progress
 
-- **WHEN** a developer attempts to create a non-library subclass of `PageSession` outside of `app/lib/core/novel/` or `app/lib/features/novel/`
-- **THEN** the analyzer reports a sealed-class violation
+- **WHEN** a `PageSession` is constructed for an opened novel episode and an observer subscribes to `pagePositionStream`
+- **THEN** the stream emits at least one initial `PagePosition` value within 500 ms and continues to emit values whenever the user scrolls or navigates between episodes
 
 ### Requirement: PagePosition value object
 
-The system SHALL define `PagePosition` as an immutable value object carrying `pageIndex (int, 1-based)` and `scrollFraction (double, 0.0..1.0 inclusive)`. Both fields MUST be validated at construction; out-of-range values MUST throw `ArgumentError`.
+The system SHALL define `PagePosition` as an immutable value object in `app/lib/core/media/page_session.dart` (same library) with `int pageIndex` (>=1) and `double scrollFraction` (0.0..1.0). The constructor MUST validate the ranges and throw `ArgumentError` on violation.
 
-#### Scenario: Valid PagePosition is constructed
+#### Scenario: Invalid PagePosition throws
 
-- **WHEN** `PagePosition(pageIndex: 3, scrollFraction: 0.5)` is constructed
-- **THEN** no error is thrown and the value compares equal to another `PagePosition(pageIndex: 3, scrollFraction: 0.5)`
+- **WHEN** `PagePosition(pageIndex: 0, scrollFraction: 0.5)` is constructed
+- **THEN** an `ArgumentError` is thrown
 
-#### Scenario: pageIndex below 1 is rejected
-
-- **WHEN** `PagePosition(pageIndex: 0, scrollFraction: 0.0)` is constructed
-- **THEN** `ArgumentError` is thrown
-
-#### Scenario: scrollFraction outside [0,1] is rejected
+#### Scenario: scrollFraction out of range throws
 
 - **WHEN** `PagePosition(pageIndex: 1, scrollFraction: 1.5)` is constructed
-- **THEN** `ArgumentError` is thrown
+- **THEN** an `ArgumentError` is thrown
 
-### Requirement: PageSession operations
+### Requirement: PageSession re-interprets MediaSession audio-centric methods
 
-`PageSession` SHALL expose `pagePositionStream (Stream<PagePosition>)`, `totalPages (int)`, `goToPage(int index)`, and `updateScrollFraction(double fraction)`. The `seek(Duration)` operation inherited from `MediaSession` MUST throw `UnsupportedError` on `PageSession` to force callers to use `goToPage` explicitly. The `play()` / `pause()` operations MAY be implemented as auto-scroll start / stop or as no-ops.
+The `play` / `pause` methods on `PageSession` SHALL control optional auto-scroll (paving the way for future audiobook narration). The `seek(Duration)` method MUST throw `UnsupportedError` because page navigation does not have a time-based representation; callers MUST use `goToPage(int)` instead. The `setSpeed` method SHALL adjust auto-scroll speed when auto-scroll is active.
 
-#### Scenario: pagePositionStream emits on navigation
+#### Scenario: seek throws UnsupportedError on PageSession
 
-- **GIVEN** a `PageSession` is loaded with a Work of 10 episodes
-- **WHEN** `goToPage(3)` is called
-- **THEN** `pagePositionStream` emits a `PagePosition` with `pageIndex == 3` within 100ms
+- **WHEN** `pageSession.seek(Duration(seconds: 30))` is called
+- **THEN** `UnsupportedError` is thrown with a message that names `goToPage` as the correct entry point
 
-#### Scenario: seek throws UnsupportedError
+#### Scenario: goToPage updates page position
 
-- **WHEN** `session.seek(Duration(seconds: 10))` is called on a `PageSession`
-- **THEN** `UnsupportedError` is thrown synchronously with a message that points to `goToPage`
+- **WHEN** `pageSession.goToPage(5)` is called
+- **THEN** `pagePositionStream` emits a `PagePosition` with `pageIndex == 5` and `scrollFraction == 0.0` within 200 ms
 
-#### Scenario: updateScrollFraction updates within the current page
+### Requirement: PageSession persists position to novel_bookmarks on dispose
 
-- **GIVEN** the current `PagePosition` is `(pageIndex: 4, scrollFraction: 0.0)`
-- **WHEN** `updateScrollFraction(0.7)` is called
-- **THEN** the next emitted `PagePosition` is `(pageIndex: 4, scrollFraction: 0.7)`
+When a `PageSession` is disposed (e.g., the reader screen is closed), the current `PagePosition` SHALL be upserted into the shared `novel_bookmarks` table provided by `add-online-novel-library` keyed by `(site, externalId, episodeIndex)`. The persisted record MUST store `scrollFraction` (not pixel offset) so that subsequent reads survive font / layout changes.
 
-### Requirement: PageSession lifecycle through Riverpod
+#### Scenario: Closing the reader saves the current position
 
-The system SHALL manage `PageSession` lifecycle via an `AutoDispose` Riverpod provider, mirroring the `VideoSession` pattern. When the reader screen is disposed, the corresponding `PageSession.dispose()` MUST be invoked, the bookmark for the active Work MUST be written to `novel_bookmarks`, and all streams MUST complete.
-
-#### Scenario: Leaving the reader writes the bookmark
-
-- **GIVEN** a `PageSession` is active with `PagePosition(pageIndex: 5, scrollFraction: 0.3)` for a Library Work
-- **WHEN** the reader screen is popped
-- **THEN** `dispose()` is called, the `novel_bookmarks` upsert is executed before the provider tears down, and `pagePositionStream` completes
+- **GIVEN** the user is reading episode 3 at scroll fraction 0.42 of a kakuyomu work
+- **WHEN** the user navigates away from the reader screen
+- **THEN** an upsert is issued against `novel_bookmarks` with `(site=Site.kakuyomu, externalId, episodeIndex=3, scrollFraction=0.42, updatedAt=<now>)` before the screen is destroyed

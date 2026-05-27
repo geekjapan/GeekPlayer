@@ -46,11 +46,14 @@
 
 ## 6. PageSession と media-session 拡張
 
-- [ ] 6.1 `app/lib/core/novel/page_position.dart` に `PagePosition({required int pageIndex, required double scrollFraction})` を実装し、`pageIndex >= 1` / `0.0 <= scrollFraction <= 1.0` バリデーション
-- [ ] 6.2 `app/lib/core/novel/page_session.dart` に `sealed abstract class PageSession extends MediaSession`（`pagePositionStream`, `totalPages`, `goToPage`, `updateScrollFraction`、`seek` で `UnsupportedError`）を実装
-- [ ] 6.3 [`app/lib/core/media/media_session.dart`](../../../app/lib/core/media/media_session.dart) を更新し、sealed hierarchy に `PageSession` を含むことを doc コメントで明示（コード自体は extends 側に委譲）
-- [ ] 6.4 `NovelPageSession`（drift `NovelBookmarks` と `NovelEpisodesDao` を裏で叩く実装）を `app/lib/features/novel/data/novel_page_session.dart` に実装
-- [ ] 6.5 `app/test/core/novel/page_position_test.dart` でバリデーションと等価性を検証
+GRILL-REPORT Q-CROSS-011 に従い、Dart 3 の sealed-class 制約のため
+`page_session.dart` は `core/media/` に置き `part of 'media_session.dart';` で結合する。
+
+- [ ] 6.1 `app/lib/core/media/page_position.dart` に `PagePosition({required int pageIndex, required double scrollFraction})` を実装し、`pageIndex >= 1` / `0.0 <= scrollFraction <= 1.0` バリデーション
+- [ ] 6.2 `app/lib/core/media/page_session.dart` の冒頭に `part of 'media_session.dart';` を書き、`sealed abstract class PageSession extends MediaSession`（`pagePositionStream`, `totalPages`, `goToPage`, `updateScrollFraction`、`seek` で `UnsupportedError`）を実装
+- [ ] 6.3 [`app/lib/core/media/media_session.dart`](../../../app/lib/core/media/media_session.dart) に `part 'page_session.dart';` 行を追加し、sealed hierarchy に `PageSession` を含めることをコメントで明示
+- [ ] 6.4 `NovelPageSession`（drift `NovelBookmarks` と `NovelEpisodesDao` を裏で叩く実装）を `app/lib/features/novel/data/novel_page_session.dart` に実装、dispose 時に `novel_bookmarks` へ upsert
+- [ ] 6.5 `app/test/core/media/page_position_test.dart` でバリデーションと等価性を検証
 - [ ] 6.6 `app/test/features/novel/novel_page_session_test.dart` で `goToPage` / `updateScrollFraction` のストリーム遷移、`seek` の `UnsupportedError`、dispose 時の `novel_bookmarks` upsert を検証
 - [ ] 6.7 既存の `app/test/core/media/` テスト群が `MediaSession` の sealed exhaustivity 拡張で壊れないことを確認（必要なら `PageSession` ケースを追加）
 

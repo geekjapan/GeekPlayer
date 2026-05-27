@@ -6,7 +6,7 @@ The system SHALL display an `AgeGateDialog` whenever the user first attempts to 
 
 #### Scenario: Dialog appears on first R18 access
 
-- **GIVEN** no `SiteConsent` for `SiteId.narou18` exists
+- **GIVEN** no `SiteConsent` for `Site.noc` exists
 - **WHEN** the user taps the "ノクターン" entry point in the なろう section
 - **THEN** the `AgeGateDialog` is presented modally before any R18 API request is issued
 
@@ -14,7 +14,7 @@ The system SHALL display an `AgeGateDialog` whenever the user first attempts to 
 
 - **GIVEN** the `AgeGateDialog` is open
 - **WHEN** the user taps "はい、18歳以上です"
-- **THEN** `SiteConsentRepository.grant(SiteId.narou18, grantedAt: <now>)` is called, the dialog dismisses, and the requested R18 screen loads
+- **THEN** `SiteConsentRepository.grant(Site.noc, policyVersion: 'age-verified')` is called, the dialog dismisses, and the requested R18 screen loads
 
 #### Scenario: Declining keeps the R18 surface locked
 
@@ -30,22 +30,22 @@ The system SHALL display an `AgeGateDialog` whenever the user first attempts to 
 
 ### Requirement: Persistent consent storage backed by site_consents table
 
-The age-gate consent SHALL be persisted in the shared `site_consents` drift table provided by `add-online-novel-library`, keyed by `SiteId.narou18`. The stored record MUST include at least the consent grant timestamp. Consent SHALL NOT expire automatically; it remains valid until explicitly revoked through the settings UI.
+The age-gate consent SHALL be persisted in the shared `site_consents` drift table provided by `add-online-novel-library`, keyed by `Site.noc`. The stored record MUST include at least the consent grant timestamp. Consent SHALL NOT expire automatically; it remains valid until explicitly revoked through the settings UI.
 
 #### Scenario: Consent survives app restart
 
 - **GIVEN** the user has granted R18 consent in a previous session and quit the app
 - **WHEN** the app is launched again
-- **THEN** `SiteConsentRepository.isGranted(SiteId.narou18)` returns `true` and the R18 surface is available without re-prompting
+- **THEN** `SiteConsentRepository.isGranted(Site.noc)` returns `true` and the R18 surface is available without re-prompting
 
 #### Scenario: Consent is read from drift on cold start
 
 - **WHEN** the app cold-starts and the `SiteConsentRepository` is first queried
-- **THEN** the `site_consents` row for `SiteId.narou18` is read directly from drift (not from a cached preference), so manual DB clears reliably reset the gate
+- **THEN** the `site_consents` row for `Site.noc` is read directly from drift (not from a cached preference), so manual DB clears reliably reset the gate
 
 ### Requirement: Settings screen lets users revoke and re-grant consent
 
-The settings screen SHALL include an "オンライン小説" subsection with a "年齢確認をやり直す" entry implemented at `app/lib/features/age_gate/presentation/age_gate_settings_section.dart`. The entry MUST show the current consent state (granted with timestamp, or not granted). When the user activates the entry, the system MUST present a confirmation dialog, and on confirm SHALL revoke the consent via `SiteConsentRepository.revoke(SiteId.narou18)`. After revocation, R18 surfaces MUST be hidden until consent is granted again.
+The settings screen SHALL include an "オンライン小説" subsection with a "年齢確認をやり直す" entry implemented at `app/lib/features/age_gate/presentation/age_gate_settings_section.dart`. The entry MUST show the current consent state (granted with timestamp, or not granted). When the user activates the entry, the system MUST present a confirmation dialog, and on confirm SHALL revoke the consent via `SiteConsentRepository.revoke(Site.noc)`. After revocation, R18 surfaces MUST be hidden until consent is granted again.
 
 #### Scenario: Settings shows current consent state
 
@@ -57,7 +57,7 @@ The settings screen SHALL include an "オンライン小説" subsection with a "
 
 - **GIVEN** the user is on the settings screen with R18 consent currently granted
 - **WHEN** the user taps "年齢確認をやり直す" and confirms revocation
-- **THEN** `SiteConsentRepository.revoke(SiteId.narou18)` is called, the row updates to "未同意", and any subsequently opened なろう home section MUST NOT show R18 tabs
+- **THEN** `SiteConsentRepository.revoke(Site.noc)` is called, the row updates to "未同意", and any subsequently opened なろう home section MUST NOT show R18 tabs
 
 #### Scenario: Active R18 repository is invalidated after revoke
 
@@ -71,12 +71,12 @@ The system SHALL treat any non-`granted` consent state — including missing row
 
 #### Scenario: Unknown consent value is treated as not granted
 
-- **GIVEN** the `site_consents` row for `SiteId.narou18` contains an unknown status value
-- **WHEN** the app evaluates `SiteConsentRepository.isGranted(SiteId.narou18)`
+- **GIVEN** the `site_consents` row for `Site.noc` contains an unknown status value
+- **WHEN** the app evaluates `SiteConsentRepository.isGranted(Site.noc)`
 - **THEN** the method returns `false` and a structured log entry records the corruption
 
 #### Scenario: Missing row defaults to not granted
 
-- **GIVEN** no `site_consents` row exists for `SiteId.narou18`
+- **GIVEN** no `site_consents` row exists for `Site.noc`
 - **WHEN** any R18 access is attempted
 - **THEN** the `AgeGateDialog` is shown and the API call is blocked until the user explicitly grants consent

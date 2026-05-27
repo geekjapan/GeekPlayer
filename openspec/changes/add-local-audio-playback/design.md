@@ -36,7 +36,13 @@
 
 ### D1. `AudioSession` は `just_audio` の `AudioPlayer` + `audio_service` の `BaseAudioHandler` を内包
 
+ファイル: `app/lib/core/media/audio_session.dart`。Dart 3 の `sealed class` 制約上、
+`media_session.dart` と同一ライブラリ内に置く必要があるため、`part of 'media_session.dart';`
+を冒頭に書く（`add-local-video-playback` D1 の規約と一致）。
+
 ```dart
+part of 'media_session.dart';
+
 final class AudioSession extends MediaSession {
   final AudioPlayer _player;     // just_audio
   final AudioHandler _handler;   // audio_service へ流すブリッジ

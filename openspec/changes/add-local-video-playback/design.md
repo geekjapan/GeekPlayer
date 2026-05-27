@@ -39,7 +39,17 @@ GeekPlayer リポジトリは scaffold が済んだ直後で、`app/lib/features
 
 ## Decisions
 
-### D1. `MediaSession` を sealed abstract class にする
+### D1. `MediaSession` を sealed abstract class にする (part-of 構造で結合)
+
+Dart 3 の `sealed class` は **同一ライブラリ内のサブクラスのみ** 許可される。
+複数ファイルに分けるため、以下の物理レイアウトを採用する:
+
+- `app/lib/core/media/media_session.dart` — `library` directive + `sealed class MediaSession`
+- `app/lib/core/media/video_session.dart` — `part of 'media_session.dart';` + `final class VideoSession extends MediaSession`
+- `app/lib/core/media/audio_session.dart` — `part of 'media_session.dart';` + `final class AudioSession extends MediaSession`（`add-local-audio-playback` で追加）
+- 将来の `app/lib/core/media/page_session.dart`（v0.2）も同じ `part of` 構造
+
+各 site / feature 側からは `media_session.dart` を import するだけで全 variant が見える。
 
 ```dart
 sealed class MediaSession {

@@ -1,7 +1,7 @@
 ## 1. 依存と前提
 
-- [ ] 1.1 `add-online-novel-library` で `NovelRepository` / `RateLimiter` / `SiteConsentReader` / `OnlineWork` / drift `online_novel_*` テーブルが定義されていることを確認（未確定なら本 change の Dart 実装は暫定インターフェースを `app/lib/features/novel/common/_pending.dart` に置いて先行マージしない）
-- [ ] 1.2 `app/pubspec.yaml` に `webfeed_revised`、`html`、`url_launcher`、`package_info_plus` を `flutter pub add`（`dio` は共通 change で導入済み前提、未導入なら本 task で追加）
+- [ ] 1.1 `add-online-novel-library` で `NovelRepository` / `LibraryRepository` / `RateLimiter` / `SiteConsentRepository` / `Site` enum / `Work` / `Episode` / drift `novel_works` / `novel_episodes` / `novel_bookmarks` / `site_consents` テーブルが定義されていることを確認
+- [ ] 1.2 `app/pubspec.yaml` に `url_launcher` を `flutter pub add` で追加（冪等: 既に存在すれば skip）。`webfeed_revised` / `html` / `dio` / `package_info_plus` は共通 change で導入済み前提
 - [ ] 1.3 `flutter pub get` がクリーンで通り、`flutter analyze` が green
 - [ ] 1.4 `THIRD_PARTY_NOTICES.md` に `webfeed_revised` / `html` / `url_launcher` / `package_info_plus` のライセンス記載を追加
 - [ ] 1.5 `app/lib/core/config/feature_flags.dart` に `const bool kakuyomuEnabled = true;` を追加（kill-switch）
@@ -18,9 +18,9 @@
 ## 3. HTTP / レート制限 / robots.txt インフラ
 
 - [ ] 3.1 `data/kakuyomu_dio_factory.dart` を実装: `Dio` インスタンスを生成し、`BaseOptions.headers['User-Agent']` を `GeekPlayer/<version> (+https://github.com/geekjapan/GeekPlayer; personal-use)` 形式で設定（`package_info_plus` 経由）
-- [ ] 3.2 共通 `RateLimiter` を `siteKey: 'kakuyomu'`、`minInterval: Duration(seconds: 2)`、`maxConcurrent: 1` で構築するファクトリを実装
-- [ ] 3.3 Dio `InterceptorsWrapper` を実装: `onRequest` で `limiter.acquire('kakuyomu')` を await、`onError` で 429/503 を捕捉して指数バックオフ（初期 1s / ×2 / 上限 5min / `Retry-After` 優先 / 最大 3 リトライ）でリトライし、3 回失敗で `KakuyomuUpstreamUnavailableException` に変換
-- [ ] 3.4 `data/kakuyomu_robots_txt_cache.dart` を実装: 初回 fetch / 1 時間メモリキャッシュ / disallow 評価 / 取得失敗時の許可リストフォールバック（`/works/`, `/works/.+/episodes/`, RSS endpoints）
+- [ ] 3.2 共通 `RateLimiter` を `RateLimiter(rate: 0.5, burst: 1, maxConcurrency: 1)`（0.5 req/sec = 2 秒に 1 回）で構築する Riverpod プロバイダを実装
+- [ ] 3.3 Dio `InterceptorsWrapper` を実装: `onRequest` で `limiter.run(() async { ... })` でラップ、`onError` で 429/503 を捕捉して指数バックオフ（初期 1s / ×2 / 上限 5min / `Retry-After` 優先 / 最大 6 リトライ）でリトライし、6 回失敗で `KakuyomuUpstreamUnavailableException` に変換
+- [ ] 3.4 `data/kakuyomu_robots_txt_cache.dart` を実装: 初回 fetch / 24 時間メモリキャッシュ / disallow 評価 / 取得失敗時の許可リストフォールバック（`/works/`, `/works/.+/episodes/`, RSS endpoints）
 - [ ] 3.5 Dio Interceptor に robots 評価を組み込み、disallow パスへの送信前に `RobotsDisallowedException` を投げる
 - [ ] 3.6 ユニットテスト: User-Agent 正規表現、2 秒間隔、並列度 1、429/503 バックオフ、`Retry-After` 優先、robots disallow 拒否、robots fetch 失敗時の許可リスト動作
 
@@ -45,11 +45,11 @@
 
 ## 6. Repository と同意連携
 
-- [ ] 6.1 `data/kakuyomu_novel_repository.dart` に `KakuyomuNovelRepository implements NovelRepository` を実装し、`search` / `latest` / `ranking` / `fetchWork` / `fetchEpisodeBody` / `addToLibrary` / `purgeAllCachedBodies` を提供
-- [ ] 6.2 各メソッドの先頭で `SiteConsentReader.isGranted('kakuyomu')` を確認し、未同意なら `SiteConsentDeniedException` を投げる（HTTP は飛ばさない）
-- [ ] 6.3 `addToLibrary(workId)` でレート制限を経由しながら全エピソード本文を逐次フェッチ → 共通 drift の `online_episode_bodies` に保存（テーブル定義は共通 change）
-- [ ] 6.4 `addToLibrary` のキャンセル対応（`CancelToken` 連携）
-- [ ] 6.5 `purgeAllCachedBodies()` で全カクヨム本文と Library エントリの本文フラグをクリア
+- [ ] 6.1 `data/kakuyomu_novel_repository.dart` に `KakuyomuNovelRepository implements NovelRepository` を実装し、`search` / `latest` / `ranking` / `fetchWork` / `fetchEpisodes` / `fetchEpisodeBody` を提供。Library 追加は共通の `LibraryRepository.addToLibrary(KakuyomuNovelRepository, workId)` で呼び出される（このリポジトリ自体に `addToLibrary` メソッドは持たない）
+- [ ] 6.2 各メソッドの先頭で `SiteConsentRepository.isGranted(Site.kakuyomu)` を確認し、未同意なら `SiteConsentDeniedException` を投げる（HTTP は飛ばさない）
+- [ ] 6.3 `LibraryRepository.addToLibrary` から呼ばれる `fetchEpisodes` / `fetchEpisodeBody` が、本文取得を順次行えること（レート制限・キャンセル可能）を保証。永続化は共通 `LibraryRepository` 側の責務
+- [ ] 6.4 `CancelToken` 連携でフェッチ中断対応
+- [ ] 6.5 同意取り消し時の本文キャッシュ削除は共通 `LibraryRepository.purgeBySite(Site.kakuyomu)` を呼ぶ
 - [ ] 6.6 リポジトリ単体テスト: 同意なし → 全メソッドが HTTP を飛ばさず例外、能動キャッシュ（reader 開きはキャッシュしない / library add のみキャッシュ）
 
 ## 7. 同意ダイアログと設定画面
@@ -57,7 +57,7 @@
 - [ ] 7.1 `presentation/kakuyomu_consent_dialog.dart` を実装: 「個人利用に限定」「能動キャッシュのみ」「robots.txt 尊重」を箇条書き、ADR-0001 / README / カクヨム公式 ToS へのリンク、「同意する」「同意しない」を同等視認性
 - [ ] 7.2 ダイアログを「カクヨムセクション初回タップ」「設定画面の OFF→ON トグル」から呼び出す統合
 - [ ] 7.3 設定画面のカクヨムセクション（`add-online-novel-library` の settings に挿入）に同意トグル / 注意書き / レート制限現状値「1 リクエスト / 2 秒、並列度 1」 / README リンクを実装
-- [ ] 7.4 OFF トグル時の確認ダイアログ → `purgeAllCachedBodies()` 呼び出し → トグル反映
+- [ ] 7.4 OFF トグル時の確認ダイアログ → `LibraryRepository.purgeBySite(Site.kakuyomu)` 呼び出し → トグル反映
 - [ ] 7.5 文言レビュー: ダークパターンになっていないか、ADR-0001 の 4 箇所注意のうち「ダイアログ」「設定画面」の文言が ADR-0001 と齟齬なく一致するかを目視レビュー task として明示
 
 ## 8. UI 画面

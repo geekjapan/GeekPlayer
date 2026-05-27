@@ -9,7 +9,7 @@
 
 ## 2. AudioSession 実装 (`core/media`)
 
-- [ ] 2.1 `app/lib/core/media/audio_session.dart` に `final class AudioSession extends MediaSession` を定義し、`just_audio` の `AudioPlayer` を内部に保持
+- [ ] 2.1 `app/lib/core/media/audio_session.dart` の冒頭に `part of 'media_session.dart';` を書き、`final class AudioSession extends MediaSession` を定義（`just_audio` の `AudioPlayer` を内部保持）。`media_session.dart` 側にも `part 'audio_session.dart';` 行を追加
 - [ ] 2.2 `AudioSession` の `positionStream` / `playStateStream` / `durationStream` を `AudioPlayer` のストリームから変換して公開
 - [ ] 2.3 `AudioSession.play` / `pause` / `seek` / `setSpeed` を `AudioPlayer` に委譲する実装を追加
 - [ ] 2.4 `AudioSession.dispose()` が `AudioPlayer.dispose()` を確実に呼び、二重 dispose で例外を投げないこと
