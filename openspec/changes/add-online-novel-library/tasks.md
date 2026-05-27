@@ -89,7 +89,7 @@ GRILL-REPORT Q-CROSS-011 に従い、Dart 3 の sealed-class 制約のため
 - [x] 9.3 同意なしサイトのグループ見出し「同意が無効化されています — 設定で再同意」を実装し、該当グループの Work カードは disabled 表示
 - [x] 9.4 ADR-0004 に従い `home_section_registry.dart` に `novelHomeSectionsProvider` を 1 行追加（HomeScreen 直編集禁止）
 - [x] 9.5 設定画面（仮の画面ルート、本 change ではホームから遷移できる最小実装）に `NovelSettingsSection` を組み込む
-- [ ] 9.6 `app/test/features/novel/home_section_test.dart` で空状態、Library エントリ表示、フィルタチップ、disabled 表示（granted=false 時）を widget test
+- [x] 9.6 `app/test/features/novel/home_section_test.dart` で空状態、Library エントリ表示、フィルタチップ、disabled 表示（granted=false 時）を widget test
 - [x] 9.7 「Library に追加」を試す開発者向け debug menu を `app/lib/features/novel/presentation/debug_menu.dart` に追加（`FakeNovelRepository` のダミー Work を 1 つ Library に投入できる、後続サイト別 change まで UI 確認用）
 
 ## 10. 締め
