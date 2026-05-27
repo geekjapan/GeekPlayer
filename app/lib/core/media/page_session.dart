@@ -22,7 +22,7 @@ part of 'media_session.dart';
 /// Lifecycle: on [dispose], implementations MUST upsert the current
 /// [PagePosition] into the `novel_bookmarks` table so the next open
 /// resumes at the same scroll fraction (design.md D9 / Q-D2).
-sealed class PageSession extends MediaSession {
+abstract class PageSession extends MediaSession {
   /// Stream of position updates. First event SHOULD be emitted within
   /// 500ms of subscription.
   Stream<PagePosition> get pagePositionStream;
