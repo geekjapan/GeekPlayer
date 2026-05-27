@@ -13,12 +13,12 @@
 
 ## 2. ドメインモデルと例外
 
-- [ ] 2.1 `app/lib/features/novel/kakuyomu/domain/kakuyomu_work.dart` に `KakuyomuWorkDetail`（id / title / author / synopsis / tags / episodes / lastUpdatedAt）を `freezed` で定義
-- [ ] 2.2 `kakuyomu_episode.dart` に `KakuyomuEpisodeSummary`（id / title / publishedAt）と `KakuyomuEpisodeBody`（id / paragraphs: List<ReaderSegment>）を定義
-- [ ] 2.3 `kakuyomu_feed_item.dart` に `KakuyomuFeedItem`（title / workId / url / author / publishedAt / summary）を定義
-- [ ] 2.4 `kakuyomu_search_query.dart` に `KakuyomuSearchQuery`（keyword / genre? / sort?）を定義
-- [ ] 2.5 `domain/exceptions.dart` に `SiteConsentDeniedException` / `KakuyomuParseException` / `KakuyomuEpisodeNotFoundException` / `KakuyomuUpstreamUnavailableException` / `RobotsDisallowedException` を実装
-- [ ] 2.6 ドメインモデルの freezed / json codegen を `dart run build_runner build --delete-conflicting-outputs` で生成
+- [x] 2.1 `app/lib/features/novel/kakuyomu/domain/kakuyomu_work.dart` に `KakuyomuWorkDetail`（id / title / author / synopsis / tags / episodes / lastUpdatedAt）を `freezed` で定義 — placed under `features/novel_kakuyomu/domain/`; plain `@immutable` (no freezed in pubspec, follows existing core/novel models convention)
+- [x] 2.2 `kakuyomu_episode.dart` に `KakuyomuEpisodeSummary`（id / title / publishedAt）と `KakuyomuEpisodeBody`（id / paragraphs: List<ReaderSegment>）を定義 — also added sealed `ReaderSegment` (Paragraph/Blank/RubyParagraph) in `reader_segment.dart`
+- [x] 2.3 `kakuyomu_feed_item.dart` に `KakuyomuFeedItem`（title / workId / url / author / publishedAt / summary）を定義
+- [x] 2.4 `kakuyomu_search_query.dart` に `KakuyomuSearchQuery`（keyword / genre? / sort?）を定義
+- [x] 2.5 `domain/exceptions.dart` に `SiteConsentDeniedException` / `KakuyomuParseException` / `KakuyomuEpisodeNotFoundException` / `KakuyomuUpstreamUnavailableException` / `RobotsDisallowedException` を実装 — `SiteConsentDeniedException` / `RobotsDisallowedException` are typedef aliases of the cross-site sealed types in `core/{novel,network}/errors.dart`
+- [x] 2.6 ドメインモデルの freezed / json codegen を `dart run build_runner build --delete-conflicting-outputs` で生成 — N/A (no freezed); plain `toJson` methods are hand-written
 
 ## 3. HTTP / レート制限 / robots.txt インフラ
 
