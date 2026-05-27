@@ -69,8 +69,8 @@ GRILL-REPORT Q-CROSS-011 に従い、Dart 3 の sealed-class 制約のため
 - [x] 7.3 `app/lib/features/novel/presentation/settings_section.dart` に `NovelSettingsSection` を実装（ADR-0001 §注意書き-③ の常時表示文言、各サイトの consent トグル）
 - [x] 7.4 起動フックを `app/lib/main.dart` に追加：Riverpod 初期化で `hasFreshConsent` を全サイト確認し、無ければ `ConsentDialog` を `WidgetsBinding.instance.addPostFrameCallback` でモーダル表示
 - [x] 7.5 `policyVersion = '2026-05-27'` を `app/lib/core/novel/policy_version.dart` に定義
-- [ ] 7.6 `app/test/features/novel/consent_dialog_test.dart` でチェック ON/OFF、「すべて拒否」の DB 書き込み、外側タップで閉じないことを検証
-- [ ] 7.7 `app/test/features/novel/consent_enforcement_test.dart` で `ConsentRepository` が `granted=false` の時に対応する `NovelRepository` 呼び出しが `SiteConsentRequiredError` を投げることを検証（`FakeNovelRepository` を `ConsentGuardedRepository` でラップして検証）
+- [x] 7.6 `app/test/features/novel/consent_dialog_test.dart` でチェック ON/OFF、「すべて拒否」の DB 書き込み、外側タップで閉じないことを検証
+- [x] 7.7 `app/test/features/novel/consent_enforcement_test.dart` で `ConsentRepository` が `granted=false` の時に対応する `NovelRepository` 呼び出しが `SiteConsentRequiredError` を投げることを検証（`FakeNovelRepository` を `ConsentGuardedRepository` でラップして検証）
 
 ## 8. Library 機能 (`features/novel/library`)
 
