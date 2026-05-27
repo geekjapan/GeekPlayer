@@ -71,13 +71,15 @@ class VideoRepository {
       'video',
       limit: limit,
     );
-    return rows.map((RecentItemRow r) {
-      final Uri uri = Uri.parse(r.uri);
-      final String name = uri.scheme == 'file'
-          ? p.basename(uri.toFilePath())
-          : r.uri;
-      return VideoFile(uri: uri, displayName: name);
-    }).toList(growable: false);
+    return rows
+        .map((RecentItemRow r) {
+          final Uri uri = Uri.parse(r.uri);
+          final String name = uri.scheme == 'file'
+              ? p.basename(uri.toFilePath())
+              : r.uri;
+          return VideoFile(uri: uri, displayName: name);
+        })
+        .toList(growable: false);
   }
 
   /// Remove [uri] from both the recent-items list and the playback

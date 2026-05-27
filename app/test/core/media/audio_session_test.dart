@@ -44,26 +44,27 @@ void main() {
       },
     );
 
-    test(
-      'durationStream forwards null then a non-null duration',
-      () async {
-        final List<Duration?> received = <Duration?>[];
-        final StreamSubscription<Duration?> sub =
-            session.durationStream.listen(received.add);
-        duration.add(null);
-        duration.add(const Duration(minutes: 3, seconds: 30));
-        await Future<void>.delayed(Duration.zero);
-        expect(received, <Duration?>[null, const Duration(minutes: 3, seconds: 30)]);
-        await sub.cancel();
-      },
-    );
+    test('durationStream forwards null then a non-null duration', () async {
+      final List<Duration?> received = <Duration?>[];
+      final StreamSubscription<Duration?> sub = session.durationStream.listen(
+        received.add,
+      );
+      duration.add(null);
+      duration.add(const Duration(minutes: 3, seconds: 30));
+      await Future<void>.delayed(Duration.zero);
+      expect(received, <Duration?>[
+        null,
+        const Duration(minutes: 3, seconds: 30),
+      ]);
+      await sub.cancel();
+    });
 
     test(
       'playStateStream maps just_audio ProcessingState transitions',
       () async {
         final List<MediaPlayState> states = <MediaPlayState>[];
-        final StreamSubscription<MediaPlayState> sub =
-            session.playStateStream.listen(states.add);
+        final StreamSubscription<MediaPlayState> sub = session.playStateStream
+            .listen(states.add);
         playerState.add(PlayerState(false, ProcessingState.idle));
         playerState.add(PlayerState(false, ProcessingState.loading));
         playerState.add(PlayerState(true, ProcessingState.ready));

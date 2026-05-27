@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../audio/presentation/audio_home_section.dart';
 import '../video/presentation/video_home_section.dart';
 import 'home_section.dart';
 
@@ -13,7 +14,7 @@ part 'home_section_registry.g.dart';
 List<HomeSection> homeSections(Ref ref) {
   final List<HomeSection> all = <HomeSection>[
     ...ref.watch(videoHomeSectionsProvider),
-    // Wave 2 — audio: ...ref.watch(audioHomeSectionsProvider),
+    ...ref.watch(audioHomeSectionsProvider),
     // Wave 2 — novel-library: ...ref.watch(novelHomeSectionsProvider),
     // Wave 3 — narou/kakuyomu fold their tabs under the novel section.
   ];

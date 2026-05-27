@@ -31,7 +31,13 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('GeekPlayer'), findsOneWidget);
+    // Video section
+    expect(find.text('動画'), findsOneWidget);
     expect(find.text('動画を開く'), findsOneWidget);
     expect(find.text('最近開いた動画はまだありません'), findsOneWidget);
+    // Audio section (wave 2)
+    expect(find.text('音楽'), findsOneWidget);
+    expect(find.text('音楽を開く'), findsOneWidget);
+    expect(find.text('最近開いた音楽はまだありません'), findsOneWidget);
   });
 }

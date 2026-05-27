@@ -81,10 +81,7 @@ void main() {
         _t('d'),
         _t('e'),
       ];
-      final AudioQueue q = AudioQueue(
-        tracks: five,
-        currentIndex: 2,
-      );
+      final AudioQueue q = AudioQueue(tracks: five, currentIndex: 2);
       final AudioQueue shuffled = q.toggleShuffle(random: Random(42));
       expect(shuffled.shuffle, isTrue);
       expect(shuffled.current, five[2]);

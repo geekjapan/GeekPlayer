@@ -47,8 +47,11 @@ void main() {
       final AudioPickResult? r = await repo.expandFolderToQueue(tempDir.path);
       expect(r, isNotNull);
       expect(r!.tracks.length, 3);
-      expect(r.tracks.map((t) => t.displayName).toList(),
-          <String>['a.flac', 'b.mp3', 'c.opus']);
+      expect(r.tracks.map((t) => t.displayName).toList(), <String>[
+        'a.flac',
+        'b.mp3',
+        'c.opus',
+      ]);
       expect(r.sourceUri.toFilePath(), p.normalize(tempDir.path) + p.separator);
     },
   );

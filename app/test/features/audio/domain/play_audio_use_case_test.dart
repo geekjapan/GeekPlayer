@@ -36,10 +36,7 @@ void main() {
     'returns Duration.zero when saved position is within end threshold',
     () async {
       final Uri uri = Uri.parse('file:///near-end.mp3');
-      await repo.saveResumePoint(
-        uri,
-        const Duration(minutes: 3, seconds: 57),
-      );
+      await repo.saveResumePoint(uri, const Duration(minutes: 3, seconds: 57));
       final Duration start = await useCase.resolveStart(
         uri,
         knownDuration: const Duration(minutes: 4),
@@ -61,14 +58,16 @@ void main() {
     },
   );
 
-  test('applyEndOfPlaybackRule guard: zero / negative duration returns saved',
-      () {
-    expect(
-      PlayAudioUseCase.applyEndOfPlaybackRule(
+  test(
+    'applyEndOfPlaybackRule guard: zero / negative duration returns saved',
+    () {
+      expect(
+        PlayAudioUseCase.applyEndOfPlaybackRule(
+          const Duration(seconds: 10),
+          Duration.zero,
+        ),
         const Duration(seconds: 10),
-        Duration.zero,
-      ),
-      const Duration(seconds: 10),
-    );
-  });
+      );
+    },
+  );
 }

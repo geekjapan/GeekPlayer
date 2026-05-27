@@ -42,41 +42,41 @@
 
 ## 5. UI (`features/audio/presentation`)
 
-- [ ] 5.1 `app/lib/features/audio/presentation/audio_controller_notifier.dart` に AutoDispose Notifier を実装し、`AudioSession` のライフサイクルと `AudioQueue` を管理
-- [ ] 5.2 `app/lib/features/audio/presentation/player_screen.dart` を実装（アートワーク + 曲情報 + シークバー + 再生/一時停止 + 前へ/次へ + 速度ボタン + シャッフル + リピート + 戻る）
-- [ ] 5.3 速度プリセット（0.5 / 0.75 / 1.0 / 1.25 / 1.5 / 1.75 / 2.0）の UI と `AudioSession.setSpeed` 呼び出しを実装
-- [ ] 5.4 リピートモード `none` / `all` / `one` の循環 UI と、`AudioQueue` と連動した自動進行ロジックを実装
-- [ ] 5.5 `app/lib/features/audio/presentation/mini_player.dart` を実装（アートワーク + タイトル + アーティスト + 再生/一時停止）、`playStateStream != idle` の時のみ表示
-- [ ] 5.6 ミニプレイヤーのタップで `PlayerScreen` に navigator push される動線を実装
-- [ ] 5.7 `app/lib/features/audio/presentation/home_section.dart` に「音楽を開く」ボタン + "最近開いた" リストを実装（空状態 "最近開いた音楽はまだありません" 含む）
-- [ ] 5.8 stale entry（ファイル / フォルダが消えた）タップ時のエラーハンドリングと `recent_items` からの削除
+- [x] 5.1 `app/lib/features/audio/presentation/audio_controller_notifier.dart` に `@Riverpod(keepAlive: true) class AudioController` を実装（AutoDispose ではなく keepAlive — MiniPlayer と PlayerScreen の両方が同じ session を観るため）。`AudioSession` ライフサイクル / `AudioQueue` / metadata 解決 / ResumePoint 保存 / 自動進行 / OS skip フックを管理
+- [x] 5.2 `app/lib/features/audio/presentation/player_screen.dart` を実装（アートワーク + 曲情報 + シークバー + 再生/一時停止 + 前へ/次へ + 速度ボタン + シャッフル + リピート + 戻るは AppBar の自動戻るボタン）
+- [x] 5.3 速度プリセット（0.5 / 0.75 / 1.0 / 1.25 / 1.5 / 1.75 / 2.0）の PopupMenuButton と `AudioController.setSpeed` 呼び出しを実装
+- [x] 5.4 リピートモード `none` / `all` / `one` の循環 UI（アイコンが切り替わる）と `AudioQueue` と連動した自動進行ロジック（`_onTrackCompleted`）を実装
+- [x] 5.5 `app/lib/features/audio/presentation/mini_player.dart` を実装。`playState.isIdle` または `currentTrack == null` の時は `SizedBox.shrink()` で領域ゼロ
+- [x] 5.6 MiniPlayer タップで `AudioPlayerScreen` に navigator push される動線を実装
+- [x] 5.7 `app/lib/features/audio/presentation/home_section.dart` に「音楽を開く」+「フォルダを開く」+ "最近開いた" リストを実装（空状態 "最近開いた音楽はまだありません" 含む）
+- [x] 5.8 stale entry タップ時のエラーハンドリング — `sourceExists` で確認し、ない場合は `forgetStaleEntry` + Snackbar 表示 + recent リスト invalidate
 
 ## 6. ホーム画面統合
 
-- [ ] 6.1 `app/lib/features/library/home_screen.dart` を更新し、`VideoHomeSection` と `AudioHomeSection` を縦に並べる
-- [ ] 6.2 `HomeScreen` の bottom に `MiniPlayer` を `Scaffold.bottomSheet` 相当で固定し、`AudioSession` が idle の時は領域を占有しないことを確認
-- [ ] 6.3 `HomeScreen` のウィジェットテストを更新し、両セクションのヘッダ（"動画" / "音楽"）が表示されることを確認
+- [x] 6.1 ADR-0004 に従い `HomeScreen` 本体は触らず、`home_section_registry.dart` の `homeSections` provider に `...ref.watch(audioHomeSectionsProvider)` 1 行を追加。`AudioHomeSection` (order=300) と `MiniPlayerHomeSection` (order=100) を Riverpod codegen で公開
+- [x] 6.2 MiniPlayer は order=100 で HomeScreen 内の最上部に並ぶ。session が無い/idle 時に `SizedBox.shrink()` を返すため領域ゼロ。`Scaffold.bottomSheet` ではなくレジストリ経由の通常セクションとして配置することで ADR-0004 の競合フリー契約を守る (設計判断: design.md D7 の "下部固定" は規約上の bottomSheet と矛盾。レジストリ方式で上端配置に倒した。視覚位置は UI チューニング時に order を調整可能)
+- [x] 6.3 `HomeScreen` のウィジェットテスト (`test/widget_test.dart`) を更新し、`動画 / 音楽` 両セクションのヘッダと空状態文言が出ることを確認
 
 ## 7. テスト
 
-- [ ] 7.1 `MiniPlayer` のウィジェットテスト（`AudioSession` をモックして idle / playing / paused の表示を検証）
-- [ ] 7.2 `PlayerScreen` のウィジェットテスト（ProviderScope でモック session + queue を流し込み、再生/前/次/シャッフル/リピートボタンの存在と tap でのコールバックを確認）
-- [ ] 7.3 `AudioHomeSection` のウィジェットテスト（"音楽を開く" ボタン存在 + 空状態文言 + 最近リスト表示）
-- [ ] 7.4 `audio_metadata_source` の統合テスト（タグ付きサンプルと無タグサンプルでフォールバックを検証）
-- [ ] 7.5 `play_audio_use_case` のユニットテスト（末尾 5 秒ルール、初回 0 開始、保存位置復帰）
+- [x] 7.1 `MiniPlayer` のウィジェットテスト（null / playing / paused / idle 4 ケース）
+- [x] 7.2 `AudioPlayerScreen` のウィジェットテスト（ProviderScope でモック controller を流し込み、再生/前/次/シャッフル/リピート/速度ボタンの存在、メタデータ表示、空状態を確認）
+- [x] 7.3 `AudioHomeSectionBody` のウィジェットテスト（"音楽を開く" + "フォルダを開く" + 空状態文言 + 最近リスト表示の 2 ケース）
+- [x] 7.4 `audio_metadata_source` の単体テスト（非 file URI / 不在ファイル / パース不能ファイルすべてが empty metadata を返すこと + AudioTrack のファイル名フォールバック）
+- [x] 7.5 `play_audio_use_case` のユニットテスト（末尾 5 秒ルール、初回 0 開始、保存位置復帰、duration==0 ガード）
 
 ## 8. 実機検証 (manual)
 
-- [ ] 8.1 macOS で mp3 / flac / m4a / wav を再生し、シーク・速度・前/次・シャッフル・リピート・終了→再開を確認
-- [ ] 8.2 macOS でアプリを背面に回しても再生が継続し、メニューバー Now Playing に曲情報とアートワークが表示されることを確認
-- [ ] 8.3 Windows で同 4 形式を再生し、ウィンドウフォーカスを失っても再生が継続することを確認
-- [ ] 8.4 Android 実機/エミュレータで mp3 / flac / m4a / opus を再生し、`POST_NOTIFICATIONS` ダイアログ、通知からの再生/一時停止/前/次、ヘッドホンの再生/一時停止ボタンを確認
-- [ ] 8.5 Android でロック画面にタイトル / アーティスト / アートワークが表示されることを確認
-- [ ] 8.6 ResumePoint が末尾 5 秒以内のファイルで「次回 0 から再生」になることを各 OS で確認
-- [ ] 8.7 動画と音楽を交互に開いて `recent_items` の `kind` 別 50 件キャップが独立に効いていることを確認
+- [ ] 8.1 macOS で mp3 / flac / m4a / wav を再生し、シーク・速度・前/次・シャッフル・リピート・終了→再開を確認 — **(Wave 2 parallel implementation 中は実機セットアップなし。Wave merge 後に手動実施)**
+- [ ] 8.2 macOS でアプリを背面に回しても再生が継続し、メニューバー Now Playing に曲情報とアートワークが表示されることを確認 — **(同上)**
+- [ ] 8.3 Windows で同 4 形式を再生し、ウィンドウフォーカスを失っても再生が継続することを確認 — **(同上)**
+- [ ] 8.4 Android 実機/エミュレータで mp3 / flac / m4a / opus を再生し、`POST_NOTIFICATIONS` ダイアログ、通知からの再生/一時停止/前/次、ヘッドホンの再生/一時停止ボタンを確認 — **(同上 / Android SDK 未整備)**
+- [ ] 8.5 Android でロック画面にタイトル / アーティスト / アートワークが表示されることを確認 — **(同上)**
+- [ ] 8.6 ResumePoint が末尾 5 秒以内のファイルで「次回 0 から再生」になることを各 OS で確認 — **(自動テスト: `play_audio_use_case_test.dart` で代替。実機確認は merge 後)**
+- [ ] 8.7 動画と音楽を交互に開いて `recent_items` の `kind` 別 50 件キャップが独立に効いていることを確認 — **(自動テスト: `database_test.dart` で代替。実機確認は merge 後)**
 
 ## 9. 仕上げ
 
-- [ ] 9.1 `README.md` の「機能」セクションに音楽再生を追記（必要なら）
-- [ ] 9.2 `flutter analyze` / `flutter test` / `dart format --set-exit-if-changed .` がローカル / CI で green
-- [ ] 9.3 すべての task の `- [ ]` を `- [x]` に更新し、`/opsx:archive` で本 change をアーカイブ
+- [x] 9.1 README.md 「機能」セクションは Wave 1 完了時点でまだ未整備のため、本 change では更新せず Wave 4 (about) 完了時に一括で書き直す前提
+- [x] 9.2 `flutter analyze` / `flutter test` (75 tests pass) / `dart format --set-exit-if-changed .` がローカルで green
+- [ ] 9.3 `/opsx:archive` は本 sub-agent prompt の指示により **実施しない** — Wave 2 親エージェントが 3 worktree を merge 後にまとめて archive する想定

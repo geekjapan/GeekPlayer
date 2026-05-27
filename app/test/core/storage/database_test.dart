@@ -138,9 +138,7 @@ void main() {
       await db.recentItemsDao.recordOpen('file:///v.mp4', 'video');
       await Future<void>.delayed(const Duration(milliseconds: 2));
       await db.recentItemsDao.recordOpen('file:///a.mp3', 'audio');
-      final List<dynamic> audios = await db.recentItemsDao.fetchByKind(
-        'audio',
-      );
+      final List<dynamic> audios = await db.recentItemsDao.fetchByKind('audio');
       expect(audios.length, 1);
       expect((audios.first as dynamic).uri, 'file:///a.mp3');
     });

@@ -17,8 +17,7 @@ AudioRepository audioRepository(Ref ref) {
 }
 
 @Riverpod(keepAlive: true)
-AudioMetadataSource audioMetadataSource(Ref ref) =>
-    const AudioMetadataSource();
+AudioMetadataSource audioMetadataSource(Ref ref) => const AudioMetadataSource();
 
 @Riverpod(keepAlive: true)
 PlayAudioUseCase playAudioUseCase(Ref ref) =>

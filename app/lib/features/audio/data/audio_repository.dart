@@ -58,9 +58,7 @@ class AudioRepository {
     final String path = picked.path;
     final Uri uri = Uri.file(path);
     return AudioPickResult(
-      tracks: <AudioTrack>[
-        AudioTrack(uri: uri, displayName: p.basename(path)),
-      ],
+      tracks: <AudioTrack>[AudioTrack(uri: uri, displayName: p.basename(path))],
       sourceUri: uri,
     );
   }
@@ -73,16 +71,17 @@ class AudioRepository {
     final Directory dir = Directory(folderPath);
     if (!await dir.exists()) return null;
     final List<FileSystemEntity> entries = await dir.list().toList();
-    final List<File> files = entries
-        .whereType<File>()
-        .where((File f) => _isSupported(f.path))
-        .toList()
-      ..sort(
-        (File a, File b) =>
-            p.basename(a.path).toLowerCase().compareTo(
-              p.basename(b.path).toLowerCase(),
-            ),
-      );
+    final List<File> files =
+        entries
+            .whereType<File>()
+            .where((File f) => _isSupported(f.path))
+            .toList()
+          ..sort(
+            (File a, File b) => p
+                .basename(a.path)
+                .toLowerCase()
+                .compareTo(p.basename(b.path).toLowerCase()),
+          );
     if (files.isEmpty) return null;
     final List<AudioTrack> tracks = files
         .map((File f) {
@@ -90,7 +89,10 @@ class AudioRepository {
           return AudioTrack(uri: u, displayName: p.basename(f.path));
         })
         .toList(growable: false);
-    return AudioPickResult(tracks: tracks, sourceUri: Uri.directory(folderPath));
+    return AudioPickResult(
+      tracks: tracks,
+      sourceUri: Uri.directory(folderPath),
+    );
   }
 
   static bool _isSupported(String filePath) {
@@ -124,15 +126,17 @@ class AudioRepository {
       'audio',
       limit: limit,
     );
-    return rows.map((RecentItemRow r) {
-      final Uri uri = Uri.parse(r.uri);
-      final String name = uri.scheme == 'file'
-          ? (uri.pathSegments.isEmpty
-                ? r.uri
-                : p.basename(uri.toFilePath()))
-          : r.uri;
-      return AudioTrack(uri: uri, displayName: name);
-    }).toList(growable: false);
+    return rows
+        .map((RecentItemRow r) {
+          final Uri uri = Uri.parse(r.uri);
+          final String name = uri.scheme == 'file'
+              ? (uri.pathSegments.isEmpty
+                    ? r.uri
+                    : p.basename(uri.toFilePath()))
+              : r.uri;
+          return AudioTrack(uri: uri, displayName: name);
+        })
+        .toList(growable: false);
   }
 
   /// Remove [uri] from `recent_items` and `playback_positions`. Used

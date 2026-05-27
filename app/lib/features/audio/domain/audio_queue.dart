@@ -23,17 +23,15 @@ class AudioQueue {
     this.shuffle = false,
     this.repeat = RepeatMode.none,
     List<int>? shuffledOrder,
-  })  : assert(
-          tracks.isEmpty || (currentIndex >= 0 && currentIndex < tracks.length),
-          'currentIndex out of range',
-        ),
-        shuffledOrder =
-            shuffledOrder ?? List<int>.generate(tracks.length, (int i) => i);
+  }) : assert(
+         tracks.isEmpty || (currentIndex >= 0 && currentIndex < tracks.length),
+         'currentIndex out of range',
+       ),
+       shuffledOrder =
+           shuffledOrder ?? List<int>.generate(tracks.length, (int i) => i);
 
   /// Empty queue used as the initial state.
-  static final AudioQueue empty = AudioQueue(
-    tracks: const <AudioTrack>[],
-  );
+  static final AudioQueue empty = AudioQueue(tracks: const <AudioTrack>[]);
 
   final List<AudioTrack> tracks;
   final int currentIndex;
@@ -49,8 +47,7 @@ class AudioQueue {
   bool get isEmpty => tracks.isEmpty;
   int get length => tracks.length;
 
-  AudioTrack? get current =>
-      tracks.isEmpty ? null : tracks[currentIndex];
+  AudioTrack? get current => tracks.isEmpty ? null : tracks[currentIndex];
 
   /// Logical (post-shuffle) position of [currentIndex] within
   /// [shuffledOrder]. Used by [skipNext] / [skipPrevious] to walk the

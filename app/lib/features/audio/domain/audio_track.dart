@@ -38,7 +38,11 @@ class AudioTrack {
   /// Album line. May be empty (renders as a blank line in the UI).
   String get effectiveAlbum => metadata?.album ?? '';
 
-  AudioTrack copyWith({Uri? uri, String? displayName, AudioMetadata? metadata}) {
+  AudioTrack copyWith({
+    Uri? uri,
+    String? displayName,
+    AudioMetadata? metadata,
+  }) {
     return AudioTrack(
       uri: uri ?? this.uri,
       displayName: displayName ?? this.displayName,
@@ -68,12 +72,7 @@ class AudioTrack {
 /// decoding it.
 @immutable
 class AudioMetadata {
-  const AudioMetadata({
-    this.title,
-    this.artist,
-    this.album,
-    this.artworkBytes,
-  });
+  const AudioMetadata({this.title, this.artist, this.album, this.artworkBytes});
 
   final String? title;
   final String? artist;
