@@ -51,8 +51,7 @@ void main() {
       };
       final Iterable<Package> withEmptyLicense = allDependencies.where(
         (Package p) =>
-            !bundledSkip.contains(p.name) &&
-            (p.license ?? '').trim().isEmpty,
+            !bundledSkip.contains(p.name) && (p.license ?? '').trim().isEmpty,
       );
       expect(
         withEmptyLicense.map((Package p) => p.name).toList(),

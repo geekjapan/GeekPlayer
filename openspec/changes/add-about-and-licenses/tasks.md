@@ -49,17 +49,17 @@
 - [x] 6.2 OS 別差し替え手順（macOS: `Contents/Frameworks/`、Windows: `mpv-2.dll`、Android: `lib/<abi>/libmpv.so` + APK 再署名）を箇条書きで表示
 - [x] 6.3 「詳細は THIRD_PARTY_NOTICES を参照」リンクを `https://github.com/geekjapan/GeekPlayer/blob/main/THIRD_PARTY_NOTICES.md` へ `url_launcher` で開く
 - [x] 6.4 「LGPL-2.1 全文」リンクから `assets/legal/LGPL-2.1.txt` を `rootBundle.loadString` で読み出して詳細画面に遷移
-- [ ] 6.5 `LgplNoticeSection` のウィジェットテストを `app/test/features/about/lgpl_notice_section_test.dart` に追加（URL / "LGPL-2.1+" / "動的リンク" / "差し替える権利" / OS 別パス文字列が描画されること）
+- [x] 6.5 `LgplNoticeSection` のウィジェットテストを `app/test/features/about/lgpl_notice_section_test.dart` に追加（URL / "LGPL-2.1+" / "動的リンク" / "差し替える権利" / OS 別パス文字列が描画されること）
 
 ## 7. ウィジェットテストと CI 整備
 
-- [ ] 7.1 `AboutScreen` のウィジェットテストを `app/test/features/about/about_screen_test.dart` に追加（モック `PackageInfo` で version/build/SHA 表示、`unknown` → `(dev build)` 挙動）
-- [ ] 7.2 `LicenseListScreen` のウィジェットテストを `app/test/features/about/license_screen_test.dart` に追加（最上部 LGPL セクション、Apache-2.0 NOTICE、依存リストの順序）
-- [ ] 7.3 CI ワークフローに `dart run flutter_oss_licenses:generate -o lib/oss_licenses.dart --source` を実行して `lib/oss_licenses.dart` に diff が出ないことを検証する step を追加
-- [ ] 7.4 CI に `assets/legal/LGPL-2.1.txt` の SHA-256 検証 step を追加（`checksums.txt` と突合）
+- [x] 7.1 `AboutScreen` のウィジェットテストを `app/test/features/about/about_screen_test.dart` に追加（モック `PackageInfo` で version/build/SHA 表示、`unknown` → `(dev build)` 挙動）
+- [x] 7.2 `LicenseListScreen` のウィジェットテストを `app/test/features/about/license_screen_test.dart` に追加（最上部 LGPL セクション、Apache-2.0 NOTICE、依存リストの順序）
+- [x] 7.3 CI ワークフローに `dart run flutter_oss_licenses:generate -o lib/oss_licenses.dart -i flutter` を実行して `lib/oss_licenses.dart` に diff が出ないことを検証する step を追加（`-i flutter` は Flutter SDK の `version` ファイル欠落への workaround）
+- [x] 7.4 CI に `assets/legal/LGPL-2.1.txt` の SHA-256 検証 step を追加（`checksums.txt` と突合）
 
 ## 8. ドキュメントと締め
 
-- [ ] 8.1 `THIRD_PARTY_NOTICES.md` を更新（必要なら）: アプリ内 LGPL 通知の存在に言及
-- [ ] 8.2 `flutter analyze` / `flutter test` / `dart format --set-exit-if-changed .` が CI でも green
-- [ ] 8.3 すべての task の `- [ ]` を `- [x]` に更新し、`/opsx:archive` で本 change をアーカイブ
+- [x] 8.1 `THIRD_PARTY_NOTICES.md` を更新（必要なら）: アプリ内 LGPL 通知の存在に言及
+- [x] 8.2 `flutter analyze` / `flutter test` / `dart format --set-exit-if-changed .` が CI でも green
+- [x] 8.3 すべての task の `- [ ]` を `- [x]` に更新（archive は agent prompt の指示により実施しない）

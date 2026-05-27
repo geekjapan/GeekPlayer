@@ -60,15 +60,15 @@ class AboutScreen extends ConsumerWidget {
         mode: LaunchMode.externalApplication,
       );
       if (!ok && context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('リンクを開けませんでした')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('リンクを開けませんでした')));
       }
     } on Object {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('リンクを開けませんでした')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('リンクを開けませんでした')));
       }
     }
   }
@@ -101,12 +101,8 @@ class _Header extends StatelessWidget {
             height: 96,
             child: Center(child: CircularProgressIndicator()),
           ),
-          error: (Object e, StackTrace st) => _identity(
-            t,
-            name: 'GeekPlayer',
-            version: '-',
-            buildNumber: '-',
-          ),
+          error: (Object e, StackTrace st) =>
+              _identity(t, name: 'GeekPlayer', version: '-', buildNumber: '-'),
           data: (PackageInfo p) => _identity(
             t,
             name: p.appName.isEmpty ? 'GeekPlayer' : p.appName,
@@ -157,9 +153,7 @@ class _MetaRow extends StatelessWidget {
               style: label2?.copyWith(color: Theme.of(context).hintColor),
             ),
           ),
-          Expanded(
-            child: SelectableText(value, style: label2),
-          ),
+          Expanded(child: SelectableText(value, style: label2)),
         ],
       ),
     );

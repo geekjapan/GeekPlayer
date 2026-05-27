@@ -69,7 +69,10 @@ class _ApacheNoticeCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text('Apache-2.0 NOTICE', style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              'Apache-2.0 NOTICE',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 8),
             const SelectableText('Copyright 2026 GeekPlayer Contributors'),
             const SizedBox(height: 4),

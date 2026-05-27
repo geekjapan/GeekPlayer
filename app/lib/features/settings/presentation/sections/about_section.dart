@@ -70,9 +70,7 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
           title: const Text('OSS Notices'),
           trailing: const Icon(Icons.chevron_right),
           onTap: () => Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (_) => const LicenseListScreen(),
-            ),
+            MaterialPageRoute<void>(builder: (_) => const LicenseListScreen()),
           ),
         ),
       ],

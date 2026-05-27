@@ -42,11 +42,7 @@ class LicenseDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: _Body(
-        assetPath: assetPath,
-        body: body,
-        subtitle: subtitle,
-      ),
+      body: _Body(assetPath: assetPath, body: body, subtitle: subtitle),
     );
   }
 }

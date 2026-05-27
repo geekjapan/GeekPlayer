@@ -39,3 +39,9 @@ iOS / iPadOS 対応（v0.2 計画）で App Store 配布を視野に入れる場
 依存ライブラリのバージョン別ライセンス情報は、ビルド時に `flutter pub deps
 --style=tree` で生成される依存ツリーと、各パッケージの `LICENSE` ファイルを
 合わせて参照してください。
+
+エンドユーザー向けには、アプリ内 **「アプリ情報」→「OSS ライセンス」** から
+すべての依存ライセンス本文と libmpv の LGPL-2.1+ 通知を確認できます
+(`add-about-and-licenses` change)。ライセンスデータは `app/lib/oss_licenses.dart`
+にビルド時生成 (`dart run flutter_oss_licenses:generate -o lib/oss_licenses.dart -i flutter`)
+され、CI で `pubspec.yaml` との整合性が検証されます。

@@ -29,9 +29,9 @@ class AboutAppBarAction implements HomeAppBarAction {
       icon: const Icon(Icons.info_outline),
       tooltip: 'アプリ情報',
       onPressed: () {
-        Navigator.of(context).push(
-          MaterialPageRoute<void>(builder: (_) => const AboutScreen()),
-        );
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute<void>(builder: (_) => const AboutScreen()));
       },
     );
   }

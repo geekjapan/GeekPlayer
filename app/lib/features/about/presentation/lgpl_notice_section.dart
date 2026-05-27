@@ -105,15 +105,15 @@ class LgplNoticeSection extends StatelessWidget {
         mode: LaunchMode.externalApplication,
       );
       if (!ok && context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('リンクを開けませんでした')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('リンクを開けませんでした')));
       }
     } on Object {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('リンクを開けませんでした')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('リンクを開けませんでした')));
       }
     }
   }
