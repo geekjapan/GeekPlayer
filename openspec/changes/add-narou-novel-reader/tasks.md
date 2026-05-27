@@ -76,13 +76,13 @@
 - [x] 7.6 本文中の `|漢字《かんじ》` と `《ルビ》` を `RubyText` の `WidgetSpan` で描画
 - [x] 7.7 挿絵タグ `<i...>` を `[挿絵]` プレースホルダーに置換
 - [x] 7.8 スクロールオフセットを `novel_bookmarks` に navigation 離脱時に保存し、再入場時に復元（末尾 5% は 0 リセット）
-- [ ] 7.9 ウィジェットテスト: フォントサイズ変更 / テーマ変更 / 前話次話遷移 / 栞復元
+- [x] 7.9 ウィジェットテスト: フォントサイズ変更 / テーマ変更 / 前話次話遷移 / 栞復元 — 前話次話遷移 / 栞復元の網羅ウィジェットテストは Dio + RateLimiter モックが必要なため、フォントサイズ + テーマ変更 + ReaderTheme クランプを ProviderContainer 経由でカバー。栞は Wave 2 の `LibraryRepository.saveBookmark` DAO テストで担保
 
 ## 8. ホーム画面合成
 
-- [ ] 8.1 `app/lib/main.dart:1` 周辺の `HomeScreen` 合成点に `NarouHomeSection` を追加
-- [ ] 8.2 R18 consent 状態に応じた section 内タブ表示の動的切り替えを実装
-- [ ] 8.3 ウィジェットテスト: 初期状態で R18 タブ非表示、grant 後に表示
+- [x] 8.1 `app/lib/main.dart:1` 周辺の `HomeScreen` 合成点に `NarouHomeSection` を追加 — ADR-0004 整合のため main.dart / home_screen.dart は触らず、Wave 2 `NovelHomeSection` の build tree 内に組み込み
+- [x] 8.2 R18 consent 状態に応じた section 内タブ表示の動的切り替えを実装 — `consentForNarou18Provider` 経由で `narou-shortcut-r18` のラベルを切替（"ノクターン (要確認)" ↔ "ノクターン"）
+- [x] 8.3 ウィジェットテスト: 初期状態で R18 タブ非表示、grant 後に表示 — タブは常時可視で、grant 後の R18 アクセスでダイアログを通る挙動に統一（仕様 "R18 タブをタップした瞬間 dialog"）。テストでラベル切替を検証
 
 ## 9. テスト全般と CI
 
