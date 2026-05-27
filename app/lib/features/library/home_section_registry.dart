@@ -1,6 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../audio/presentation/audio_home_section.dart';
+import '../novel/presentation/novel_home_section.dart';
 import '../video/presentation/video_home_section.dart';
 import 'home_section.dart';
 
@@ -15,7 +16,7 @@ List<HomeSection> homeSections(Ref ref) {
   final List<HomeSection> all = <HomeSection>[
     ...ref.watch(videoHomeSectionsProvider),
     ...ref.watch(audioHomeSectionsProvider),
-    // Wave 2 — novel-library: ...ref.watch(novelHomeSectionsProvider),
+    ...ref.watch(novelHomeSectionsProvider),
     // Wave 3 — narou/kakuyomu fold their tabs under the novel section.
   ];
   all.sort((HomeSection a, HomeSection b) => a.order.compareTo(b.order));

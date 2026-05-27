@@ -84,13 +84,13 @@ GRILL-REPORT Q-CROSS-011 に従い、Dart 3 の sealed-class 制約のため
 
 ## 9. ホーム画面と UI 統合
 
-- [ ] 9.1 `app/lib/features/novel/presentation/home_section.dart` に `NovelHomeSection`（Library カードグリッド、サイトバッジ、空状態 placeholder、disabled な「検索画面を開く」ボタン）を実装
-- [ ] 9.2 サイト別フィルタチップ（narou / noc / kakuyomu / すべて）と Riverpod state（`Provider<Site?>`）を実装
-- [ ] 9.3 同意なしサイトのグループ見出し「同意が無効化されています — 設定で再同意」を実装し、該当グループの Work カードは disabled 表示
-- [ ] 9.4 `app/lib/main.dart` の `HomeScreen` セクション配列に `NovelHomeSection` を追加（`add-local-video-playback` の `VideoHomeSection` の隣）
-- [ ] 9.5 設定画面（仮の画面ルート、本 change ではホームから遷移できる最小実装）に `NovelSettingsSection` を組み込む
+- [x] 9.1 `app/lib/features/novel/presentation/home_section.dart` に `NovelHomeSection`（Library カードグリッド、サイトバッジ、空状態 placeholder、disabled な「検索画面を開く」ボタン）を実装 (file: novel_home_section.dart)
+- [x] 9.2 サイト別フィルタチップ（narou / noc / kakuyomu / すべて）と Riverpod state（`Provider<Site?>`）を実装
+- [x] 9.3 同意なしサイトのグループ見出し「同意が無効化されています — 設定で再同意」を実装し、該当グループの Work カードは disabled 表示
+- [x] 9.4 ADR-0004 に従い `home_section_registry.dart` に `novelHomeSectionsProvider` を 1 行追加（HomeScreen 直編集禁止）
+- [x] 9.5 設定画面（仮の画面ルート、本 change ではホームから遷移できる最小実装）に `NovelSettingsSection` を組み込む
 - [ ] 9.6 `app/test/features/novel/home_section_test.dart` で空状態、Library エントリ表示、フィルタチップ、disabled 表示（granted=false 時）を widget test
-- [ ] 9.7 「Library に追加」を試す開発者向け debug menu を `app/lib/features/novel/presentation/debug_menu.dart` に追加（`FakeNovelRepository` のダミー Work を 1 つ Library に投入できる、後続サイト別 change まで UI 確認用）
+- [x] 9.7 「Library に追加」を試す開発者向け debug menu を `app/lib/features/novel/presentation/debug_menu.dart` に追加（`FakeNovelRepository` のダミー Work を 1 つ Library に投入できる、後続サイト別 change まで UI 確認用）
 
 ## 10. 締め
 
