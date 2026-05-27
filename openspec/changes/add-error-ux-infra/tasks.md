@@ -58,14 +58,14 @@
 
 ## 7. RetryStrategy と withRetry
 
-- [ ] 7.1 `app/lib/core/errors/retry_strategy.dart` に `sealed class RetryStrategy` と `_Indefinite` / `_Bounded` / `_None` を実装。`bounded(maxAttempts)` で `< 1` に `ArgumentError` を投げる
-- [ ] 7.2 同ファイルに `Future<T> withRetry<T>(Future<T> Function() task, RetryStrategy strategy, { Duration initialDelay, Duration maxDelay, double jitter, bool Function(Object error)? shouldRetry })` を実装
-- [ ] 7.3 デフォルト `shouldRetry` predicate を実装（`RateLimitError` / `UpstreamUnavailableError` / `NetworkUnreachableError` のみ true）
-- [ ] 7.4 指数バックオフ計算（`initialDelay * 2^(attempt - 1)` を `maxDelay` で clamp、`±jitter` を `Random` で適用）を実装。`RateLimitError.retryAfter` が non-null の時は `retryAfter` を verbatim 使い jitter を適用しない
-- [ ] 7.5 `app/test/core/errors/retry_strategy_test.dart` を `FakeAsync` を使って実装し、(a) `bounded(N)` で N 回試行 (b) `none` で 1 回 (c) `indefinite` が 12 回失敗を耐える (d) デフォルト predicate が `RobotsDisallowedError` / `SiteConsentRequiredError` / `HtmlParseError` / `FileNotFoundError` / `UnsupportedFormatError` / `StorageQuotaError` / `UnknownError` / `FormatException` を retry しないこと、を検証
-- [ ] 7.6 `withRetry` の jitter=0 で 1s / 2s / 4s の正確な wait をテスト
-- [ ] 7.7 `RateLimitError.retryAfter=30s` で次 wait が 30s ジャストになることをテスト
-- [ ] 7.8 `maxDelay=5min` clamp が 2^9=512s を 300s に丸めることをテスト
+- [x] 7.1 `app/lib/core/errors/retry_strategy.dart` に `sealed class RetryStrategy` と `_Indefinite` / `_Bounded` / `_None` を実装。`bounded(maxAttempts)` で `< 1` に `ArgumentError` を投げる（`bounded` は引数検証のため non-const factory、`indefinite`/`none` は const factory）
+- [x] 7.2 同ファイルに `Future<T> withRetry<T>(Future<T> Function() task, RetryStrategy strategy, { Duration initialDelay, Duration maxDelay, double jitter, bool Function(Object error)? shouldRetry, Future<void> Function(Duration)? sleep, math.Random? random })` を実装。`sleep` と `random` をテスト用に injection 可能に
+- [x] 7.3 デフォルト `shouldRetry` predicate を実装（`RateLimitError` / `UpstreamUnavailableError` / `NetworkUnreachableError` のみ true）
+- [x] 7.4 指数バックオフ計算（`initialDelay * 2^(attempt - 1)` を `maxDelay` で clamp、`±jitter` を `Random` で適用）を実装。`RateLimitError.retryAfter` が non-null の時は `retryAfter` を verbatim 使い jitter を適用しない
+- [x] 7.5 `app/test/core/errors/retry_strategy_test.dart` を `FakeAsync` を使って実装し、(a) `bounded(N)` で N 回試行 (b) `none` で 1 回 (c) `indefinite` が 12 回失敗を耐える (d) デフォルト predicate が `RobotsDisallowedError` / `SiteConsentRequiredError` / `HtmlParseError` / `FileNotFoundError` / `UnsupportedFormatError` / `StorageQuotaError` / `UnknownError` / `FormatException` を retry しないこと、を検証
+- [x] 7.6 `withRetry` の jitter=0 で 1s / 2s / 4s の正確な wait をテスト
+- [x] 7.7 `RateLimitError.retryAfter=30s` で次 wait が 30s ジャストになることをテスト
+- [x] 7.8 `maxDelay=5min` clamp が 2^9=512s を 300s に丸めることをテスト
 
 ## 8. ドキュメントと締め
 
