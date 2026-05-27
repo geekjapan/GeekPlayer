@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../about/presentation/about_app_bar_action.dart';
 import '../audio/presentation/audio_home_section.dart';
 import '../novel/presentation/novel_home_section.dart';
 import '../novel_kakuyomu/presentation/kakuyomu_home_sections.dart';
@@ -40,7 +41,7 @@ List<HomeSection> homeSections(Ref ref) {
 List<HomeAppBarAction> homeAppBarActions(Ref ref) {
   final List<HomeAppBarAction> all = <HomeAppBarAction>[
     ...ref.watch(settingsAppBarActionsProvider),
-    // Wave 4 — about-and-licenses: ...ref.watch(aboutAppBarActionsProvider),
+    ...ref.watch(aboutAppBarActionsProvider),
   ];
   all.sort(
     (HomeAppBarAction a, HomeAppBarAction b) => a.order.compareTo(b.order),

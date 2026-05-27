@@ -27,6 +27,27 @@ jobs:
       - name: Generate code (drift / riverpod)
         run: dart run build_runner build --delete-conflicting-outputs
 
+      # add-about-and-licenses task 7.3 — regenerating
+      # `lib/oss_licenses.dart` must be a no-op against the committed
+      # file. Catches the "forgot to re-run flutter_oss_licenses:generate
+      # after adding a dep" failure mode at PR time.
+      - name: Verify OSS license data is up to date
+        run: |
+          dart run flutter_oss_licenses:generate -o lib/oss_licenses.dart -i flutter
+          git diff --exit-code -- lib/oss_licenses.dart || {
+            echo '::error::lib/oss_licenses.dart is out of sync with pubspec.yaml.' \
+                 'Re-run `dart run flutter_oss_licenses:generate -o lib/oss_licenses.dart -i flutter` and commit.'
+            exit 1
+          }
+
+      # add-about-and-licenses task 7.4 — LGPL-2.1 asset must be byte-
+      # identical to the FSF text. Compare SHA-256 against the value
+      # committed in assets/legal/checksums.txt.
+      - name: Verify LGPL-2.1 asset integrity
+        run: |
+          cd assets/legal
+          sha256sum -c checksums.txt
+
       - name: Verify formatting
         run: dart format --output=none --set-exit-if-changed .
 
