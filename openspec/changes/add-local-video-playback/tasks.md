@@ -56,9 +56,9 @@
 
 ## 6. ウィジェットテスト
 
-- [ ] 6.1 `HomeScreen` のウィジェットテスト（"動画を開く" ボタン存在 + 空状態文言）
-- [ ] 6.2 `PlayerScreen` のウィジェットテスト（ProviderScope で `MediaSession` をモックして描画のみ確認）
-- [ ] 6.3 `RecentItems` リストのテスト（タップで `play_video_use_case` が呼ばれる）
+- [x] 6.1 `HomeScreen` のウィジェットテスト（"動画を開く" ボタン存在 + 空状態文言）
+- [x] 6.2 `PlayerScreen` のウィジェットテスト（ProviderScope で `MediaSession` をモックして描画のみ確認）
+- [x] 6.3 `RecentItems` リストのテスト（タップで `play_video_use_case` が呼ばれる）
 
 ## 7. 実機検証 (manual)
 
@@ -69,6 +69,6 @@
 
 ## 8. ドキュメントと締め
 
-- [ ] 8.1 `README.md` の「機能」セクションを実装済みに合わせて更新（必要なら）
-- [ ] 8.2 `flutter analyze` / `flutter test` / `dart format --set-exit-if-changed .` が CI でも green
+- [x] 8.1 `README.md` の「機能」セクションを実装済みに合わせて更新（必要なら）
+- [x] 8.2 `flutter analyze` / `flutter test` / `dart format --set-exit-if-changed .` が CI でも green
 - [ ] 8.3 すべての task の `- [ ]` を `- [x]` に更新し、`/opsx:archive` で本 change をアーカイブ

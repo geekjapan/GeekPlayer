@@ -86,14 +86,14 @@ class MediaSpeed {
   static final MediaSpeed x2 = MediaSpeed(2.0);
 
   static List<MediaSpeed> get presets => <MediaSpeed>[
-        x0_5,
-        x0_75,
-        normal,
-        x1_25,
-        x1_5,
-        x1_75,
-        x2,
-      ];
+    x0_5,
+    x0_75,
+    normal,
+    x1_25,
+    x1_5,
+    x1_75,
+    x2,
+  ];
 
   @override
   bool operator ==(Object other) {

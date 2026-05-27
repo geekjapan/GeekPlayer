@@ -5,46 +5,51 @@ import 'package:geekplayer/core/storage/database.dart';
 
 void main() {
   group('AppDatabase migration', () {
-    test('onCreate creates playback_positions and recent_items tables',
-        () async {
-      final AppDatabase db = AppDatabase.forTesting(
-        DatabaseConnection(NativeDatabase.memory()),
-      );
-      addTearDown(db.close);
-      // Touching DAOs forces table access; would throw if migration missed.
-      await db.playbackPositionsDao.getByUri('file:///nonexistent');
-      final List<dynamic> recents = await db.recentItemsDao.list();
-      expect(recents, isEmpty);
-      expect(db.schemaVersion, 1);
-    });
+    test(
+      'onCreate creates playback_positions and recent_items tables',
+      () async {
+        final AppDatabase db = AppDatabase.forTesting(
+          DatabaseConnection(NativeDatabase.memory()),
+        );
+        addTearDown(db.close);
+        // Touching DAOs forces table access; would throw if migration missed.
+        await db.playbackPositionsDao.getByUri('file:///nonexistent');
+        final List<dynamic> recents = await db.recentItemsDao.list();
+        expect(recents, isEmpty);
+        expect(db.schemaVersion, 1);
+      },
+    );
   });
 
   group('PlaybackPositionsDao', () {
     late AppDatabase db;
 
     setUp(() {
-      db = AppDatabase.forTesting(
-        DatabaseConnection(NativeDatabase.memory()),
-      );
+      db = AppDatabase.forTesting(DatabaseConnection(NativeDatabase.memory()));
     });
 
     tearDown(() => db.close());
 
     test('returns null when no row exists', () async {
-      final Duration? p =
-          await db.playbackPositionsDao.getByUri('file:///x.mp4');
+      final Duration? p = await db.playbackPositionsDao.getByUri(
+        'file:///x.mp4',
+      );
       expect(p, isNull);
     });
 
     test('upsert inserts then updates on conflict', () async {
-      await db.playbackPositionsDao
-          .upsert('file:///a.mp4', const Duration(seconds: 30));
+      await db.playbackPositionsDao.upsert(
+        'file:///a.mp4',
+        const Duration(seconds: 30),
+      );
       expect(
         await db.playbackPositionsDao.getByUri('file:///a.mp4'),
         const Duration(seconds: 30),
       );
-      await db.playbackPositionsDao
-          .upsert('file:///a.mp4', const Duration(seconds: 75));
+      await db.playbackPositionsDao.upsert(
+        'file:///a.mp4',
+        const Duration(seconds: 75),
+      );
       expect(
         await db.playbackPositionsDao.getByUri('file:///a.mp4'),
         const Duration(seconds: 75),
@@ -52,14 +57,13 @@ void main() {
     });
 
     test('deleteByUri removes the row', () async {
-      await db.playbackPositionsDao
-          .upsert('file:///b.mp4', const Duration(seconds: 10));
+      await db.playbackPositionsDao.upsert(
+        'file:///b.mp4',
+        const Duration(seconds: 10),
+      );
       final int n = await db.playbackPositionsDao.deleteByUri('file:///b.mp4');
       expect(n, 1);
-      expect(
-        await db.playbackPositionsDao.getByUri('file:///b.mp4'),
-        isNull,
-      );
+      expect(await db.playbackPositionsDao.getByUri('file:///b.mp4'), isNull);
     });
   });
 
@@ -67,9 +71,7 @@ void main() {
     late AppDatabase db;
 
     setUp(() {
-      db = AppDatabase.forTesting(
-        DatabaseConnection(NativeDatabase.memory()),
-      );
+      db = AppDatabase.forTesting(DatabaseConnection(NativeDatabase.memory()));
     });
 
     tearDown(() => db.close());
@@ -106,22 +108,28 @@ void main() {
       final List<dynamic> rows = await db.recentItemsDao.list(limit: 100);
       expect(rows.length, 50);
       // The 5 oldest (f0..f4) should have been pruned.
-      final List<String> uris =
-          rows.map((dynamic r) => (r as dynamic).uri as String).toList();
+      final List<String> uris = rows
+          .map((dynamic r) => (r as dynamic).uri as String)
+          .toList();
       for (int i = 0; i < 5; i++) {
-        expect(uris.contains('file:///f$i.mp4'), isFalse,
-            reason: 'file:///f$i.mp4 should have been pruned');
+        expect(
+          uris.contains('file:///f$i.mp4'),
+          isFalse,
+          reason: 'file:///f$i.mp4 should have been pruned',
+        );
       }
       for (int i = 5; i < 55; i++) {
-        expect(uris.contains('file:///f$i.mp4'), isTrue,
-            reason: 'file:///f$i.mp4 should still be present');
+        expect(
+          uris.contains('file:///f$i.mp4'),
+          isTrue,
+          reason: 'file:///f$i.mp4 should still be present',
+        );
       }
     });
 
     test('deleteByUri removes the row', () async {
       await db.recentItemsDao.recordOpen('file:///gone.mp4', 'video');
-      final int n =
-          await db.recentItemsDao.deleteByUri('file:///gone.mp4');
+      final int n = await db.recentItemsDao.deleteByUri('file:///gone.mp4');
       expect(n, 1);
       expect(await db.recentItemsDao.list(), isEmpty);
     });

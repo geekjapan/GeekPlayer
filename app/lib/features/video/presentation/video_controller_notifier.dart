@@ -30,8 +30,9 @@ class VideoControllerNotifier extends _$VideoControllerNotifier {
   @override
   Future<VideoControllerState> build(VideoFile file) async {
     final session = VideoSession();
-    final start =
-        await ref.read(playVideoUseCaseProvider).resolveStart(file.uri);
+    final start = await ref
+        .read(playVideoUseCaseProvider)
+        .resolveStart(file.uri);
     await ref.read(videoRepositoryProvider).recordRecentOpen(file.uri);
     // Invalidate the recent list so the home screen reflects the new entry.
     ref.invalidate(recentVideosProvider);

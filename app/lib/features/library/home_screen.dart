@@ -14,8 +14,7 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final List<HomeSection> sections = ref.watch(homeSectionsProvider);
-    final List<HomeAppBarAction> actions =
-        ref.watch(homeAppBarActionsProvider);
+    final List<HomeAppBarAction> actions = ref.watch(homeAppBarActionsProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text('GeekPlayer'),

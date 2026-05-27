@@ -13,9 +13,7 @@ final class VideoSession extends MediaSession {
   /// Production constructor. Creates a fresh `media_kit` `Player` and
   /// initialises a `VideoController` ready to be attached to a `Video`
   /// widget. Call [open] to load a file.
-  VideoSession()
-      : _player = Player(),
-        _ownsController = true {
+  VideoSession() : _player = Player(), _ownsController = true {
     _videoController = VideoController(_player!);
     _attachStreams();
   }
@@ -24,8 +22,8 @@ final class VideoSession extends MediaSession {
   /// `VideoController` construction (it requires a real platform handle).
   @visibleForTesting
   VideoSession.forTest(Player player)
-      : _player = player,
-        _ownsController = false {
+    : _player = player,
+      _ownsController = false {
     _attachStreams();
   }
 
@@ -41,45 +39,53 @@ final class VideoSession extends MediaSession {
     required Stream<Duration> duration,
     required Stream<bool> playing,
     required Stream<bool> completed,
-  })  : _player = null,
-        _ownsController = false {
-    _subscriptions.add(position.listen((Duration p) {
-      _lastPosition = p;
-      _positionController.add(MediaPosition(
-        position: p,
-        bufferEnd: _lastBuffer,
-      ));
-    }));
-    _subscriptions.add(buffer.listen((Duration b) {
-      _lastBuffer = b;
-      _positionController.add(MediaPosition(
-        position: _lastPosition,
-        bufferEnd: b,
-      ));
-    }));
-    _subscriptions.add(duration.listen((Duration d) {
-      _durationController.add(d == Duration.zero ? null : d);
-    }));
-    _subscriptions.add(playing.listen((bool p) {
-      _lastPlaying = p;
-      if (_lastCompleted) {
-        _playStateController.add(const MediaPlayState.ended());
-      } else if (p) {
-        _playStateController.add(const MediaPlayState.playing());
-      } else {
-        _playStateController.add(const MediaPlayState.paused());
-      }
-    }));
-    _subscriptions.add(completed.listen((bool c) {
-      _lastCompleted = c;
-      if (c) {
-        _playStateController.add(const MediaPlayState.ended());
-      } else if (_lastPlaying) {
-        _playStateController.add(const MediaPlayState.playing());
-      } else {
-        _playStateController.add(const MediaPlayState.paused());
-      }
-    }));
+  }) : _player = null,
+       _ownsController = false {
+    _subscriptions.add(
+      position.listen((Duration p) {
+        _lastPosition = p;
+        _positionController.add(
+          MediaPosition(position: p, bufferEnd: _lastBuffer),
+        );
+      }),
+    );
+    _subscriptions.add(
+      buffer.listen((Duration b) {
+        _lastBuffer = b;
+        _positionController.add(
+          MediaPosition(position: _lastPosition, bufferEnd: b),
+        );
+      }),
+    );
+    _subscriptions.add(
+      duration.listen((Duration d) {
+        _durationController.add(d == Duration.zero ? null : d);
+      }),
+    );
+    _subscriptions.add(
+      playing.listen((bool p) {
+        _lastPlaying = p;
+        if (_lastCompleted) {
+          _playStateController.add(const MediaPlayState.ended());
+        } else if (p) {
+          _playStateController.add(const MediaPlayState.playing());
+        } else {
+          _playStateController.add(const MediaPlayState.paused());
+        }
+      }),
+    );
+    _subscriptions.add(
+      completed.listen((bool c) {
+        _lastCompleted = c;
+        if (c) {
+          _playStateController.add(const MediaPlayState.ended());
+        } else if (_lastPlaying) {
+          _playStateController.add(const MediaPlayState.playing());
+        } else {
+          _playStateController.add(const MediaPlayState.paused());
+        }
+      }),
+    );
   }
 
   final Player? _player;
@@ -154,8 +160,9 @@ final class VideoSession extends MediaSession {
   @override
   Future<void> seek(Duration position) async {
     _ensureNotDisposed();
-    final Duration clamped =
-        position < Duration.zero ? Duration.zero : position;
+    final Duration clamped = position < Duration.zero
+        ? Duration.zero
+        : position;
     await _player?.seek(clamped);
   }
 
@@ -176,8 +183,10 @@ final class VideoSession extends MediaSession {
     final SubtitleTrack current = p.state.track.subtitle;
     // Embedded subtitles only — skip `auto`, `no`, and any URI/data tracks.
     final List<SubtitleTrack> embedded = tracks.subtitle
-        .where((SubtitleTrack t) =>
-            t.id != 'auto' && t.id != 'no' && !t.uri && !t.data)
+        .where(
+          (SubtitleTrack t) =>
+              t.id != 'auto' && t.id != 'no' && !t.uri && !t.data,
+        )
         .toList(growable: false);
     if (embedded.isEmpty) return false;
     if (current.id == 'no') {
@@ -219,45 +228,58 @@ final class VideoSession extends MediaSession {
     final Player? p = _player;
     if (p == null) return;
     final PlayerStream s = p.stream;
-    _subscriptions.add(s.position.listen((Duration p) {
-      _lastPosition = p;
-      _positionController.add(MediaPosition(
-        position: p,
-        bufferStart: Duration.zero,
-        bufferEnd: _lastBuffer,
-      ));
-    }));
-    _subscriptions.add(s.buffer.listen((Duration b) {
-      _lastBuffer = b;
-      _positionController.add(MediaPosition(
-        position: _lastPosition,
-        bufferStart: Duration.zero,
-        bufferEnd: b,
-      ));
-    }));
-    _subscriptions.add(s.duration.listen((Duration d) {
-      _durationController.add(d == Duration.zero ? null : d);
-    }));
-    _subscriptions.add(s.playing.listen((bool playing) {
-      _lastPlaying = playing;
-      if (_lastCompleted) {
-        _playStateController.add(const MediaPlayState.ended());
-      } else if (playing) {
-        _playStateController.add(const MediaPlayState.playing());
-      } else {
-        _playStateController.add(const MediaPlayState.paused());
-      }
-    }));
-    _subscriptions.add(s.completed.listen((bool completed) {
-      _lastCompleted = completed;
-      if (completed) {
-        _playStateController.add(const MediaPlayState.ended());
-      } else if (_lastPlaying) {
-        _playStateController.add(const MediaPlayState.playing());
-      } else {
-        _playStateController.add(const MediaPlayState.paused());
-      }
-    }));
+    _subscriptions.add(
+      s.position.listen((Duration p) {
+        _lastPosition = p;
+        _positionController.add(
+          MediaPosition(
+            position: p,
+            bufferStart: Duration.zero,
+            bufferEnd: _lastBuffer,
+          ),
+        );
+      }),
+    );
+    _subscriptions.add(
+      s.buffer.listen((Duration b) {
+        _lastBuffer = b;
+        _positionController.add(
+          MediaPosition(
+            position: _lastPosition,
+            bufferStart: Duration.zero,
+            bufferEnd: b,
+          ),
+        );
+      }),
+    );
+    _subscriptions.add(
+      s.duration.listen((Duration d) {
+        _durationController.add(d == Duration.zero ? null : d);
+      }),
+    );
+    _subscriptions.add(
+      s.playing.listen((bool playing) {
+        _lastPlaying = playing;
+        if (_lastCompleted) {
+          _playStateController.add(const MediaPlayState.ended());
+        } else if (playing) {
+          _playStateController.add(const MediaPlayState.playing());
+        } else {
+          _playStateController.add(const MediaPlayState.paused());
+        }
+      }),
+    );
+    _subscriptions.add(
+      s.completed.listen((bool completed) {
+        _lastCompleted = completed;
+        if (completed) {
+          _playStateController.add(const MediaPlayState.ended());
+        } else if (_lastPlaying) {
+          _playStateController.add(const MediaPlayState.playing());
+        } else {
+          _playStateController.add(const MediaPlayState.paused());
+        }
+      }),
+    );
   }
 }
-

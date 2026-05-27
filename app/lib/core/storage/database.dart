@@ -31,12 +31,12 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        onCreate: (Migrator m) async {
-          await m.createAll();
-        },
-        // No onUpgrade yet — first shipped schema. Future versions append
-        // their own `if (from < N) await m.createTable(...);` branches.
-      );
+    onCreate: (Migrator m) async {
+      await m.createAll();
+    },
+    // No onUpgrade yet — first shipped schema. Future versions append
+    // their own `if (from < N) await m.createTable(...);` branches.
+  );
 }
 
 QueryExecutor _openConnection() {
@@ -64,18 +64,19 @@ class PlaybackPositionsDao extends DatabaseAccessor<AppDatabase>
 
   /// Return the saved [Duration] for [uri], or `null` if none exists.
   Future<Duration?> getByUri(String uri) async {
-    final PlaybackPositionRow? row = await (select(playbackPositions)
-          ..where(($PlaybackPositionsTable t) => t.uri.equals(uri)))
-        .getSingleOrNull();
+    final PlaybackPositionRow? row =
+        await (select(playbackPositions)
+              ..where(($PlaybackPositionsTable t) => t.uri.equals(uri)))
+            .getSingleOrNull();
     if (row == null) return null;
     return Duration(milliseconds: row.positionMs);
   }
 
   /// Delete a row by URI (used when a stale file is detected).
   Future<int> deleteByUri(String uri) {
-    return (delete(playbackPositions)
-          ..where(($PlaybackPositionsTable t) => t.uri.equals(uri)))
-        .go();
+    return (delete(
+      playbackPositions,
+    )..where(($PlaybackPositionsTable t) => t.uri.equals(uri))).go();
   }
 }
 
@@ -111,36 +112,39 @@ class RecentItemsDao extends DatabaseAccessor<AppDatabase>
 
   /// Delete a row by URI (used when a stale file is detected on open).
   Future<int> deleteByUri(String uri) {
-    return (delete(recentItems)
-          ..where(($RecentItemsTable t) => t.uri.equals(uri)))
-        .go();
+    return (delete(
+      recentItems,
+    )..where(($RecentItemsTable t) => t.uri.equals(uri))).go();
   }
 
   /// Keep only the [kRecentItemsCap] most recent entries; delete the
   /// rest. Returns the number of deleted rows.
   Future<int> pruneToCap() async {
-    final int count = await (selectOnly(recentItems)
+    final int count =
+        await (selectOnly(recentItems)
               ..addColumns(<Expression<Object>>[recentItems.uri.count()]))
             .map(
-              (TypedResult row) =>
-                  row.read<int>(recentItems.uri.count()) ?? 0,
+              (TypedResult row) => row.read<int>(recentItems.uri.count()) ?? 0,
             )
             .getSingle();
     if (count <= kRecentItemsCap) return 0;
     final int toDelete = count - kRecentItemsCap;
     // Find the URIs of the oldest entries beyond the cap.
-    final List<RecentItemRow> oldest = await (select(recentItems)
-          ..orderBy(<OrderClauseGenerator<$RecentItemsTable>>[
-            ($RecentItemsTable t) =>
-                OrderingTerm(expression: t.openedAt, mode: OrderingMode.asc),
-          ])
-          ..limit(toDelete))
-        .get();
+    final List<RecentItemRow> oldest =
+        await (select(recentItems)
+              ..orderBy(<OrderClauseGenerator<$RecentItemsTable>>[
+                ($RecentItemsTable t) => OrderingTerm(
+                  expression: t.openedAt,
+                  mode: OrderingMode.asc,
+                ),
+              ])
+              ..limit(toDelete))
+            .get();
     int removed = 0;
     for (final RecentItemRow row in oldest) {
-      removed += await (delete(recentItems)
-            ..where(($RecentItemsTable t) => t.uri.equals(row.uri)))
-          .go();
+      removed += await (delete(
+        recentItems,
+      )..where(($RecentItemsTable t) => t.uri.equals(row.uri))).go();
     }
     return removed;
   }

@@ -54,14 +54,14 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final AsyncValue<VideoControllerState> async =
-        ref.watch(videoControllerProvider(widget.file));
+    final AsyncValue<VideoControllerState> async = ref.watch(
+      videoControllerProvider(widget.file),
+    );
     return Scaffold(
       backgroundColor: Colors.black,
       body: async.when(
-        loading: () => const Center(
-          child: CircularProgressIndicator(color: Colors.white),
-        ),
+        loading: () =>
+            const Center(child: CircularProgressIndicator(color: Colors.white)),
         error: (Object e, StackTrace st) => _ErrorView(error: e),
         data: (VideoControllerState s) => _PlayerBody(
           state: s,
@@ -156,7 +156,8 @@ class _OverlayControlsState extends ConsumerState<_OverlayControls> {
           widget.state.initialStart,
           d,
         );
-        if (adjusted == Duration.zero && widget.state.initialStart > Duration.zero) {
+        if (adjusted == Duration.zero &&
+            widget.state.initialStart > Duration.zero) {
           await s.seek(Duration.zero);
         }
       }
@@ -192,27 +193,31 @@ class _OverlayControlsState extends ConsumerState<_OverlayControls> {
               subtitleOn: _subtitleOn,
               onPlayPause: () async {
                 widget.onUserInteraction();
-                final VideoControllerNotifier n = ref
-                    .read(videoControllerProvider(widget.state.file).notifier);
+                final VideoControllerNotifier n = ref.read(
+                  videoControllerProvider(widget.state.file).notifier,
+                );
                 await n.togglePlayPause(_lastPlayState);
               },
               onSeek: (Duration target) async {
                 widget.onUserInteraction();
-                final VideoControllerNotifier n = ref
-                    .read(videoControllerProvider(widget.state.file).notifier);
+                final VideoControllerNotifier n = ref.read(
+                  videoControllerProvider(widget.state.file).notifier,
+                );
                 await n.seek(target);
               },
               onSpeed: (MediaSpeed speed) async {
                 widget.onUserInteraction();
-                final VideoControllerNotifier n = ref
-                    .read(videoControllerProvider(widget.state.file).notifier);
+                final VideoControllerNotifier n = ref.read(
+                  videoControllerProvider(widget.state.file).notifier,
+                );
                 await n.setSpeed(speed);
                 if (mounted) setState(() {});
               },
               onSubtitleToggle: () async {
                 widget.onUserInteraction();
-                final VideoControllerNotifier n = ref
-                    .read(videoControllerProvider(widget.state.file).notifier);
+                final VideoControllerNotifier n = ref.read(
+                  videoControllerProvider(widget.state.file).notifier,
+                );
                 final bool now = await n.toggleSubtitle();
                 if (mounted) setState(() => _subtitleOn = now);
               },
@@ -297,8 +302,7 @@ class _BottomBar extends StatelessWidget {
                   max: max > 0 ? max : 1,
                   value: value,
                   onChanged: max > 0
-                      ? (double v) =>
-                          onSeek(Duration(milliseconds: v.toInt()))
+                      ? (double v) => onSeek(Duration(milliseconds: v.toInt()))
                       : null,
                 ),
               ),
@@ -359,10 +363,8 @@ class _SpeedButton extends StatelessWidget {
       onSelected: onChanged,
       itemBuilder: (BuildContext context) => MediaSpeed.presets
           .map(
-            (MediaSpeed s) => PopupMenuItem<MediaSpeed>(
-              value: s,
-              child: Text('${s.value}x'),
-            ),
+            (MediaSpeed s) =>
+                PopupMenuItem<MediaSpeed>(value: s, child: Text('${s.value}x')),
           )
           .toList(growable: false),
       child: Padding(
@@ -388,8 +390,7 @@ class _ErrorView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            const Icon(Icons.error_outline,
-                color: Colors.white70, size: 56),
+            const Icon(Icons.error_outline, color: Colors.white70, size: 56),
             const SizedBox(height: 16),
             const Text(
               'このファイルは再生できません',

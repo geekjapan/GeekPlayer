@@ -59,8 +59,9 @@ void main() {
       const MediaPosition original = MediaPosition(
         position: Duration(seconds: 10),
       );
-      final MediaPosition updated =
-          original.copyWith(position: const Duration(seconds: 20));
+      final MediaPosition updated = original.copyWith(
+        position: const Duration(seconds: 20),
+      );
       expect(updated.position, const Duration(seconds: 20));
       expect(updated.bufferEnd, original.bufferEnd);
     });

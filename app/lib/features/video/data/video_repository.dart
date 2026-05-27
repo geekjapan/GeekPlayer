@@ -64,16 +64,20 @@ class VideoRepository {
 
   /// Reverse-chronological recent items, mapped back to [VideoFile]s for
   /// display. Filters to `kind == 'video'`.
-  Future<List<VideoFile>> fetchRecentItems({int limit = kRecentItemsCap}) async {
+  Future<List<VideoFile>> fetchRecentItems({
+    int limit = kRecentItemsCap,
+  }) async {
     final List<RecentItemRow> rows = await recentItemsDao.list(limit: limit);
     return rows
         .where((RecentItemRow r) => r.kind == 'video')
         .map((RecentItemRow r) {
-      final Uri uri = Uri.parse(r.uri);
-      final String name =
-          uri.scheme == 'file' ? p.basename(uri.toFilePath()) : r.uri;
-      return VideoFile(uri: uri, displayName: name);
-    }).toList(growable: false);
+          final Uri uri = Uri.parse(r.uri);
+          final String name = uri.scheme == 'file'
+              ? p.basename(uri.toFilePath())
+              : r.uri;
+          return VideoFile(uri: uri, displayName: name);
+        })
+        .toList(growable: false);
   }
 
   /// Remove [uri] from both the recent-items list and the playback
@@ -120,8 +124,10 @@ class _DefaultFilePicker extends FilePickerDelegate {
     final String? path = file.path;
     if (path == null) {
       if (kDebugMode) {
-        debugPrint('VideoRepository: file_picker returned null path; '
-            'this is unexpected on desktop/Android in v0.1.');
+        debugPrint(
+          'VideoRepository: file_picker returned null path; '
+          'this is unexpected on desktop/Android in v0.1.',
+        );
       }
       return null;
     }
