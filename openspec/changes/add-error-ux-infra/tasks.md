@@ -49,12 +49,12 @@
 
 ## 6. ErrorBoundary と runZonedGuarded
 
-- [ ] 6.1 `app/lib/core/errors/error_boundary.dart` に `class ErrorBoundary` と `static void install()` を実装。`kReleaseMode` 判定で `ErrorWidget.builder` を `_ReleaseErrorFallback` 生成側に差し替え、debug 時は元の builder に委譲。冪等化のため `_isInstalled` フラグで多重呼び出しを no-op に
-- [ ] 6.2 `_ReleaseErrorFallback` を `StatefulWidget` で実装し、初回 build 時に 1 度だけ `AppErrorLogger.log(UnknownError(details.exception, stackTrace: details.stack))` を呼ぶ。見た目は `ErrorBanner` の `error` severity 相当 + 「アプリを再起動してください」+ 再起動ボタン（`Restart.restartApp` 等は使わず、文言だけ。再起動ロジックは v0.2 で）
-- [ ] 6.3 `app/lib/core/errors/error_boundary.dart` に `Future<void> runAppWithErrorBoundary(Widget app)` を実装。内部で `runZonedGuarded` + `FlutterError.onError` を設定し、両方とも `AppErrorLogger.log(UnknownError(...))` を呼んでから元のハンドラに委譲
-- [ ] 6.4 `app/test/core/errors/error_boundary_release_mode_test.dart` で `debugDefaultTargetPlatformOverride` 等のテクニックではなく、`ErrorBoundary.install()` 後に `ErrorWidget.builder(FlutterErrorDetails(...))` を直接呼んで返るウィジェットを assert（release / debug の挙動差は `kReleaseMode` を使う関数に切り出して inject 可能にすることで検証可能にする）
-- [ ] 6.5 `app/test/core/errors/error_boundary_idempotent_test.dart` で `install()` を 2 回呼んでも build 結果が 1 層の `_ReleaseErrorFallback` であることを確認
-- [ ] 6.6 `app/test/core/errors/run_zoned_guarded_test.dart` で `runZonedGuarded` ハンドラに到達した uncaught error が `AppErrorLogger.log` を呼ぶことを mock で確認
+- [x] 6.1 `app/lib/core/errors/error_boundary.dart` に `class ErrorBoundary` と `static void install()` を実装。`kReleaseMode` 判定で `ErrorWidget.builder` を `_ReleaseErrorFallback` 生成側に差し替え、debug 時は元の builder に委譲。冪等化のため `_isInstalled` フラグで多重呼び出しを no-op に
+- [x] 6.2 `_ReleaseErrorFallback` を `StatefulWidget` で実装し、初回 build 時に 1 度だけ `AppErrorLogger.log(UnknownError(details.exception, stackTrace: details.stack))` を呼ぶ。見た目は `ErrorBanner` の `error` severity 相当 + 「アプリを再起動してください」+ 再起動ボタン（`Restart.restartApp` 等は使わず、文言だけ。再起動ロジックは v0.2 で）
+- [x] 6.3 `app/lib/core/errors/error_boundary.dart` に `Future<void> runAppWithErrorBoundary(Widget app)` を実装。内部で `runZonedGuarded` + `FlutterError.onError` を設定し、両方とも `AppErrorLogger.log(UnknownError(...))` を呼んでから元のハンドラに委譲
+- [x] 6.4 `app/test/core/errors/error_boundary_release_mode_test.dart` で `debugDefaultTargetPlatformOverride` 等のテクニックではなく、`ErrorBoundary.buildErrorWidget(FlutterErrorDetails(...))` を直接呼んで返るウィジェットを assert（release / debug の挙動差は `debugIsReleaseModeOverride` を使う関数に切り出して inject 可能にした。`flutter_test` が `ErrorWidget.builder` の再設定を検証するため、テストは `install()` 経由ではなく builder を直接呼ぶ）
+- [x] 6.5 `app/test/core/errors/error_boundary_idempotent_test.dart` で `install()` を複数回呼んでも `isInstalled` latch が単発のままで、`buildErrorWidget` が 1 層の `_ReleaseErrorFallback` を返すことを確認
+- [x] 6.6 `app/test/core/errors/run_zoned_guarded_test.dart` で `runZonedGuarded` ハンドラに到達した uncaught error が `AppErrorLogger.log` を呼ぶことを capture-filter で確認
 
 ## 7. RetryStrategy と withRetry
 

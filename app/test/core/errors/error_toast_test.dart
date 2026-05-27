@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geekplayer/core/errors/app_error.dart';
-import 'package:geekplayer/core/errors/error_banner.dart';
 import 'package:geekplayer/core/errors/error_toast.dart';
 import 'package:geekplayer/core/errors/scaffold_messenger_key.dart';
 import 'package:geekplayer/l10n/app_localizations.dart';
