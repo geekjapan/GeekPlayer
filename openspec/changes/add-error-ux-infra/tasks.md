@@ -3,12 +3,12 @@
 
 ## 1. 依存と l10n 骨組み
 
-- [ ] 1.1 `app/pubspec.yaml` に `logger ^2.5.0` を `flutter pub add` で追加（冪等: 既に存在すればバージョンだけ揃える）
-- [ ] 1.2 `app/pubspec.yaml` に `flutter_localizations: { sdk: flutter }` と `intl ^0.20.0` を追加し、`flutter.generate: true` を有効化
-- [ ] 1.3 `app/lib/l10n/l10n.yaml` を作成（`arb-dir: lib/l10n`, `template-arb-file: app_ja.arb`, `output-localization-file: app_localizations.dart`, `output-class: AppLocalizations`）
-- [ ] 1.4 `app/lib/l10n/app_ja.arb` に 10 個の `error*` キー（`errorNetworkUnreachable`, `errorRateLimit`, `errorSiteConsentRequired`, `errorRobotsDisallowed`, `errorHtmlParse`, `errorFileNotFound`, `errorUnsupportedFormat`, `errorUpstreamUnavailable`, `errorStorageQuota`, `errorUnknown`）と「再試行」「アプリを再起動してください」を ja 文言で追加。`errorRateLimit` と `errorSiteConsentRequired` はプレースホルダ付き
-- [ ] 1.5 `flutter pub get` を実行し `AppLocalizations` の生成物が `app/lib/l10n/app_localizations.dart` に出力されることを確認
-- [ ] 1.6 `flutter analyze` がクリーン
+- [x] 1.1 `app/pubspec.yaml` に `logger ^2.5.0` を `flutter pub add` で追加（冪等: 既に存在すればバージョンだけ揃える）
+- [x] 1.2 `app/pubspec.yaml` に `flutter_localizations: { sdk: flutter }` と `intl ^0.20.0` を追加し、`flutter.generate: true` を有効化
+- [x] 1.3 `app/lib/l10n/l10n.yaml` を作成（`arb-dir: lib/l10n`, `template-arb-file: app_ja.arb`, `output-localization-file: app_localizations.dart`, `output-class: AppLocalizations`） — 実際の配置は `app/l10n.yaml`（Flutter `gen-l10n` の規約により project root 必須）
+- [x] 1.4 `app/lib/l10n/app_ja.arb` に 10 個の `error*` キー（`errorNetworkUnreachable`, `errorRateLimit`, `errorSiteConsentRequired`, `errorRobotsDisallowed`, `errorHtmlParse`, `errorFileNotFound`, `errorUnsupportedFormat`, `errorUpstreamUnavailable`, `errorStorageQuota`, `errorUnknown`）と「再試行」「アプリを再起動してください」を ja 文言で追加。`errorRateLimit` と `errorSiteConsentRequired` はプレースホルダ付き
+- [x] 1.5 `flutter pub get` を実行し `AppLocalizations` の生成物が `app/lib/l10n/app_localizations.dart` に出力されることを確認
+- [x] 1.6 `flutter analyze` がクリーン
 
 ## 2. AppError ドメイン (`core/errors/app_error.dart`)
 
