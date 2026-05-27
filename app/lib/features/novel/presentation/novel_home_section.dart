@@ -5,6 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../core/novel/models/site.dart';
 import '../../../core/novel/models/work.dart';
 import '../../library/home_section.dart';
+import '../../novel_narou/presentation/narou_home_section.dart';
 import '../data/consent_repository.dart';
 import '../domain/list_library_use_case.dart';
 import 'novel_settings_screen.dart';
@@ -78,6 +79,11 @@ class _NovelHomeSectionBody extends ConsumerWidget {
           ),
           const SizedBox(height: 8),
           _SiteFilterChips(current: filter),
+          const SizedBox(height: 8),
+          // Wave 3 (`add-narou-novel-reader`) が提供する「なろう」パネル。
+          // 検索 / ランキング / R18 入口を NovelHomeSection 内に折り込む
+          // (ADR-0004: HomeScreen 本体は触らない)。
+          const NarouHomeSection(),
           const SizedBox(height: 8),
           FutureBuilder<_NovelLibraryState>(
             future: _load(consent, listUseCase, filter),
