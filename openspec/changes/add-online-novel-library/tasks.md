@@ -74,11 +74,11 @@ GRILL-REPORT Q-CROSS-011 に従い、Dart 3 の sealed-class 制約のため
 
 ## 8. Library 機能 (`features/novel/library`)
 
-- [ ] 8.1 `app/lib/features/novel/data/library_repository.dart` に `LibraryRepository`（`addToLibrary(NovelRepository, WorkId)`, `removeFromLibrary(WorkId)`, `listLibrary()`, `getBookmark(WorkId)`, `saveBookmark(WorkId, PagePosition)`）を実装
-- [ ] 8.2 `addToLibrary` の冪等性: 既存 `novel_episodes` 行は再フェッチせず、欠けている `episodeIndex` のみ `fetchEpisodeBody` を呼ぶ
-- [ ] 8.3 `addToLibrary` の途中失敗時、成功分は残し、再実行で続きから再開できることをトランザクション境界で保証
-- [ ] 8.4 `app/lib/features/novel/domain/{add_to_library_use_case.dart, remove_from_library_use_case.dart, list_library_use_case.dart}` を実装し、Riverpod provider に登録
-- [ ] 8.5 `app/lib/features/novel/data/consent_guarded_repository.dart` に `NovelRepository` を decorate するクラスを実装：全メソッドの先頭で `ConsentRepository.hasFreshConsent(site)` を確認、不可なら同期的に `SiteConsentRequiredError` を投げる
+- [x] 8.1 `app/lib/features/novel/data/library_repository.dart` に `LibraryRepository`（`addToLibrary(NovelRepository, WorkId)`, `removeFromLibrary(WorkId)`, `listLibrary()`, `getBookmark(WorkId)`, `saveBookmark(WorkId, PagePosition)`）を実装
+- [x] 8.2 `addToLibrary` の冪等性: 既存 `novel_episodes` 行は再フェッチせず、欠けている `episodeIndex` のみ `fetchEpisodeBody` を呼ぶ
+- [x] 8.3 `addToLibrary` の途中失敗時、成功分は残し、再実行で続きから再開できることをトランザクション境界で保証
+- [x] 8.4 `app/lib/features/novel/domain/{add_to_library_use_case.dart, remove_from_library_use_case.dart, list_library_use_case.dart}` を実装し、Riverpod provider に登録
+- [x] 8.5 `app/lib/features/novel/data/consent_guarded_repository.dart` に `NovelRepository` を decorate するクラスを実装：全メソッドの先頭で `ConsentRepository.hasFreshConsent(site)` を確認、不可なら同期的に `SiteConsentRequiredError` を投げる
 - [ ] 8.6 `app/test/features/novel/library_repository_test.dart` で `FakeNovelRepository` + in-memory drift を組み合わせ、能動キャッシュ（閲覧では書かない / 追加で書く）、再開、cascade 削除、消費同意（granted=false で `SiteConsentRequiredError`）を検証
 - [ ] 8.7 `app/test/features/novel/add_to_library_partial_resume_test.dart` で 10 話中 4 話成功 → 5 話目失敗 → 再実行で 5..10 話だけ取りに行くことを検証
 
