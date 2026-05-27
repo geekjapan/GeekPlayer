@@ -8,6 +8,8 @@ import 'core/errors/scaffold_messenger_key.dart';
 import 'core/media/audio_handler.dart';
 import 'core/media/audio_providers.dart';
 import 'features/library/home_screen.dart';
+import 'features/novel/data/consent_repository.dart';
+import 'features/novel/presentation/consent_dialog.dart';
 import 'l10n/app_localizations.dart';
 
 Future<void> main() async {
@@ -51,7 +53,40 @@ class GeekPlayerApp extends ConsumerWidget {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       locale: const Locale('ja'),
-      home: const HomeScreen(),
+      // Wrap the home in a ConsumerWidget that checks consent on first
+      // frame and shows the dialog modally if no decision exists yet.
+      // Spec `site-consent` "First-launch consent dialog".
+      home: const _StartupShell(),
     );
   }
+}
+
+class _StartupShell extends ConsumerStatefulWidget {
+  const _StartupShell();
+
+  @override
+  ConsumerState<_StartupShell> createState() => _StartupShellState();
+}
+
+class _StartupShellState extends ConsumerState<_StartupShell> {
+  bool _checked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _maybePromptConsent());
+  }
+
+  Future<void> _maybePromptConsent() async {
+    if (_checked) return;
+    _checked = true;
+    final ConsentRepository repo = ref.read(consentRepositoryProvider);
+    final bool allDecided = await repo.hasAnyDecisionForAllSites();
+    if (allDecided) return;
+    if (!mounted) return;
+    await ConsentDialog.show(context);
+  }
+
+  @override
+  Widget build(BuildContext context) => const HomeScreen();
 }

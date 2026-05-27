@@ -64,11 +64,11 @@ GRILL-REPORT Q-CROSS-011 に従い、Dart 3 の sealed-class 制約のため
 
 ## 7. SiteConsent 機能 (`features/novel/consent`)
 
-- [ ] 7.1 `app/lib/features/novel/data/consent_repository.dart` に `ConsentRepository`（`SiteConsentsDao` ラッパー、`hasFreshConsent(Site)`, `grant(Site)`, `revoke(Site)`, `getAll()`）を実装
-- [ ] 7.2 `app/lib/features/novel/presentation/consent_dialog.dart` に `ConsentDialog` ウィジェットを実装（3 サイトのチェックボックス、「決定」「すべて拒否」、外側タップで閉じない）
-- [ ] 7.3 `app/lib/features/novel/presentation/settings_section.dart` に `NovelSettingsSection` を実装（ADR-0001 §注意書き-③ の常時表示文言、各サイトの consent トグル）
-- [ ] 7.4 起動フックを `app/lib/main.dart` に追加：Riverpod 初期化で `hasFreshConsent` を全サイト確認し、無ければ `ConsentDialog` を `WidgetsBinding.instance.addPostFrameCallback` でモーダル表示
-- [ ] 7.5 `policyVersion = '2026-05-27'` を `app/lib/core/novel/policy_version.dart` に定義
+- [x] 7.1 `app/lib/features/novel/data/consent_repository.dart` に `ConsentRepository`（`SiteConsentsDao` ラッパー、`hasFreshConsent(Site)`, `grant(Site)`, `revoke(Site)`, `getAll()`）を実装
+- [x] 7.2 `app/lib/features/novel/presentation/consent_dialog.dart` に `ConsentDialog` ウィジェットを実装（3 サイトのチェックボックス、「決定」「すべて拒否」、外側タップで閉じない）
+- [x] 7.3 `app/lib/features/novel/presentation/settings_section.dart` に `NovelSettingsSection` を実装（ADR-0001 §注意書き-③ の常時表示文言、各サイトの consent トグル）
+- [x] 7.4 起動フックを `app/lib/main.dart` に追加：Riverpod 初期化で `hasFreshConsent` を全サイト確認し、無ければ `ConsentDialog` を `WidgetsBinding.instance.addPostFrameCallback` でモーダル表示
+- [x] 7.5 `policyVersion = '2026-05-27'` を `app/lib/core/novel/policy_version.dart` に定義
 - [ ] 7.6 `app/test/features/novel/consent_dialog_test.dart` でチェック ON/OFF、「すべて拒否」の DB 書き込み、外側タップで閉じないことを検証
 - [ ] 7.7 `app/test/features/novel/consent_enforcement_test.dart` で `ConsentRepository` が `granted=false` の時に対応する `NovelRepository` 呼び出しが `SiteConsentRequiredError` を投げることを検証（`FakeNovelRepository` を `ConsentGuardedRepository` でラップして検証）
 
