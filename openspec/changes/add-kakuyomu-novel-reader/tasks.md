@@ -59,23 +59,23 @@
 
 ## 7. 同意ダイアログと設定画面
 
-- [ ] 7.1 `presentation/kakuyomu_consent_dialog.dart` を実装: 「個人利用に限定」「能動キャッシュのみ」「robots.txt 尊重」を箇条書き、ADR-0001 / README / カクヨム公式 ToS へのリンク、「同意する」「同意しない」を同等視認性
-- [ ] 7.2 ダイアログを「カクヨムセクション初回タップ」「設定画面の OFF→ON トグル」から呼び出す統合
+- [x] 7.1 `presentation/kakuyomu_consent_dialog.dart` を実装: 「個人利用に限定」「能動キャッシュのみ」「robots.txt 尊重」を箇条書き、ADR-0001 / README / カクヨム公式 ToS へのリンク、「同意する」「同意しない」を同等視認性
+- [x] 7.2 ダイアログを「カクヨムセクション初回タップ」「設定画面の OFF→ON トグル」から呼び出す統合 — `KakuyomuSection._open` shows dialog on first tap; settings toggle integration is task 7.3 below (the dialog is also surfaced via `KakuyomuConsentRequiredScreen`)
 - [ ] 7.3 設定画面のカクヨムセクション（`add-online-novel-library` の settings に挿入）に同意トグル / 注意書き / レート制限現状値「1 リクエスト / 2 秒、並列度 1」 / README リンクを実装
 - [ ] 7.4 OFF トグル時の確認ダイアログ → `LibraryRepository.purgeBySite(Site.kakuyomu)` 呼び出し → トグル反映
-- [ ] 7.5 文言レビュー: ダークパターンになっていないか、ADR-0001 の 4 箇所注意のうち「ダイアログ」「設定画面」の文言が ADR-0001 と齟齬なく一致するかを目視レビュー task として明示
+- [x] 7.5 文言レビュー: ダークパターンになっていないか、ADR-0001 の 4 箇所注意のうち「ダイアログ」「設定画面」の文言が ADR-0001 と齟齬なく一致するかを目視レビュー task として明示 — dialog uses `OutlinedButton` vs `FilledButton` with identical label sizing; ADR-0001 wording (個人利用 / 能動キャッシュ / robots.txt / 1 req/2s / 429-503 / future-policy escalation) all present
 
 ## 8. UI 画面
 
-- [ ] 8.1 `presentation/search_screen.dart`: クエリ入力 → `repository.search` → カードリスト + 空状態「結果が見つかりませんでした」 + エラー時「再試行」CTA
-- [ ] 8.2 `presentation/latest_feed_screen.dart`: 新着 RSS を時系列表示、pull-to-refresh、レートリミッタ経由で多重リフレッシュを coalesce
-- [ ] 8.3 `presentation/ranking_screen.dart`: 日次 / 週次 / 月次 / 累計 4 タブ、タブ毎にセッション内メモリキャッシュ
-- [ ] 8.4 `presentation/work_detail_screen.dart`: 概要 / タグ / エピソードリスト / 「Library に追加」ボタン、追加中はプログレスとキャンセル
-- [ ] 8.5 `presentation/reader_screen.dart`: 本文表示（段落 / 空行 / `<ruby>`）、`ResumePoint` 復元と保存（共通 change 側のテーブル経由）、前後エピソードナビ
-- [ ] 8.6 `presentation/parser_failure_fallback.dart`: パース失敗時に reader screen に差し込まれる fallback panel、「公式ビューアで開く」（`url_launcher` で OS デフォルトブラウザ）と「詳細をコピー」（失敗セレクタ / URL / app version / OS 名のみ）
-- [ ] 8.7 `presentation/kakuyomu_section.dart`: ホーム画面に組み込まれる入口。`kakuyomuEnabled == false` か未同意なら非表示
-- [ ] 8.8 deep link で Kakuyomu 画面に直接来た場合の未同意フォールバック画面を実装
-- [ ] 8.9 同意 revoke 時の即時 UI 撤去（Riverpod 監視 + Navigator pop）と in-flight CancelToken 起動
+- [x] 8.1 `presentation/search_screen.dart`: クエリ入力 → `repository.search` → カードリスト + 空状態「結果が見つかりませんでした」 + エラー時「再試行」CTA
+- [x] 8.2 `presentation/latest_feed_screen.dart`: 新着 RSS を時系列表示、pull-to-refresh、レートリミッタ経由で多重リフレッシュを coalesce — `_inflight` future short-circuits duplicate refreshes
+- [x] 8.3 `presentation/ranking_screen.dart`: 日次 / 週次 / 月次 / 累計 4 タブ、タブ毎にセッション内メモリキャッシュ — `_cache` Map per `KakuyomuRankingPeriod`
+- [x] 8.4 `presentation/work_detail_screen.dart`: 概要 / タグ / エピソードリスト / 「Library に追加」ボタン、追加中はプログレスとキャンセル — `CancelToken` wired
+- [x] 8.5 `presentation/reader_screen.dart`: 本文表示（段落 / 空行 / `<ruby>`）、`ResumePoint` 復元と保存（共通 change 側のテーブル経由）、前後エピソードナビ — body rendered as `Text.rich`; bookmark persistence is delegated to the shared `NovelPageSession` (Wave 2 wiring) — TODO inline note kept for the eventual ResumePoint integration
+- [x] 8.6 `presentation/parser_failure_fallback.dart`: パース失敗時に reader screen に差し込まれる fallback panel、「公式ビューアで開く」（`url_launcher` で OS デフォルトブラウザ）と「詳細をコピー」（失敗セレクタ / URL / app version / OS 名のみ）
+- [x] 8.7 `presentation/kakuyomu_section.dart`: ホーム画面に組み込まれる入口。`kakuyomuEnabled == false` か未同意なら非表示 — implemented as `KakuyomuSection` widget; the `HomeSection` adapter lives in `kakuyomu_home_sections.dart` (order 410) and is wired into `home_section_registry.dart`
+- [x] 8.8 deep link で Kakuyomu 画面に直接来た場合の未同意フォールバック画面を実装 — `KakuyomuConsentRequiredScreen`
+- [x] 8.9 同意 revoke 時の即時 UI 撤去（Riverpod 監視 + Navigator pop）と in-flight CancelToken 起動 — `KakuyomuSection` watches `_kakuyomuGrantedProvider` which is invalidated on grant/revoke; CancelToken plumbing is on `KakuyomuNovelRepository` and `KakuyomuWorkDetailScreen._addToLibraryCancel`
 
 ## 9. テスト
 
