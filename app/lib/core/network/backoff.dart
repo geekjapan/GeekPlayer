@@ -13,8 +13,7 @@ class BackoffAttempt<T> {
   });
 
   /// Build a "succeeded — return [value]" outcome.
-  factory BackoffAttempt.success(T value) =>
-      BackoffAttempt<T>._(value: value);
+  factory BackoffAttempt.success(T value) => BackoffAttempt<T>._(value: value);
 
   /// Build a "retry after [retryAfter] (or computed wait)" outcome.
   /// Used for 429 / 503 responses.
@@ -65,7 +64,8 @@ class RetryPolicy {
 /// Calculate the i-th wait (0-based) under [policy], excluding jitter
 /// and Retry-After overrides. Exposed for tests.
 Duration computeBackoffDelay(int attempt, RetryPolicy policy) {
-  final double scaled = policy.initialDelay.inMilliseconds *
+  final double scaled =
+      policy.initialDelay.inMilliseconds *
       math.pow(policy.multiplier, attempt).toDouble();
   final int clampedMs = scaled.isFinite
       ? scaled.clamp(0, policy.maxDelay.inMilliseconds.toDouble()).toInt()
@@ -79,9 +79,7 @@ Duration applyJitter(Duration delay, double fraction, math.Random random) {
   final double low = 1.0 - fraction;
   final double high = 1.0 + fraction;
   final double factor = low + (high - low) * random.nextDouble();
-  return Duration(
-    microseconds: (delay.inMicroseconds * factor).round(),
-  );
+  return Duration(microseconds: (delay.inMicroseconds * factor).round());
 }
 
 /// Drive [task] with exponential backoff on retryable outcomes.

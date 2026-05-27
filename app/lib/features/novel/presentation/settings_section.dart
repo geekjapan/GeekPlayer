@@ -26,8 +26,7 @@ class NovelSettingsSection extends ConsumerStatefulWidget {
       _NovelSettingsSectionState();
 }
 
-class _NovelSettingsSectionState
-    extends ConsumerState<NovelSettingsSection> {
+class _NovelSettingsSectionState extends ConsumerState<NovelSettingsSection> {
   late Future<Map<Site, SiteConsentRow>> _futureConsents;
 
   @override
@@ -82,37 +81,35 @@ class _NovelSettingsSectionState
             ),
           ),
           const SizedBox(height: 16),
-          Text(
-            'サイトごとの同意',
-            style: theme.textTheme.titleMedium,
-          ),
+          Text('サイトごとの同意', style: theme.textTheme.titleMedium),
           const SizedBox(height: 8),
           FutureBuilder<Map<Site, SiteConsentRow>>(
             future: _futureConsents,
-            builder: (
-              BuildContext context,
-              AsyncSnapshot<Map<Site, SiteConsentRow>> snap,
-            ) {
-              if (!snap.hasData) {
-                return const Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Center(child: CircularProgressIndicator()),
-                );
-              }
-              final Map<Site, SiteConsentRow> consents = snap.data!;
-              return Column(
-                children: <Widget>[
-                  for (final Site s in Site.values)
-                    SwitchListTile(
-                      key: ValueKey<String>('settings-consent-${s.code}'),
-                      title: Text(s.displayName),
-                      subtitle: Text(s.baseUrl.host),
-                      value: consents[s]?.granted ?? false,
-                      onChanged: (bool v) => _toggle(s, v),
-                    ),
-                ],
-              );
-            },
+            builder:
+                (
+                  BuildContext context,
+                  AsyncSnapshot<Map<Site, SiteConsentRow>> snap,
+                ) {
+                  if (!snap.hasData) {
+                    return const Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+                  final Map<Site, SiteConsentRow> consents = snap.data!;
+                  return Column(
+                    children: <Widget>[
+                      for (final Site s in Site.values)
+                        SwitchListTile(
+                          key: ValueKey<String>('settings-consent-${s.code}'),
+                          title: Text(s.displayName),
+                          subtitle: Text(s.baseUrl.host),
+                          value: consents[s]?.granted ?? false,
+                          onChanged: (bool v) => _toggle(s, v),
+                        ),
+                    ],
+                  );
+                },
           ),
         ],
       ),

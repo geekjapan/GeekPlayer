@@ -22,8 +22,8 @@ class RateLimiter {
     required this.burst,
     required this.maxConcurrency,
     DateTime Function()? now,
-  })  : _now = now ?? DateTime.now,
-        _tokens = burst.toDouble() {
+  }) : _now = now ?? DateTime.now,
+       _tokens = burst.toDouble() {
     if (rate <= 0) {
       throw ArgumentError.value(rate, 'rate', 'must be > 0');
     }

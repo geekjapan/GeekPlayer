@@ -25,9 +25,7 @@ class ConsentDialog extends ConsumerStatefulWidget {
 
   /// Show the dialog modally above [context]. Returns the resolved
   /// future once the user confirms (no barrier-dismiss path exists).
-  static Future<void> show(BuildContext context, {
-    bool policyUpdated = false,
-  }) {
+  static Future<void> show(BuildContext context, {bool policyUpdated = false}) {
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -69,9 +67,7 @@ class _ConsentDialogState extends ConsumerState<ConsentDialog> {
                   ),
                   child: Text(
                     'ポリシーが更新されました',
-                    style: TextStyle(
-                      color: theme.colorScheme.onErrorContainer,
-                    ),
+                    style: TextStyle(color: theme.colorScheme.onErrorContainer),
                   ),
                 ),
               const Text(
@@ -93,8 +89,7 @@ class _ConsentDialogState extends ConsumerState<ConsentDialog> {
                   value: _checked[s] ?? false,
                   onChanged: _saving
                       ? null
-                      : (bool? v) =>
-                          setState(() => _checked[s] = v ?? false),
+                      : (bool? v) => setState(() => _checked[s] = v ?? false),
                 ),
               const SizedBox(height: 4),
               Text(

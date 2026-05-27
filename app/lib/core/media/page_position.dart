@@ -20,9 +20,7 @@ class PagePosition {
         'pageIndex must be >= 1',
       );
     }
-    if (scrollFraction.isNaN ||
-        scrollFraction < 0.0 ||
-        scrollFraction > 1.0) {
+    if (scrollFraction.isNaN || scrollFraction < 0.0 || scrollFraction > 1.0) {
       throw ArgumentError.value(
         scrollFraction,
         'scrollFraction',

@@ -31,9 +31,9 @@ class LibraryRepository {
     required NovelWorksDao worksDao,
     required NovelEpisodesDao episodesDao,
     required NovelBookmarksDao bookmarksDao,
-  })  : _worksDao = worksDao, // ignore: prefer_initializing_formals
-        _episodesDao = episodesDao, // ignore: prefer_initializing_formals
-        _bookmarksDao = bookmarksDao; // ignore: prefer_initializing_formals
+  }) : _worksDao = worksDao, // ignore: prefer_initializing_formals
+       _episodesDao = episodesDao, // ignore: prefer_initializing_formals
+       _bookmarksDao = bookmarksDao; // ignore: prefer_initializing_formals
 
   final NovelWorksDao _worksDao;
   final NovelEpisodesDao _episodesDao;
@@ -112,8 +112,10 @@ class LibraryRepository {
   }
 
   Future<Work?> getWork(WorkId workId) async {
-    final NovelWorkRow? row =
-        await _worksDao.getWork(workId.site.code, workId.externalId);
+    final NovelWorkRow? row = await _worksDao.getWork(
+      workId.site.code,
+      workId.externalId,
+    );
     if (row == null) return null;
     return _rowToWork(row);
   }
@@ -147,19 +149,13 @@ class LibraryRepository {
 
   /// Return cached episodes for [workId] in `episodeIndex` order.
   Future<List<NovelEpisodeRow>> listEpisodes(WorkId workId) {
-    return _episodesDao.listEpisodes(
-      workId.site.code,
-      workId.externalId,
-    );
+    return _episodesDao.listEpisodes(workId.site.code, workId.externalId);
   }
 
   Work _rowToWork(NovelWorkRow row) {
     final Site? site = Site.fromCode(row.site);
     return Work(
-      id: WorkId(
-        site: site ?? Site.narou,
-        externalId: row.externalId,
-      ),
+      id: WorkId(site: site ?? Site.narou, externalId: row.externalId),
       title: row.title,
       author: row.author,
       synopsis: row.synopsis,

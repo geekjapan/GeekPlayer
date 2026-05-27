@@ -18,8 +18,10 @@ import '../domain/remove_from_library_use_case.dart';
 class NovelDebugMenu extends ConsumerWidget {
   const NovelDebugMenu({super.key});
 
-  static const WorkId _fixtureId =
-      WorkId(site: Site.narou, externalId: 'debug-1');
+  static const WorkId _fixtureId = WorkId(
+    site: Site.narou,
+    externalId: 'debug-1',
+  );
 
   FakeNovelRepository _seed() {
     final DateTime now = DateTime.utc(2026, 5, 27);
@@ -53,8 +55,9 @@ class NovelDebugMenu extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final AddToLibraryUseCase add = ref.watch(addToLibraryUseCaseProvider);
-    final RemoveFromLibraryUseCase rm =
-        ref.watch(removeFromLibraryUseCaseProvider);
+    final RemoveFromLibraryUseCase rm = ref.watch(
+      removeFromLibraryUseCaseProvider,
+    );
 
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -80,9 +83,7 @@ class NovelDebugMenu extends ConsumerWidget {
                   await add.call(_seed(), _fixtureId);
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('ダミー Work を追加しました'),
-                      ),
+                      const SnackBar(content: Text('ダミー Work を追加しました')),
                     );
                   }
                 },
@@ -94,9 +95,7 @@ class NovelDebugMenu extends ConsumerWidget {
                   await rm.call(_fixtureId);
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('ダミー Work を削除しました'),
-                      ),
+                      const SnackBar(content: Text('ダミー Work を削除しました')),
                     );
                   }
                 },

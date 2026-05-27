@@ -27,9 +27,7 @@ FakeWorkData _fixture(WorkId id, String title) {
       addedAt: now,
     ),
     episodes: <Episode>[Episode(id: EpisodeId(1), title: 'e1')],
-    bodies: <int, EpisodeBody>{
-      1: EpisodeBody(body: 'body', fetchedAt: now),
-    },
+    bodies: <int, EpisodeBody>{1: EpisodeBody(body: 'body', fetchedAt: now)},
   );
 }
 
@@ -37,7 +35,9 @@ Widget _hosted(AppDatabase db) {
   return ProviderScope(
     overrides: [appDatabaseProvider.overrideWithValue(db)],
     child: const MaterialApp(
-      home: Scaffold(body: SingleChildScrollView(child: NovelHomeSectionView())),
+      home: Scaffold(
+        body: SingleChildScrollView(child: NovelHomeSectionView()),
+      ),
     ),
   );
 }
@@ -70,8 +70,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Library に小説はまだありません。'), findsOneWidget);
-    final Finder button =
-        find.byKey(const Key('open-search-disabled'));
+    final Finder button = find.byKey(const Key('open-search-disabled'));
     expect(button, findsOneWidget);
     final OutlinedButton btnWidget = tester.widget(button);
     expect(btnWidget.onPressed, isNull);
@@ -97,13 +96,10 @@ void main() {
       episodesDao: db.novelEpisodesDao,
       bookmarksDao: db.novelBookmarksDao,
     );
-    final ConsentRepository consent =
-        ConsentRepository(db.siteConsentsDao);
+    final ConsentRepository consent = ConsentRepository(db.siteConsentsDao);
     final FakeNovelRepository source = FakeNovelRepository(
       site: Site.narou,
-      seed: <WorkId, FakeWorkData>{
-        _narouWork: _fixture(_narouWork, 'タイトルA'),
-      },
+      seed: <WorkId, FakeWorkData>{_narouWork: _fixture(_narouWork, 'タイトルA')},
     );
     await library.addToLibrary(source, _narouWork);
     await consent.grant(Site.narou);
@@ -117,33 +113,26 @@ void main() {
     expect(find.byKey(const Key('consent-disabled-banner')), findsNothing);
   });
 
-  testWidgets(
-    'Library entry on a denied site shows consent-disabled banner',
-    (WidgetTester tester) async {
-      final LibraryRepository library = LibraryRepository(
-        worksDao: db.novelWorksDao,
-        episodesDao: db.novelEpisodesDao,
-        bookmarksDao: db.novelBookmarksDao,
-      );
-      final ConsentRepository consent =
-          ConsentRepository(db.siteConsentsDao);
-      final FakeNovelRepository source = FakeNovelRepository(
-        site: Site.narou,
-        seed: <WorkId, FakeWorkData>{
-          _narouWork: _fixture(_narouWork, 'タイトルA'),
-        },
-      );
-      await library.addToLibrary(source, _narouWork);
-      await consent.revoke(Site.narou); // granted = false
+  testWidgets('Library entry on a denied site shows consent-disabled banner', (
+    WidgetTester tester,
+  ) async {
+    final LibraryRepository library = LibraryRepository(
+      worksDao: db.novelWorksDao,
+      episodesDao: db.novelEpisodesDao,
+      bookmarksDao: db.novelBookmarksDao,
+    );
+    final ConsentRepository consent = ConsentRepository(db.siteConsentsDao);
+    final FakeNovelRepository source = FakeNovelRepository(
+      site: Site.narou,
+      seed: <WorkId, FakeWorkData>{_narouWork: _fixture(_narouWork, 'タイトルA')},
+    );
+    await library.addToLibrary(source, _narouWork);
+    await consent.revoke(Site.narou); // granted = false
 
-      await tester.pumpWidget(_hosted(db));
-      await tester.pumpAndSettle();
+    await tester.pumpWidget(_hosted(db));
+    await tester.pumpAndSettle();
 
-      expect(find.text('タイトルA'), findsOneWidget);
-      expect(
-        find.byKey(const Key('consent-disabled-banner')),
-        findsOneWidget,
-      );
-    },
-  );
+    expect(find.text('タイトルA'), findsOneWidget);
+    expect(find.byKey(const Key('consent-disabled-banner')), findsOneWidget);
+  });
 }

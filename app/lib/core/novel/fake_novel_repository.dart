@@ -61,7 +61,10 @@ class FakeNovelRepository implements NovelRepository {
     await _sleep();
     final FakeWorkData? d = _data[id];
     if (d == null) {
-      throw WorkNotFoundError('FakeNovelRepository: $id not seeded', workId: id);
+      throw WorkNotFoundError(
+        'FakeNovelRepository: $id not seeded',
+        workId: id,
+      );
     }
     return d.work;
   }

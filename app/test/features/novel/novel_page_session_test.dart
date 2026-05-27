@@ -9,8 +9,7 @@ import 'package:geekplayer/features/novel/data/novel_page_session.dart';
 
 void main() {
   late AppDatabase db;
-  const WorkId workId =
-      WorkId(site: Site.kakuyomu, externalId: 'kak-1');
+  const WorkId workId = WorkId(site: Site.kakuyomu, externalId: 'kak-1');
 
   setUp(() {
     db = AppDatabase.forTesting(DatabaseConnection(NativeDatabase.memory()));
@@ -74,14 +73,8 @@ void main() {
     expect(seen.last.pageIndex, 2);
     expect(seen.last.scrollFraction, closeTo(0.42, 1e-9));
 
-    await expectLater(
-      () => s.updateScrollFraction(1.5),
-      throwsArgumentError,
-    );
-    await expectLater(
-      () => s.updateScrollFraction(-0.1),
-      throwsArgumentError,
-    );
+    await expectLater(() => s.updateScrollFraction(1.5), throwsArgumentError);
+    await expectLater(() => s.updateScrollFraction(-0.1), throwsArgumentError);
     await sub.cancel();
   });
 
@@ -105,26 +98,25 @@ void main() {
     );
   });
 
-  test(
-    'dispose upserts current position to novel_bookmarks',
-    () async {
-      final NovelPageSession s = NovelPageSession(
-        workId: workId,
-        bookmarksDao: db.novelBookmarksDao,
-        totalPages: 10,
-      );
+  test('dispose upserts current position to novel_bookmarks', () async {
+    final NovelPageSession s = NovelPageSession(
+      workId: workId,
+      bookmarksDao: db.novelBookmarksDao,
+      totalPages: 10,
+    );
 
-      await s.goToPage(4);
-      await s.updateScrollFraction(0.75);
-      await s.dispose();
+    await s.goToPage(4);
+    await s.updateScrollFraction(0.75);
+    await s.dispose();
 
-      final NovelBookmarkRow? row = await db.novelBookmarksDao
-          .getBookmark(workId.site.code, workId.externalId);
-      expect(row, isNotNull);
-      expect(row!.episodeIndex, 4);
-      expect(row.scrollFraction, closeTo(0.75, 1e-9));
-    },
-  );
+    final NovelBookmarkRow? row = await db.novelBookmarksDao.getBookmark(
+      workId.site.code,
+      workId.externalId,
+    );
+    expect(row, isNotNull);
+    expect(row!.episodeIndex, 4);
+    expect(row.scrollFraction, closeTo(0.75, 1e-9));
+  });
 
   test('dispose is idempotent', () async {
     final NovelPageSession s = NovelPageSession(

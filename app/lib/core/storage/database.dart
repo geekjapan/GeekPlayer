@@ -237,9 +237,7 @@ class RecentItemsDao extends DatabaseAccessor<AppDatabase>
 /// keyed by `(site, externalId, ...)` not by an FK column reference).
 /// [deleteWork] wraps its episodes/bookmark deletes inside a single
 /// transaction.
-@DriftAccessor(
-  tables: <Type>[NovelWorks, NovelEpisodes, NovelBookmarks],
-)
+@DriftAccessor(tables: <Type>[NovelWorks, NovelEpisodes, NovelBookmarks])
 class NovelWorksDao extends DatabaseAccessor<AppDatabase>
     with _$NovelWorksDaoMixin {
   NovelWorksDao(super.db);
@@ -269,21 +267,18 @@ class NovelWorksDao extends DatabaseAccessor<AppDatabase>
   }
 
   Future<NovelWorkRow?> getWork(String site, String externalId) {
-    return (select(novelWorks)
-          ..where(
-            ($NovelWorksTable t) =>
-                t.site.equals(site) & t.externalId.equals(externalId),
-          ))
+    return (select(novelWorks)..where(
+          ($NovelWorksTable t) =>
+              t.site.equals(site) & t.externalId.equals(externalId),
+        ))
         .getSingleOrNull();
   }
 
   Future<List<NovelWorkRow>> listAll() {
     return (select(novelWorks)
           ..orderBy(<OrderClauseGenerator<$NovelWorksTable>>[
-            ($NovelWorksTable t) => OrderingTerm(
-              expression: t.addedAt,
-              mode: OrderingMode.desc,
-            ),
+            ($NovelWorksTable t) =>
+                OrderingTerm(expression: t.addedAt, mode: OrderingMode.desc),
           ]))
         .get();
   }
@@ -292,10 +287,8 @@ class NovelWorksDao extends DatabaseAccessor<AppDatabase>
     return (select(novelWorks)
           ..where(($NovelWorksTable t) => t.site.equals(site))
           ..orderBy(<OrderClauseGenerator<$NovelWorksTable>>[
-            ($NovelWorksTable t) => OrderingTerm(
-              expression: t.addedAt,
-              mode: OrderingMode.desc,
-            ),
+            ($NovelWorksTable t) =>
+                OrderingTerm(expression: t.addedAt, mode: OrderingMode.desc),
           ]))
         .get();
   }
@@ -357,28 +350,23 @@ class NovelEpisodesDao extends DatabaseAccessor<AppDatabase>
     String externalId,
     int episodeIndex,
   ) {
-    return (select(novelEpisodes)
-          ..where(
-            ($NovelEpisodesTable t) =>
-                t.site.equals(site) &
-                t.externalId.equals(externalId) &
-                t.episodeIndex.equals(episodeIndex),
-          ))
+    return (select(novelEpisodes)..where(
+          ($NovelEpisodesTable t) =>
+              t.site.equals(site) &
+              t.externalId.equals(externalId) &
+              t.episodeIndex.equals(episodeIndex),
+        ))
         .getSingleOrNull();
   }
 
-  Future<List<NovelEpisodeRow>> listEpisodes(
-    String site,
-    String externalId,
-  ) {
+  Future<List<NovelEpisodeRow>> listEpisodes(String site, String externalId) {
     return (select(novelEpisodes)
           ..where(
             ($NovelEpisodesTable t) =>
                 t.site.equals(site) & t.externalId.equals(externalId),
           )
           ..orderBy(<OrderClauseGenerator<$NovelEpisodesTable>>[
-            ($NovelEpisodesTable t) =>
-                OrderingTerm(expression: t.episodeIndex),
+            ($NovelEpisodesTable t) => OrderingTerm(expression: t.episodeIndex),
           ]))
         .get();
   }
@@ -387,8 +375,7 @@ class NovelEpisodesDao extends DatabaseAccessor<AppDatabase>
   /// given Work. Used by [LibraryRepository.addToLibrary] to skip
   /// already-cached episodes when re-running after a partial failure.
   Future<Set<int>> existingIndices(String site, String externalId) async {
-    final List<NovelEpisodeRow> rows =
-        await listEpisodes(site, externalId);
+    final List<NovelEpisodeRow> rows = await listEpisodes(site, externalId);
     return rows.map((NovelEpisodeRow r) => r.episodeIndex).toSet();
   }
 }
@@ -418,11 +405,10 @@ class NovelBookmarksDao extends DatabaseAccessor<AppDatabase>
   }
 
   Future<NovelBookmarkRow?> getBookmark(String site, String externalId) {
-    return (select(novelBookmarks)
-          ..where(
-            ($NovelBookmarksTable t) =>
-                t.site.equals(site) & t.externalId.equals(externalId),
-          ))
+    return (select(novelBookmarks)..where(
+          ($NovelBookmarksTable t) =>
+              t.site.equals(site) & t.externalId.equals(externalId),
+        ))
         .getSingleOrNull();
   }
 
@@ -460,9 +446,9 @@ class SiteConsentsDao extends DatabaseAccessor<AppDatabase>
   }
 
   Future<SiteConsentRow?> getConsent(String site) {
-    return (select(siteConsents)
-          ..where(($SiteConsentsTable t) => t.site.equals(site)))
-        .getSingleOrNull();
+    return (select(
+      siteConsents,
+    )..where(($SiteConsentsTable t) => t.site.equals(site))).getSingleOrNull();
   }
 
   Future<List<SiteConsentRow>> getAll() {
@@ -481,8 +467,8 @@ class SiteConsentsDao extends DatabaseAccessor<AppDatabase>
   }
 
   Future<int> deleteConsent(String site) {
-    return (delete(siteConsents)
-          ..where(($SiteConsentsTable t) => t.site.equals(site)))
-        .go();
+    return (delete(
+      siteConsents,
+    )..where(($SiteConsentsTable t) => t.site.equals(site))).go();
   }
 }

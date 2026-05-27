@@ -13,10 +13,7 @@ import 'package:geekplayer/features/novel/data/consent_guarded_repository.dart';
 import 'package:geekplayer/features/novel/data/consent_repository.dart';
 import 'package:geekplayer/features/novel/data/library_repository.dart';
 
-FakeWorkData _fakeData({
-  required WorkId workId,
-  required int episodeCount,
-}) {
+FakeWorkData _fakeData({required WorkId workId, required int episodeCount}) {
   final DateTime now = DateTime.utc(2026, 5, 27);
   final List<Episode> eps = <Episode>[
     for (int i = 1; i <= episodeCount; i++)
@@ -63,30 +60,29 @@ void main() {
 
   tearDown(() => db.close());
 
-  test(
-    'addToLibrary writes work + all episodes (active caching)',
-    () async {
-      await library.addToLibrary(source, workId);
+  test('addToLibrary writes work + all episodes (active caching)', () async {
+    await library.addToLibrary(source, workId);
 
-      final Work? w = await library.getWork(workId);
-      expect(w, isNotNull);
-      expect(w!.title, 'title');
+    final Work? w = await library.getWork(workId);
+    expect(w, isNotNull);
+    expect(w!.title, 'title');
 
-      final List<NovelEpisodeRow> eps = await library.listEpisodes(workId);
-      expect(eps.length, 3);
-      expect(eps.map((NovelEpisodeRow r) => r.episodeIndex).toList(),
-          <int>[1, 2, 3]);
-      expect(eps.first.body, 'body-1');
-    },
-  );
+    final List<NovelEpisodeRow> eps = await library.listEpisodes(workId);
+    expect(eps.length, 3);
+    expect(eps.map((NovelEpisodeRow r) => r.episodeIndex).toList(), <int>[
+      1,
+      2,
+      3,
+    ]);
+    expect(eps.first.body, 'body-1');
+  });
 
   test(
     'browsing alone (fetchEpisodeBody) does not write to novel_episodes',
     () async {
       // Pure call against the source — no LibraryRepository involvement.
       await source.fetchEpisodeBody(workId, EpisodeId(1));
-      final List<NovelEpisodeRow> rows =
-          await library.listEpisodes(workId);
+      final List<NovelEpisodeRow> rows = await library.listEpisodes(workId);
       expect(rows, isEmpty);
       expect(await library.getWork(workId), isNull);
     },
@@ -134,8 +130,7 @@ void main() {
   test('listLibrary filters by site', () async {
     await library.addToLibrary(source, workId);
 
-    const WorkId other =
-        WorkId(site: Site.kakuyomu, externalId: 'k1');
+    const WorkId other = WorkId(site: Site.kakuyomu, externalId: 'k1');
     final FakeNovelRepository kakSource = FakeNovelRepository(
       site: Site.kakuyomu,
       seed: <WorkId, FakeWorkData>{
@@ -145,45 +140,37 @@ void main() {
     await library.addToLibrary(kakSource, other);
 
     expect((await library.listLibrary()).length, 2);
-    expect(
-      (await library.listLibrary(site: Site.narou)).length,
-      1,
-    );
-    expect(
-      (await library.listLibrary(site: Site.kakuyomu)).length,
-      1,
-    );
+    expect((await library.listLibrary(site: Site.narou)).length, 1);
+    expect((await library.listLibrary(site: Site.kakuyomu)).length, 1);
   });
 
   test('source.site != workId.site is rejected', () async {
-    const WorkId kakWorkId =
-        WorkId(site: Site.kakuyomu, externalId: 'mismatched');
+    const WorkId kakWorkId = WorkId(
+      site: Site.kakuyomu,
+      externalId: 'mismatched',
+    );
     await expectLater(
       library.addToLibrary(source, kakWorkId),
       throwsArgumentError,
     );
   });
 
-  test(
-    'consent-guarded source propagates SiteConsentRequiredError',
-    () async {
-      final ConsentRepository consent =
-          ConsentRepository(db.siteConsentsDao);
-      final ConsentGuardedRepository guarded = ConsentGuardedRepository(
-        inner: source,
-        consent: consent,
-      );
+  test('consent-guarded source propagates SiteConsentRequiredError', () async {
+    final ConsentRepository consent = ConsentRepository(db.siteConsentsDao);
+    final ConsentGuardedRepository guarded = ConsentGuardedRepository(
+      inner: source,
+      consent: consent,
+    );
 
-      // No consent row -> first internal source call fails.
-      await expectLater(
-        library.addToLibrary(guarded, workId),
-        throwsA(isA<SiteConsentRequiredError>()),
-      );
+    // No consent row -> first internal source call fails.
+    await expectLater(
+      library.addToLibrary(guarded, workId),
+      throwsA(isA<SiteConsentRequiredError>()),
+    );
 
-      // Grant + retry succeeds.
-      await consent.grant(Site.narou);
-      await library.addToLibrary(guarded, workId);
-      expect((await library.listEpisodes(workId)).length, 3);
-    },
-  );
+    // Grant + retry succeeds.
+    await consent.grant(Site.narou);
+    await library.addToLibrary(guarded, workId);
+    expect((await library.listEpisodes(workId)).length, 3);
+  });
 }

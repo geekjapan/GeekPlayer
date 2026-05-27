@@ -25,8 +25,8 @@ class BackoffInterceptor extends Interceptor {
     this.policy = const RetryPolicy(),
     math.Random? random,
     Future<void> Function(Duration)? sleep,
-  })  : _random = random ?? math.Random(),
-        _sleep = sleep ?? ((Duration d) => Future<void>.delayed(d));
+  }) : _random = random ?? math.Random(),
+       _sleep = sleep ?? ((Duration d) => Future<void>.delayed(d));
 
   final RetryPolicy policy;
   final math.Random _random;
@@ -81,17 +81,19 @@ class BackoffInterceptor extends Interceptor {
       // original. We rely on the existing connection's interceptors
       // running again. The Dio v5 idiomatic way to retry is to call
       // dio.fetch with the same options.
-      final Dio dio = Dio(BaseOptions(
-        baseUrl: opts.baseUrl,
-        headers: opts.headers,
-        connectTimeout: opts.connectTimeout,
-        receiveTimeout: opts.receiveTimeout,
-        sendTimeout: opts.sendTimeout,
-        contentType: opts.contentType,
-        responseType: opts.responseType,
-        followRedirects: opts.followRedirects,
-        validateStatus: opts.validateStatus,
-      ));
+      final Dio dio = Dio(
+        BaseOptions(
+          baseUrl: opts.baseUrl,
+          headers: opts.headers,
+          connectTimeout: opts.connectTimeout,
+          receiveTimeout: opts.receiveTimeout,
+          sendTimeout: opts.sendTimeout,
+          contentType: opts.contentType,
+          responseType: opts.responseType,
+          followRedirects: opts.followRedirects,
+          validateStatus: opts.validateStatus,
+        ),
+      );
       final Response<dynamic> response = await dio.fetch<dynamic>(opts);
       handler.resolve(response);
     } on DioException catch (e) {

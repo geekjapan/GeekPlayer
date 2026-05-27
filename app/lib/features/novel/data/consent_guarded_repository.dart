@@ -22,8 +22,8 @@ class ConsentGuardedRepository implements NovelRepository {
   ConsentGuardedRepository({
     required NovelRepository inner,
     required ConsentRepository consent,
-  })  : _inner = inner, // ignore: prefer_initializing_formals
-        _consent = consent; // ignore: prefer_initializing_formals
+  }) : _inner = inner, // ignore: prefer_initializing_formals
+       _consent = consent; // ignore: prefer_initializing_formals
 
   final NovelRepository _inner;
   final ConsentRepository _consent;

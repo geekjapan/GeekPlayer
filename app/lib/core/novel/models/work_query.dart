@@ -24,12 +24,7 @@ class WorkQuery {
   final int limit;
   final int offset;
 
-  WorkQuery copyWith({
-    Site? site,
-    String? keyword,
-    int? limit,
-    int? offset,
-  }) {
+  WorkQuery copyWith({Site? site, String? keyword, int? limit, int? offset}) {
     return WorkQuery(
       site: site ?? this.site,
       keyword: keyword ?? this.keyword,

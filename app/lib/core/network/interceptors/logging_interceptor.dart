@@ -14,10 +14,7 @@ class LoggingInterceptor extends Interceptor {
   static const String _startKey = 'geekplayer.log.start';
 
   @override
-  void onRequest(
-    RequestOptions options,
-    RequestInterceptorHandler handler,
-  ) {
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     options.extra[_startKey] = DateTime.now();
     _logger.d('[HTTP] → ${options.method} ${options.uri}');
     handler.next(options);

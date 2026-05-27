@@ -20,11 +20,9 @@ import 'errors.dart';
 /// Immutable parsed representation of a host's `robots.txt` (under the
 /// `User-agent: *` group).
 class RobotsRules {
-  RobotsRules({
-    required List<String> disallowedPrefixes,
-    DateTime? fetchedAt,
-  })  : _disallowed = List<String>.unmodifiable(disallowedPrefixes),
-        fetchedAt = fetchedAt ?? DateTime.now().toUtc();
+  RobotsRules({required List<String> disallowedPrefixes, DateTime? fetchedAt})
+    : _disallowed = List<String>.unmodifiable(disallowedPrefixes),
+      fetchedAt = fetchedAt ?? DateTime.now().toUtc();
 
   /// "Allow everything" sentinel — used when no relevant rules were
   /// found and the host did not return an error.
@@ -35,8 +33,10 @@ class RobotsRules {
   /// when `/robots.txt` itself failed to fetch (ADR-0001 §取得方針-5
   /// requires we respect robots.txt; if we can't read it we err on the
   /// safe side).
-  factory RobotsRules.denyAll({DateTime? fetchedAt}) =>
-      RobotsRules(disallowedPrefixes: const <String>['/'], fetchedAt: fetchedAt);
+  factory RobotsRules.denyAll({DateTime? fetchedAt}) => RobotsRules(
+    disallowedPrefixes: const <String>['/'],
+    fetchedAt: fetchedAt,
+  );
 
   /// Parse a `robots.txt` document. Lines outside the `User-agent: *`
   /// group, comments (`#`), blank lines, and unsupported directives are
@@ -64,10 +64,7 @@ class RobotsRules {
         // Allow, Crawl-delay, Sitemap, etc — ignored by design.
       }
     }
-    return RobotsRules(
-      disallowedPrefixes: disallow,
-      fetchedAt: fetchedAt,
-    );
+    return RobotsRules(disallowedPrefixes: disallow, fetchedAt: fetchedAt);
   }
 
   final List<String> _disallowed;
@@ -108,9 +105,9 @@ class RobotsCache {
     required Future<String> Function(String host) fetcher,
     Duration ttl = const Duration(hours: 24),
     DateTime Function()? now,
-  })  : _fetcher = fetcher,
-        _ttl = ttl,
-        _now = now ?? (() => DateTime.now().toUtc());
+  }) : _fetcher = fetcher,
+       _ttl = ttl,
+       _now = now ?? (() => DateTime.now().toUtc());
 
   final Future<String> Function(String host) _fetcher;
   final Duration _ttl;
@@ -121,8 +118,7 @@ class RobotsCache {
   /// the TTL has elapsed).
   Future<RobotsRules> rulesFor(String host) async {
     final RobotsRules? existing = _byHost[host];
-    if (existing != null &&
-        _now().difference(existing.fetchedAt) < _ttl) {
+    if (existing != null && _now().difference(existing.fetchedAt) < _ttl) {
       return existing;
     }
     try {

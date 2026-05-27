@@ -18,8 +18,8 @@ class NovelEpisodes extends Table {
 
   @override
   Set<Column<Object>> get primaryKey => <Column<Object>>{
-        site,
-        externalId,
-        episodeIndex,
-      };
+    site,
+    externalId,
+    episodeIndex,
+  };
 }

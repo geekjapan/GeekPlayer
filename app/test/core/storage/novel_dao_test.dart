@@ -32,8 +32,10 @@ void main() {
         episodeCount: 5,
         addedAt: now,
       );
-      final NovelWorkRow? row =
-          await db.novelWorksDao.getWork('narou', 'n9669bk');
+      final NovelWorkRow? row = await db.novelWorksDao.getWork(
+        'narou',
+        'n9669bk',
+      );
       expect(row, isNotNull);
       expect(row!.title, 'second');
       expect(row.author, 'B');
@@ -70,91 +72,79 @@ void main() {
         episodeCount: 1,
         addedAt: now,
       );
-      final List<NovelWorkRow> narou =
-          await db.novelWorksDao.listBySite('narou');
+      final List<NovelWorkRow> narou = await db.novelWorksDao.listBySite(
+        'narou',
+      );
       expect(narou.length, 1);
       expect(narou.first.externalId, 'a');
     });
 
-    test(
-      'deleteWork cascades to novel_episodes and novel_bookmarks',
-      () async {
-        final DateTime now = DateTime.utc(2026, 5, 27);
-        await db.novelWorksDao.upsertWork(
-          site: 'narou',
-          externalId: 'w1',
-          title: 't',
-          author: 'a',
-          episodeCount: 2,
-          addedAt: now,
-        );
-        await db.novelEpisodesDao.upsertEpisode(
-          site: 'narou',
-          externalId: 'w1',
-          episodeIndex: 1,
-          title: 'e1',
-          body: 'body1',
-          fetchedAt: now,
-        );
-        await db.novelEpisodesDao.upsertEpisode(
-          site: 'narou',
-          externalId: 'w1',
-          episodeIndex: 2,
-          title: 'e2',
-          body: 'body2',
-          fetchedAt: now,
-        );
-        await db.novelBookmarksDao.upsertBookmark(
-          site: 'narou',
-          externalId: 'w1',
-          episodeIndex: 2,
-          scrollFraction: 0.5,
-          updatedAt: now,
-        );
+    test('deleteWork cascades to novel_episodes and novel_bookmarks', () async {
+      final DateTime now = DateTime.utc(2026, 5, 27);
+      await db.novelWorksDao.upsertWork(
+        site: 'narou',
+        externalId: 'w1',
+        title: 't',
+        author: 'a',
+        episodeCount: 2,
+        addedAt: now,
+      );
+      await db.novelEpisodesDao.upsertEpisode(
+        site: 'narou',
+        externalId: 'w1',
+        episodeIndex: 1,
+        title: 'e1',
+        body: 'body1',
+        fetchedAt: now,
+      );
+      await db.novelEpisodesDao.upsertEpisode(
+        site: 'narou',
+        externalId: 'w1',
+        episodeIndex: 2,
+        title: 'e2',
+        body: 'body2',
+        fetchedAt: now,
+      );
+      await db.novelBookmarksDao.upsertBookmark(
+        site: 'narou',
+        externalId: 'w1',
+        episodeIndex: 2,
+        scrollFraction: 0.5,
+        updatedAt: now,
+      );
 
-        // Sanity: a Work in a different (site, externalId) must NOT be
-        // touched by the cascade.
-        await db.novelWorksDao.upsertWork(
-          site: 'kakuyomu',
-          externalId: 'w1',
-          title: 'kak',
-          author: 'a',
-          episodeCount: 1,
-          addedAt: now,
-        );
-        await db.novelEpisodesDao.upsertEpisode(
-          site: 'kakuyomu',
-          externalId: 'w1',
-          episodeIndex: 1,
-          title: 'kak-e1',
-          body: 'kbody',
-          fetchedAt: now,
-        );
+      // Sanity: a Work in a different (site, externalId) must NOT be
+      // touched by the cascade.
+      await db.novelWorksDao.upsertWork(
+        site: 'kakuyomu',
+        externalId: 'w1',
+        title: 'kak',
+        author: 'a',
+        episodeCount: 1,
+        addedAt: now,
+      );
+      await db.novelEpisodesDao.upsertEpisode(
+        site: 'kakuyomu',
+        externalId: 'w1',
+        episodeIndex: 1,
+        title: 'kak-e1',
+        body: 'kbody',
+        fetchedAt: now,
+      );
 
-        final int removed =
-            await db.novelWorksDao.deleteWork('narou', 'w1');
-        expect(removed, 1);
-        expect(await db.novelWorksDao.getWork('narou', 'w1'), isNull);
-        expect(
-          await db.novelEpisodesDao.listEpisodes('narou', 'w1'),
-          isEmpty,
-        );
-        expect(
-          await db.novelBookmarksDao.getBookmark('narou', 'w1'),
-          isNull,
-        );
+      final int removed = await db.novelWorksDao.deleteWork('narou', 'w1');
+      expect(removed, 1);
+      expect(await db.novelWorksDao.getWork('narou', 'w1'), isNull);
+      expect(await db.novelEpisodesDao.listEpisodes('narou', 'w1'), isEmpty);
+      expect(await db.novelBookmarksDao.getBookmark('narou', 'w1'), isNull);
 
-        // The kakuyomu Work survives.
-        expect(
-          await db.novelWorksDao.getWork('kakuyomu', 'w1'),
-          isNotNull,
-        );
-        expect(
-          (await db.novelEpisodesDao.listEpisodes('kakuyomu', 'w1')).length,
-          1,
-        );
-      },
-    );
+      // The kakuyomu Work survives.
+      expect(await db.novelWorksDao.getWork('kakuyomu', 'w1'), isNotNull);
+      expect(
+        (await db.novelEpisodesDao.listEpisodes('kakuyomu', 'w1')).length,
+        1,
+      );
+    });
   });
 
   group('NovelEpisodesDao', () {
@@ -170,8 +160,10 @@ void main() {
           fetchedAt: now,
         );
       }
-      final Set<int> existing =
-          await db.novelEpisodesDao.existingIndices('narou', 'w1');
+      final Set<int> existing = await db.novelEpisodesDao.existingIndices(
+        'narou',
+        'w1',
+      );
       expect(existing, <int>{1, 3, 5});
     });
 
@@ -193,8 +185,11 @@ void main() {
         body: 'second',
         fetchedAt: now.add(const Duration(hours: 1)),
       );
-      final NovelEpisodeRow? row =
-          await db.novelEpisodesDao.getEpisode('narou', 'w1', 1);
+      final NovelEpisodeRow? row = await db.novelEpisodesDao.getEpisode(
+        'narou',
+        'w1',
+        1,
+      );
       expect(row!.title, 'e1-updated');
       expect(row.body, 'second');
     });
@@ -217,8 +212,10 @@ void main() {
         scrollFraction: 0.75,
         updatedAt: now,
       );
-      final NovelBookmarkRow? row =
-          await db.novelBookmarksDao.getBookmark('narou', 'w1');
+      final NovelBookmarkRow? row = await db.novelBookmarksDao.getBookmark(
+        'narou',
+        'w1',
+      );
       expect(row!.episodeIndex, 3);
       expect(row.scrollFraction, closeTo(0.75, 1e-9));
     });

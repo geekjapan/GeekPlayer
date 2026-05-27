@@ -12,30 +12,30 @@
 
 ## 2. ネットワーク基盤 (`core/network`)
 
-- [ ] 2.1 `app/lib/core/network/user_agent.dart` に `buildUserAgent(String version)` を実装し、ADR-0001 §取得方針-4 のフォーマットを返す
-- [ ] 2.2 `app/lib/core/network/rate_limiter.dart` に token-bucket 実装（`rate`, `burst`, `maxConcurrency`, `Future<T> run<T>(Future<T> Function() task)`）
-- [ ] 2.3 `app/lib/core/network/backoff.dart` に `RetryPolicy`（初期 1s、2 倍、最大 5min、最大 6 回、±20% jitter、`Retry-After` 優先）と `withExponentialBackoff<T>` を実装
-- [ ] 2.4 `app/lib/core/network/robots_txt.dart` に `RobotsRules`（`User-agent: *` と `Disallow:` のみサポート）と `Allows(path) -> bool` を実装。docstring に仕様制限を明記
-- [ ] 2.5 `app/lib/core/network/errors.dart` に sealed `NetworkError` ヒエラルキー（`RobotsDisallowedError`, `RateLimitExceededError`, `NetworkUnreachableError`）を定義
-- [ ] 2.6 `app/lib/core/network/interceptors/{robots_txt_interceptor.dart, rate_limit_interceptor.dart, backoff_interceptor.dart, logging_interceptor.dart}` を実装し、`buildSiteDio(Site, RateLimiter, RobotsRules)` で 4 段の interceptor を装着
-- [ ] 2.7 `app/test/core/network/rate_limiter_test.dart` で `FakeAsync` を使い、kakuyomu プロファイル（0.5/1/1）の 2 タスク間隔が 2s であること、narou プロファイル（1.0/5/4）の maxConcurrency が 4 であることを検証
-- [ ] 2.8 `app/test/core/network/backoff_test.dart` で 429 を 3 連発 → 4 回目で 200 を返すモックに対し、待ち時間が 1s/2s/4s（±jitter 20%）であること、`Retry-After: 30` 時に exactly 30s 待つことを検証
-- [ ] 2.9 `app/test/core/network/robots_txt_test.dart` で `User-agent: *\nDisallow: /private/` のパースと `allows('/public/page') == true`、`allows('/private/page') == false` を検証
+- [x] 2.1 `app/lib/core/network/user_agent.dart` に `buildUserAgent(String version)` を実装し、ADR-0001 §取得方針-4 のフォーマットを返す
+- [x] 2.2 `app/lib/core/network/rate_limiter.dart` に token-bucket 実装（`rate`, `burst`, `maxConcurrency`, `Future<T> run<T>(Future<T> Function() task)`）
+- [x] 2.3 `app/lib/core/network/backoff.dart` に `RetryPolicy`（初期 1s、2 倍、最大 5min、最大 6 回、±20% jitter、`Retry-After` 優先）と `withExponentialBackoff<T>` を実装
+- [x] 2.4 `app/lib/core/network/robots_txt.dart` に `RobotsRules`（`User-agent: *` と `Disallow:` のみサポート）と `Allows(path) -> bool` を実装。docstring に仕様制限を明記
+- [x] 2.5 `app/lib/core/network/errors.dart` に sealed `NetworkError` ヒエラルキー（`RobotsDisallowedError`, `RateLimitExceededError`, `NetworkUnreachableError`）を定義
+- [x] 2.6 `app/lib/core/network/interceptors/{robots_txt_interceptor.dart, rate_limit_interceptor.dart, backoff_interceptor.dart, logging_interceptor.dart}` を実装し、`buildSiteDio(Site, RateLimiter, RobotsRules)` で 4 段の interceptor を装着
+- [x] 2.7 `app/test/core/network/rate_limiter_test.dart` で `FakeAsync` を使い、kakuyomu プロファイル（0.5/1/1）の 2 タスク間隔が 2s であること、narou プロファイル（1.0/5/4）の maxConcurrency が 4 であることを検証
+- [x] 2.8 `app/test/core/network/backoff_test.dart` で 429 を 3 連発 → 4 回目で 200 を返すモックに対し、待ち時間が 1s/2s/4s（±jitter 20%）であること、`Retry-After: 30` 時に exactly 30s 待つことを検証
+- [x] 2.9 `app/test/core/network/robots_txt_test.dart` で `User-agent: *\nDisallow: /private/` のパースと `allows('/public/page') == true`、`allows('/private/page') == false` を検証
 
 ## 3. ドメインモデル (`core/novel/models`)
 
-- [ ] 3.1 `app/lib/core/novel/models/site.dart` に `enum Site { narou, noc, kakuyomu }` と `String get code` / `Uri get baseUrl` を実装
-- [ ] 3.2 `app/lib/core/novel/models/work_id.dart` に `WorkId({required Site site, required String externalId})` を `@immutable` + `operator ==` / `hashCode` 込みで実装
-- [ ] 3.3 `app/lib/core/novel/models/work.dart` に `Work`（`id`, `title`, `author`, `synopsis?`, `episodeCount`, `addedAt`, `lastSyncedAt?`）を実装
-- [ ] 3.4 `app/lib/core/novel/models/episode.dart` に `EpisodeId(int index)` と `Episode(id, title)`、`EpisodeBody(String body, DateTime fetchedAt)` を実装
-- [ ] 3.5 `app/lib/core/novel/errors.dart` に sealed `NovelRepositoryError` を定義し、`SiteConsentRequiredError`, `HtmlParseError`（予約）, `WorkNotFoundError`, `EpisodeNotFoundError` を含める
-- [ ] 3.6 `app/test/core/novel/models_test.dart` で `WorkId` の構造的等価、`Site` の exhaustive switch、`Episode` の不変性を検証
+- [x] 3.1 `app/lib/core/novel/models/site.dart` に `enum Site { narou, noc, kakuyomu }` と `String get code` / `Uri get baseUrl` を実装
+- [x] 3.2 `app/lib/core/novel/models/work_id.dart` に `WorkId({required Site site, required String externalId})` を `@immutable` + `operator ==` / `hashCode` 込みで実装
+- [x] 3.3 `app/lib/core/novel/models/work.dart` に `Work`（`id`, `title`, `author`, `synopsis?`, `episodeCount`, `addedAt`, `lastSyncedAt?`）を実装
+- [x] 3.4 `app/lib/core/novel/models/episode.dart` に `EpisodeId(int index)` と `Episode(id, title)`、`EpisodeBody(String body, DateTime fetchedAt)` を実装
+- [x] 3.5 `app/lib/core/novel/errors.dart` に sealed `NovelRepositoryError` を定義し、`SiteConsentRequiredError`, `HtmlParseError`（予約）, `WorkNotFoundError`, `EpisodeNotFoundError` を含める
+- [x] 3.6 `app/test/core/novel/models_test.dart` で `WorkId` の構造的等価、`Site` の exhaustive switch、`Episode` の不変性を検証
 
 ## 4. NovelRepository interface
 
-- [ ] 4.1 `app/lib/core/novel/novel_repository.dart` に `abstract interface class NovelRepository` を定義（`site`, `fetchWork`, `fetchEpisodes (Stream<Episode>)`, `fetchEpisodeBody`）
-- [ ] 4.2 `app/lib/core/novel/fake_novel_repository.dart` にテスト用 `FakeNovelRepository`（in-memory map ベース、人工遅延注入可）を実装
-- [ ] 4.3 `app/test/core/novel/fake_novel_repository_test.dart` で `fetchEpisodes` が `Stream` で逐次返ること、`fetchEpisodeBody` が永続化しないこと（drift を触らない）を検証
+- [x] 4.1 `app/lib/core/novel/novel_repository.dart` に `abstract interface class NovelRepository` を定義（`site`, `fetchWork`, `fetchEpisodes (Stream<Episode>)`, `fetchEpisodeBody`）
+- [x] 4.2 `app/lib/core/novel/fake_novel_repository.dart` にテスト用 `FakeNovelRepository`（in-memory map ベース、人工遅延注入可）を実装
+- [x] 4.3 `app/test/core/novel/fake_novel_repository_test.dart` で `fetchEpisodes` が `Stream` で逐次返ること、`fetchEpisodeBody` が永続化しないこと（drift を触らない）を検証
 
 ## 5. drift スキーマ拡張
 
@@ -94,8 +94,8 @@ GRILL-REPORT Q-CROSS-011 に従い、Dart 3 の sealed-class 制約のため
 
 ## 10. 締め
 
-- [ ] 10.1 `flutter analyze` / `flutter test` / `dart format --set-exit-if-changed .` が green
-- [ ] 10.2 macOS / Windows / Android で `debug_menu` 経由のダミー Library 追加 / 削除 / 再起動後の永続化を実機/エミュレータで確認
-- [ ] 10.3 `ConsentDialog` の初回起動フローを各 OS で動作確認（外側タップで閉じない、「すべて拒否」で NovelHomeSection が placeholder 表示）
-- [ ] 10.4 `README.md` の機能セクションに「オンライン小説ライブラリ（インフラ層）」の一行追記（具体的なサイト対応はサイト別 change で更新する旨を併記）
-- [ ] 10.5 すべての task の `- [ ]` を `- [x]` に更新し、`/opsx:archive` で本 change をアーカイブ
+- [x] 10.1 `flutter analyze` / `flutter test` / `dart format --set-exit-if-changed .` が green
+- [ ] 10.2 macOS / Windows / Android で `debug_menu` 経由のダミー Library 追加 / 削除 / 再起動後の永続化を実機/エミュレータで確認 (deferred: manual device check, not feasible in CI)
+- [ ] 10.3 `ConsentDialog` の初回起動フローを各 OS で動作確認（外側タップで閉じない、「すべて拒否」で NovelHomeSection が placeholder 表示） (deferred: manual device check)
+- [x] 10.4 `README.md` の機能セクションに「オンライン小説ライブラリ（インフラ層）」の一行追記（具体的なサイト対応はサイト別 change で更新する旨を併記）
+- [ ] 10.5 すべての task の `- [ ]` を `- [x]` に更新し、`/opsx:archive` で本 change をアーカイブ (deferred: prompt forbids archive in this run)

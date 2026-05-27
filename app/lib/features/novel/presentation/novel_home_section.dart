@@ -43,8 +43,9 @@ class _NovelHomeSectionBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final Site? filter = ref.watch(siteFilterStateProvider);
-    final ListLibraryUseCase listUseCase =
-        ref.watch(listLibraryUseCaseProvider);
+    final ListLibraryUseCase listUseCase = ref.watch(
+      listLibraryUseCaseProvider,
+    );
     final ConsentRepository consent = ref.watch(consentRepositoryProvider);
 
     return Padding(
@@ -80,20 +81,20 @@ class _NovelHomeSectionBody extends ConsumerWidget {
           const SizedBox(height: 8),
           FutureBuilder<_NovelLibraryState>(
             future: _load(consent, listUseCase, filter),
-            builder: (BuildContext context,
-                AsyncSnapshot<_NovelLibraryState> snap) {
-              if (!snap.hasData) {
-                return const Padding(
-                  padding: EdgeInsets.all(24),
-                  child: Center(child: CircularProgressIndicator()),
-                );
-              }
-              final _NovelLibraryState st = snap.data!;
-              if (st.works.isEmpty) {
-                return const _EmptyPlaceholder();
-              }
-              return _LibraryGrid(state: st);
-            },
+            builder:
+                (BuildContext context, AsyncSnapshot<_NovelLibraryState> snap) {
+                  if (!snap.hasData) {
+                    return const Padding(
+                      padding: EdgeInsets.all(24),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+                  final _NovelLibraryState st = snap.data!;
+                  if (st.works.isEmpty) {
+                    return const _EmptyPlaceholder();
+                  }
+                  return _LibraryGrid(state: st);
+                },
           ),
         ],
       ),
@@ -271,7 +272,9 @@ class _WorkCard extends StatelessWidget {
     return Opacity(
       opacity: disabled ? 0.5 : 1.0,
       child: Card(
-        key: ValueKey<String>('work-${work.id.site.code}-${work.id.externalId}'),
+        key: ValueKey<String>(
+          'work-${work.id.site.code}-${work.id.externalId}',
+        ),
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: SizedBox(
@@ -299,10 +302,7 @@ class _WorkCard extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  work.author,
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
+                Text(work.author, style: Theme.of(context).textTheme.bodySmall),
                 const SizedBox(height: 4),
                 Text(
                   '${work.episodeCount} 話',

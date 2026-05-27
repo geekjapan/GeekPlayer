@@ -19,8 +19,7 @@ void main() {
   late FakeNovelRepository fake;
   late ConsentGuardedRepository guarded;
 
-  const WorkId workId =
-      WorkId(site: Site.kakuyomu, externalId: 'k-1');
+  const WorkId workId = WorkId(site: Site.kakuyomu, externalId: 'k-1');
 
   setUp(() {
     db = AppDatabase.forTesting(DatabaseConnection(NativeDatabase.memory()));
@@ -36,14 +35,9 @@ void main() {
             episodeCount: 1,
             addedAt: DateTime.utc(2026, 5, 27),
           ),
-          episodes: <Episode>[
-            Episode(id: EpisodeId(1), title: 'e1'),
-          ],
+          episodes: <Episode>[Episode(id: EpisodeId(1), title: 'e1')],
           bodies: <int, EpisodeBody>{
-            1: EpisodeBody(
-              body: 'hello',
-              fetchedAt: DateTime.utc(2026, 5, 27),
-            ),
+            1: EpisodeBody(body: 'hello', fetchedAt: DateTime.utc(2026, 5, 27)),
           },
         ),
       },
@@ -57,8 +51,11 @@ void main() {
     await expectLater(
       guarded.fetchWork(workId),
       throwsA(
-        isA<SiteConsentRequiredError>()
-            .having((SiteConsentRequiredError e) => e.site, 'site', Site.kakuyomu),
+        isA<SiteConsentRequiredError>().having(
+          (SiteConsentRequiredError e) => e.site,
+          'site',
+          Site.kakuyomu,
+        ),
       ),
     );
   });
@@ -75,18 +72,17 @@ void main() {
     await consent.grant(Site.kakuyomu);
     final Work w = await guarded.fetchWork(workId);
     expect(w.title, 't');
-    final EpisodeBody body =
-        await guarded.fetchEpisodeBody(workId, EpisodeId(1));
+    final EpisodeBody body = await guarded.fetchEpisodeBody(
+      workId,
+      EpisodeId(1),
+    );
     expect(body.body, 'hello');
   });
 
   test('fetchEpisodes stream throws before yielding when denied', () async {
     await consent.revoke(Site.kakuyomu);
     final Stream<Episode> s = guarded.fetchEpisodes(workId);
-    await expectLater(
-      s.toList,
-      throwsA(isA<SiteConsentRequiredError>()),
-    );
+    await expectLater(s.toList, throwsA(isA<SiteConsentRequiredError>()));
   });
 
   test('searchWorks gates on consent', () async {
@@ -103,10 +99,7 @@ void main() {
       granted: true,
       policyVersion: '2020-01-01',
     );
-    expect(
-      await consent.hasFreshConsent(Site.kakuyomu),
-      isFalse,
-    );
+    expect(await consent.hasFreshConsent(Site.kakuyomu), isFalse);
     await expectLater(
       guarded.fetchWork(workId),
       throwsA(isA<SiteConsentRequiredError>()),
@@ -114,8 +107,9 @@ void main() {
 
     // Re-granting writes the current kPolicyVersion.
     await consent.grant(Site.kakuyomu);
-    final SiteConsentRow? row =
-        await db.siteConsentsDao.getConsent(Site.kakuyomu.code);
+    final SiteConsentRow? row = await db.siteConsentsDao.getConsent(
+      Site.kakuyomu.code,
+    );
     expect(row!.policyVersion, kPolicyVersion);
     expect(row.granted, isTrue);
   });

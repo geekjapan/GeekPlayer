@@ -100,10 +100,7 @@ void main() {
 
     final List<SiteConsentRow> rows = await db.siteConsentsDao.getAll();
     expect(rows.length, Site.values.length);
-    expect(
-      rows.every((SiteConsentRow r) => !r.granted),
-      isTrue,
-    );
+    expect(rows.every((SiteConsentRow r) => !r.granted), isTrue);
   });
 
   testWidgets('barrier tap does not dismiss', (WidgetTester tester) async {

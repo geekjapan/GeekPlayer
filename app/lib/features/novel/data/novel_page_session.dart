@@ -21,9 +21,8 @@ final class NovelPageSession extends PageSession {
     required NovelBookmarksDao bookmarksDao,
     required this.totalPages,
     PagePosition? initial,
-  })  : _bookmarksDao = bookmarksDao, // ignore: prefer_initializing_formals
-        _current = initial ??
-            PagePosition(pageIndex: 1, scrollFraction: 0.0) {
+  }) : _bookmarksDao = bookmarksDao, // ignore: prefer_initializing_formals
+       _current = initial ?? PagePosition(pageIndex: 1, scrollFraction: 0.0) {
     // Emit the initial position immediately so subscribers see at
     // least one event within 500ms (spec scenario "PageSession can be
     // observed for reading progress").
@@ -68,8 +67,7 @@ final class NovelPageSession extends PageSession {
   Stream<MediaPosition> get positionStream => _positionController.stream;
 
   @override
-  Stream<MediaPlayState> get playStateStream =>
-      _playStateController.stream;
+  Stream<MediaPlayState> get playStateStream => _playStateController.stream;
 
   @override
   Stream<Duration?> get durationStream => _durationController.stream;

@@ -17,10 +17,10 @@ enum Site {
 
   /// Stable string identifier used in drift columns and provider keys.
   String get code => switch (this) {
-        Site.narou => 'narou',
-        Site.noc => 'noc',
-        Site.kakuyomu => 'kakuyomu',
-      };
+    Site.narou => 'narou',
+    Site.noc => 'noc',
+    Site.kakuyomu => 'kakuyomu',
+  };
 
   /// Origin/base used by `NovelRepository` implementations and by the
   /// `robots.txt` cache (we may fetch `/robots.txt` from this host).
@@ -32,10 +32,10 @@ enum Site {
   /// narou change will wire up. The `responsible-fetching` layer
   /// shares a single RateLimiter across `*.syosetu.com`.
   Uri get baseUrl => switch (this) {
-        Site.narou => Uri.parse('https://ncode.syosetu.com'),
-        Site.noc => Uri.parse('https://novel18.syosetu.com'),
-        Site.kakuyomu => Uri.parse('https://kakuyomu.jp'),
-      };
+    Site.narou => Uri.parse('https://ncode.syosetu.com'),
+    Site.noc => Uri.parse('https://novel18.syosetu.com'),
+    Site.kakuyomu => Uri.parse('https://kakuyomu.jp'),
+  };
 
   /// Parse a [code] back to a [Site]. Returns `null` for unknown
   /// codes (e.g. when reading rows persisted by a future version of
@@ -52,8 +52,8 @@ enum Site {
   /// Display label (ja). Used by [SiteConsentDialog] and
   /// [NovelHomeSection] filter chips.
   String get displayName => switch (this) {
-        Site.narou => '小説家になろう',
-        Site.noc => 'ノクターン系',
-        Site.kakuyomu => 'カクヨム',
-      };
+    Site.narou => '小説家になろう',
+    Site.noc => 'ノクターン系',
+    Site.kakuyomu => 'カクヨム',
+  };
 }

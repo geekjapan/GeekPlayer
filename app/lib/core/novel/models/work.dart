@@ -64,14 +64,14 @@ class Work {
 
   @override
   int get hashCode => Object.hash(
-        id,
-        title,
-        author,
-        synopsis,
-        episodeCount,
-        addedAt,
-        lastSyncedAt,
-      );
+    id,
+    title,
+    author,
+    synopsis,
+    episodeCount,
+    addedAt,
+    lastSyncedAt,
+  );
 
   @override
   String toString() => 'Work($id, "$title", $author, $episodeCount eps)';
