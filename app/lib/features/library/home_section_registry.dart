@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../audio/presentation/audio_home_section.dart';
 import '../novel/presentation/novel_home_section.dart';
+import '../settings/presentation/settings_app_bar_action.dart';
 import '../video/presentation/video_home_section.dart';
 import 'home_section.dart';
 
@@ -28,7 +29,7 @@ List<HomeSection> homeSections(Ref ref) {
 @Riverpod(keepAlive: true)
 List<HomeAppBarAction> homeAppBarActions(Ref ref) {
   final List<HomeAppBarAction> all = <HomeAppBarAction>[
-    // Wave 3 — app-settings: ...ref.watch(settingsAppBarActionsProvider),
+    ...ref.watch(settingsAppBarActionsProvider),
     // Wave 4 — about-and-licenses: ...ref.watch(aboutAppBarActionsProvider),
   ];
   all.sort(

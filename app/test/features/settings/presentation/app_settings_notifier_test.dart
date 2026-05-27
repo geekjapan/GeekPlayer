@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geekplayer/core/storage/database.dart';
 import 'package:geekplayer/core/storage/providers.dart';
-import 'package:geekplayer/features/settings/data/app_settings_repository.dart';
 import 'package:geekplayer/features/settings/domain/app_settings.dart';
 import 'package:geekplayer/features/settings/presentation/app_settings_notifier.dart';
 

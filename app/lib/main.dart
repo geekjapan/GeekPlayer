@@ -10,6 +10,8 @@ import 'core/media/audio_providers.dart';
 import 'features/library/home_screen.dart';
 import 'features/novel/data/consent_repository.dart';
 import 'features/novel/presentation/consent_dialog.dart';
+import 'features/settings/domain/app_settings.dart';
+import 'features/settings/presentation/app_settings_notifier.dart';
 import 'l10n/app_localizations.dart';
 
 Future<void> main() async {
@@ -43,12 +45,25 @@ class GeekPlayerApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final messengerKey = ref.watch(scaffoldMessengerKeyProvider);
+    final ThemeMode themeMode = ref.watch(
+      appSettingsProvider.select(
+        (AsyncValue<AppSettings> s) => s.value?.themeMode ?? ThemeMode.system,
+      ),
+    );
     return MaterialApp(
       title: 'GeekPlayer',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
         useMaterial3: true,
       ),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.indigo,
+          brightness: Brightness.dark,
+        ),
+        useMaterial3: true,
+      ),
+      themeMode: themeMode,
       scaffoldMessengerKey: messengerKey,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,

@@ -72,34 +72,34 @@
 - [x] 5.3 Notifier の `dispose` で debounce 中の保留書き込みを flush
 - [x] 5.4 debounce / flush / partial-failure rollback のユニットテストを
   `app/test/features/settings/presentation/app_settings_notifier_test.dart` に追加
-- [ ] 5.5 `app/lib/features/settings/presentation/settings_screen.dart` を実装
+- [x] 5.5 `app/lib/features/settings/presentation/settings_screen.dart` を実装
   （Material 3 `ListView` + 10 セクションを spec の順序で配置）
-- [ ] 5.6 `MaterialApp.themeMode` を `appSettingsNotifierProvider.select((s) => s.value?.themeMode ?? ThemeMode.system)`
-  で配線（`app/lib/main.dart:1` の `MaterialApp` を更新）
+- [x] 5.6 `MaterialApp.themeMode` を `appSettingsProvider.select((s) => s.value?.themeMode ?? ThemeMode.system)`
+  で配線（`app/lib/main.dart` の `MaterialApp` を更新、`darkTheme` も追加）
 
 ## 6. プレゼンテーション層 — 各セクション実装
 
-- [ ] 6.1 `display_section.dart`: テーマモードのラジオ + アクセントカラー placeholder
+- [x] 6.1 `display_section.dart`: テーマモードのラジオ + アクセントカラー placeholder
   （disabled + "v0.2 で対応" バッジ）
-- [ ] 6.2 `playback_section.dart`: デフォルト再生速度プリセット選択 + 次回起動
+- [x] 6.2 `playback_section.dart`: デフォルト再生速度プリセット選択 + 次回起動
   helper text
-- [ ] 6.3 `video_section.dart`: 字幕デフォルト switch + 次回起動 helper text
-- [ ] 6.4 `audio_section.dart`: バックグラウンド再生 / 通知継続表示の 2 switch、
+- [x] 6.3 `video_section.dart`: 字幕デフォルト switch + 次回起動 helper text
+- [x] 6.4 `audio_section.dart`: バックグラウンド再生 / 通知継続表示の 2 switch、
   即時反映（`audio_service` API 呼び直しを `add-local-audio-playback` 完了後
   に配線、本 change では値変更のみ実装）
-- [ ] 6.5 `novel_section.dart`: 縦/横書き、文字サイズスライダー、行間スライダー、
+- [x] 6.5 `novel_section.dart`: 縦/横書き、文字サイズスライダー、行間スライダー、
   フォント選択、明暗別背景色ピッカー（即時反映）
-- [ ] 6.6 `library_section.dart`: "最近開いた" 上限選択（10/25/50/100）+ 履歴
+- [x] 6.6 `library_section.dart`: "最近開いた" 上限選択（10/25/50/100）+ 履歴
   クリアボタン（確認ダイアログ）。`recent_items` の prune は次回ホーム画面
-  描画時に走るよう `HomeScreen` 側にフックを追加
-- [ ] 6.7 `cache_section.dart`: キャッシュサイズ表示（`SUM(LENGTH(body_html))`
+  描画時に走るよう `HomeScreen` 側にフックを追加  *（prune フックは task 7.2 で配線）*
+- [x] 6.7 `cache_section.dart`: キャッシュサイズ表示（`SUM(LENGTH(body))`
   を `AsyncValue` で取得）、上限設定、サイト別 / 全クリアボタン、超過時の
   警告バナーと "古い順に削除" ボタン
-- [ ] 6.8 `online_services_section.dart`: ADR-0001 §注意書き-3 の常時表示文言、
+- [x] 6.8 `online_services_section.dart`: ADR-0001 §注意書き-3 の常時表示文言、
   サイト別 consent switch、revoke 時にキャッシュ削除確認ダイアログを表示
-- [ ] 6.9 `r18_section.dart`: 現在の同意状態表示と "年齢確認をやり直す" ボタン
-  + 確認ダイアログ、`SiteConsentRepository.revoke(SiteId.narou18)` 呼び出し
-- [ ] 6.10 `about_section.dart`: バージョン行（`package_info_plus` 連携）、
+- [x] 6.9 `r18_section.dart`: 現在の同意状態表示と "年齢確認をやり直す" ボタン
+  + 確認ダイアログ、`SiteConsentRepository.revoke` 呼び出し  *（`SiteId.narou18` は `add-narou-novel-reader` 未merge のため、現状は `Site.noc` (ノクターン系) を revoke して同等の R18 リセットを実現）*
+- [x] 6.10 `about_section.dart`: バージョン行（`package_info_plus` 連携）、
   ライセンス行 / OSS Notices 行（"未実装 (add-about-and-licenses)" placeholder
   画面へ遷移）
 
