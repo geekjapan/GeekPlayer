@@ -2,9 +2,28 @@
 
 このドキュメントは、ここまでの設計・足場作りを引き継ぐ後続の人 / 後続のエージェントが、
 **読まなくて済む対話履歴をスキップして** すぐに作業に入れることを目的にしています。
-最終更新: 2026-05-27。
+最終更新: 2026-05-27（Wave 0 完了直後）。
+
+> **実装を始める方へ**: 本ファイルは high-level entry point です。
+> 実装手順（waves / worktree / sub-agent prompt / conflict resolution / exit criteria）の
+> **executable な詳細**は [`docs/IMPLEMENTATION-PLAN.md`](IMPLEMENTATION-PLAN.md) を参照してください。
 
 ---
+
+## 0. ドキュメントマップ
+
+| 質問 | ファイル |
+|---|---|
+| 何を作っているの? | このファイル §1〜§3 |
+| 開発環境のセットアップは? | このファイル §4 |
+| 過去の設計判断と理由は? | [`docs/adr/`](adr/) (0001-0004) |
+| プロジェクト全般のコーディング規約は? | [`docs/CONVENTIONS.md`](CONVENTIONS.md) |
+| **実装手順 (Wave / worktree / sub-agent)** | **[`docs/IMPLEMENTATION-PLAN.md`](IMPLEMENTATION-PLAN.md)** |
+| 全 8 change の概要と推奨順 | このファイル §5 |
+| 解決済み・未解決の設計論点 | [`docs/GRILL-REPORT.md`](GRILL-REPORT.md) |
+| ロードマップ (v0.2 / v1.0) | [`docs/roadmap.md`](roadmap.md) |
+| ドメイン用語集 | [`CONTEXT.md`](../CONTEXT.md) |
+| AI ハーネス用プロジェクトルール | [`CLAUDE.md`](../CLAUDE.md) / [`AGENTS.md`](../AGENTS.md) |
 
 ## 1. プロジェクト一行説明
 
@@ -209,41 +228,30 @@ drift スキーマのマイグレーション順序前提:
 
 ## 9. 次に何をすべきか（後続の人/エージェントへ）
 
-並列 Wave 戦略は [GRILL-REPORT.md](GRILL-REPORT.md) と [ADR-0004](adr/0004-home-screen-section-registry.md) を参照。
+**実装フェーズに入る方は [`docs/IMPLEMENTATION-PLAN.md`](IMPLEMENTATION-PLAN.md) を読んでください。**
+そこに以下が executable な形で揃っています:
 
-### Wave 1（foundation、sequential）
+- Wave 1 (sequential, video foundation) の実行コマンドと exit criteria
+- Wave 2 (3 並列: audio / novel-library / error-ux) の worktree 作成・sub-agent spawn・merge 順序
+- Wave 3 (3 並列: narou / kakuyomu / app-settings) の同様
+- Wave 4 (about-and-licenses) の最終ステップ
+- サブエージェント用 prompt template
+- worktree ライフサイクル（作成/初期化/削除/落とし穴）
+- conflict 解決プレイブック（pubspec.yaml / media_session.dart / AndroidManifest 等）
+- CI 戦略（PR 単位、rebase + 再 CI フロー）
+- ロールバック手順（task 失敗 / wave merge 後の regression）
+- リスクレジスター（R-1 〜 R-7）
+- ポスト実装（v0.1.0 タグ付け、Release 手順）
 
-1. **`add-local-video-playback` を apply 開始** — `/opsx:apply add-local-video-playback`
-2. 特に **Section 5 (HomeScreen + Section レジストリ foundation)** が wave 2/3 並列実行の前提
-3. 全 task 完了で `flutter analyze` / `flutter test` / `dart format` がクリーンを確認
-4. **実機検証** — macOS / Windows / Android 3 OS で動作確認
-5. `/opsx:archive add-local-video-playback` で `openspec/specs/` に確定し、main に merge
+### TL;DR（細かい話を省いた最短経路）
 
-### Wave 2（video merge 後、3 並列）
+1. Wave 1 を main 上で `/opsx:apply add-local-video-playback` → archive → push
+2. Wave 2: `git worktree add` × 3 → 各 worktree で `/opsx:apply <change>` → 順に merge
+3. Wave 3: 同上で 3 並列
+4. Wave 4: about-and-licenses を sequential
+5. 全 wave 完了で v0.1.0 タグ付け
 
-```bash
-git worktree add ../GeekPlayer-audio          -b feature/audio main
-git worktree add ../GeekPlayer-novel-library  -b feature/novel-library main
-git worktree add ../GeekPlayer-error-ux       -b feature/error-ux main
-```
-
-各 worktree でサブエージェント or 人が `/opsx:apply <change>` を並走。
-
-### Wave 3（wave 2 merge 後、3 並列）
-
-```bash
-git worktree add ../GeekPlayer-narou         -b feature/narou         main
-git worktree add ../GeekPlayer-kakuyomu      -b feature/kakuyomu      main
-git worktree add ../GeekPlayer-app-settings  -b feature/app-settings  main
-```
-
-### Wave 4（最後）
-
-```bash
-git worktree add ../GeekPlayer-about         -b feature/about         main
-```
-
-並列実装中は **[docs/CONVENTIONS.md](CONVENTIONS.md)** を全エージェントが遵守すること
+並列実装中は **[CONVENTIONS.md](CONVENTIONS.md)** を全エージェントが遵守すること
 （HomeScreen レジストリ / pubspec 冪等 / AndroidManifest append-only 等）。
 
 途中で設計上の疑問が出たら、`design.md` の **Open Questions** セクションを更新するか、
