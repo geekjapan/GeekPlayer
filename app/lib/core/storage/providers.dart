@@ -23,3 +23,23 @@ PlaybackPositionsDao playbackPositionsDao(Ref ref) {
 RecentItemsDao recentItemsDao(Ref ref) {
   return ref.watch(appDatabaseProvider).recentItemsDao;
 }
+
+@Riverpod(keepAlive: true)
+NovelWorksDao novelWorksDao(Ref ref) {
+  return ref.watch(appDatabaseProvider).novelWorksDao;
+}
+
+@Riverpod(keepAlive: true)
+NovelEpisodesDao novelEpisodesDao(Ref ref) {
+  return ref.watch(appDatabaseProvider).novelEpisodesDao;
+}
+
+@Riverpod(keepAlive: true)
+NovelBookmarksDao novelBookmarksDao(Ref ref) {
+  return ref.watch(appDatabaseProvider).novelBookmarksDao;
+}
+
+@Riverpod(keepAlive: true)
+SiteConsentsDao siteConsentsDao(Ref ref) {
+  return ref.watch(appDatabaseProvider).siteConsentsDao;
+}

@@ -24,7 +24,7 @@ GeekPlayer は **動画・音楽・書籍・漫画ZIP・オンライン小説（
 - **音楽再生**: mp3 / flac / m4a / ogg、背景再生、ロック画面コントロール、ヘッドホンボタン対応（`just_audio` + `audio_service`）
 - **再生位置の保存**: 動画・音楽・小説それぞれで前回位置から再開
 - **「最近開いた」リスト**
-- **オンライン小説**:
+- **オンライン小説ライブラリ（インフラ層）**: `NovelRepository` 抽象 / drift v2 スキーマ / レート制限 / `robots.txt` / 同意ダイアログ / `NovelHomeSection` を整備済み。具体的なサイト対応はサイト別 change (`add-narou-novel-reader` / `add-kakuyomu-novel-reader`) で順次有効化されます。
   - 小説家になろう / ノクターンノベルズ等 (公式 API)
   - カクヨム (公式 RSS + 本文 HTML パース — 後述の注意事項あり)
 - **オフライン読書**: ライブラリに追加した作品の本文を端末内に保存
