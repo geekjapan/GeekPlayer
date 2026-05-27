@@ -24,10 +24,7 @@ class KakuyomuConsentRequiredScreen extends ConsumerWidget {
           children: <Widget>[
             const Icon(Icons.lock_outline, size: 64),
             const SizedBox(height: 16),
-            const Text(
-              'カクヨムへの同意が必要です。',
-              textAlign: TextAlign.center,
-            ),
+            const Text('カクヨムへの同意が必要です。', textAlign: TextAlign.center),
             const SizedBox(height: 12),
             FilledButton(
               key: const Key('kakuyomu-consent-required-show'),

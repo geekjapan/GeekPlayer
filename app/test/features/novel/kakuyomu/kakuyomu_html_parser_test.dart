@@ -20,8 +20,10 @@ void main() {
       final String workId = '${i}000000000000000000$i';
       test('$name.html — golden parity', () async {
         final File f = File('test/fixtures/kakuyomu/html/$name.html');
-        final KakuyomuWorkDetail detail =
-            parser.parseWorkPage(await f.readAsString(), workId: workId);
+        final KakuyomuWorkDetail detail = parser.parseWorkPage(
+          await f.readAsString(),
+          workId: workId,
+        );
         await _check(name, detail.toJson());
         expect(detail.id, workId);
         expect(detail.title, isNotEmpty);
@@ -80,11 +82,8 @@ void main() {
 }
 
 Future<void> _check(String name, Map<String, dynamic> actual) async {
-  final File golden = File(
-    'test/fixtures/kakuyomu/html/$name.golden.json',
-  );
-  final String serialized =
-      const JsonEncoder.withIndent('  ').convert(actual);
+  final File golden = File('test/fixtures/kakuyomu/html/$name.golden.json');
+  final String serialized = const JsonEncoder.withIndent('  ').convert(actual);
   if (Platform.environment['KAKUYOMU_UPDATE_GOLDENS'] == '1' ||
       !golden.existsSync()) {
     await golden.writeAsString('$serialized\n');
@@ -93,6 +92,7 @@ Future<void> _check(String name, Map<String, dynamic> actual) async {
   expect(
     serialized,
     expected.trimRight(),
-    reason: 'Golden mismatch for $name (set KAKUYOMU_UPDATE_GOLDENS=1 to refresh)',
+    reason:
+        'Golden mismatch for $name (set KAKUYOMU_UPDATE_GOLDENS=1 to refresh)',
   );
 }

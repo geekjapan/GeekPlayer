@@ -34,12 +34,12 @@ class _KakuyomuLatestFeedScreenState
     final Future<List<KakuyomuFeedItem>> next = ref
         .read(kakuyomuNovelRepositoryProvider.future)
         .then((dynamic repo) {
-      if (repo == null) {
-        return <KakuyomuFeedItem>[];
-      }
-      // ignore: avoid_dynamic_calls
-      return repo.latest() as Future<List<KakuyomuFeedItem>>;
-    });
+          if (repo == null) {
+            return <KakuyomuFeedItem>[];
+          }
+          // ignore: avoid_dynamic_calls
+          return repo.latest() as Future<List<KakuyomuFeedItem>>;
+        });
     setState(() {
       _pending = next;
       _inflight = next;
@@ -61,52 +61,54 @@ class _KakuyomuLatestFeedScreenState
         onRefresh: _refresh,
         child: FutureBuilder<List<KakuyomuFeedItem>>(
           future: _pending,
-          builder: (
-            BuildContext context,
-            AsyncSnapshot<List<KakuyomuFeedItem>> snap,
-          ) {
-            if (snap.connectionState != ConnectionState.done) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            if (snap.hasError) {
-              return ListView(
-                children: <Widget>[
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Text('エラー: ${snap.error}'),
-                    ),
-                  ),
-                ],
-              );
-            }
-            final List<KakuyomuFeedItem> items = snap.data!;
-            return ListView.separated(
-              itemCount: items.length,
-              separatorBuilder: (_, _) => const Divider(height: 1),
-              itemBuilder: (BuildContext context, int i) {
-                final KakuyomuFeedItem it = items[i];
-                return ListTile(
-                  title: Text(it.title),
-                  subtitle: Text(
-                    [
-                      if (it.author != null && it.author!.isNotEmpty) it.author,
-                      if (it.publishedAt != null)
-                        it.publishedAt!.toLocal().toIso8601String(),
-                    ].whereType<String>().join(' · '),
-                  ),
-                  onTap: it.workId.isEmpty
-                      ? null
-                      : () => Navigator.of(context).push(
-                            MaterialPageRoute<void>(
-                              builder: (_) =>
-                                  KakuyomuWorkDetailScreen(workId: it.workId),
+          builder:
+              (
+                BuildContext context,
+                AsyncSnapshot<List<KakuyomuFeedItem>> snap,
+              ) {
+                if (snap.connectionState != ConnectionState.done) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (snap.hasError) {
+                  return ListView(
+                    children: <Widget>[
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Text('エラー: ${snap.error}'),
+                        ),
+                      ),
+                    ],
+                  );
+                }
+                final List<KakuyomuFeedItem> items = snap.data!;
+                return ListView.separated(
+                  itemCount: items.length,
+                  separatorBuilder: (_, _) => const Divider(height: 1),
+                  itemBuilder: (BuildContext context, int i) {
+                    final KakuyomuFeedItem it = items[i];
+                    return ListTile(
+                      title: Text(it.title),
+                      subtitle: Text(
+                        [
+                          if (it.author != null && it.author!.isNotEmpty)
+                            it.author,
+                          if (it.publishedAt != null)
+                            it.publishedAt!.toLocal().toIso8601String(),
+                        ].whereType<String>().join(' · '),
+                      ),
+                      onTap: it.workId.isEmpty
+                          ? null
+                          : () => Navigator.of(context).push(
+                              MaterialPageRoute<void>(
+                                builder: (_) =>
+                                    KakuyomuWorkDetailScreen(workId: it.workId),
+                              ),
                             ),
-                          ),
+                    );
+                  },
                 );
               },
-            );
-          },
         ),
       ),
     );

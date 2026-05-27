@@ -51,5 +51,6 @@ class KakuyomuSearchQuery {
   int get hashCode => Object.hash(keyword, genre, sort);
 
   @override
-  String toString() => 'KakuyomuSearchQuery("$keyword", genre=$genre, sort=$sort)';
+  String toString() =>
+      'KakuyomuSearchQuery("$keyword", genre=$genre, sort=$sort)';
 }

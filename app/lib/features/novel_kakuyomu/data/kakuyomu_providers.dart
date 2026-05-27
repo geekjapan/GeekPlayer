@@ -60,7 +60,9 @@ Future<RobotsCache> kakuyomuRobotsCache(Ref ref) async {
 Future<Dio> kakuyomuDio(Ref ref) async {
   final String version = await ref.watch(kakuyomuAppVersionProvider.future);
   final RateLimiter limiter = ref.watch(kakuyomuRateLimiterProvider);
-  final RobotsCache robots = await ref.watch(kakuyomuRobotsCacheProvider.future);
+  final RobotsCache robots = await ref.watch(
+    kakuyomuRobotsCacheProvider.future,
+  );
   return buildKakuyomuDio(
     appVersion: version,
     limiter: limiter,
@@ -89,10 +91,12 @@ Future<KakuyomuHtmlSource> kakuyomuHtmlSource(Ref ref) async {
 @Riverpod(keepAlive: true)
 Future<KakuyomuNovelRepository?> kakuyomuNovelRepository(Ref ref) async {
   if (!kakuyomuEnabled) return null;
-  final KakuyomuRssSource rss =
-      await ref.watch(kakuyomuRssSourceProvider.future);
-  final KakuyomuHtmlSource html =
-      await ref.watch(kakuyomuHtmlSourceProvider.future);
+  final KakuyomuRssSource rss = await ref.watch(
+    kakuyomuRssSourceProvider.future,
+  );
+  final KakuyomuHtmlSource html = await ref.watch(
+    kakuyomuHtmlSourceProvider.future,
+  );
   final ConsentRepository consent = ref.watch(consentRepositoryProvider);
   return KakuyomuNovelRepository(
     rssSource: rss,

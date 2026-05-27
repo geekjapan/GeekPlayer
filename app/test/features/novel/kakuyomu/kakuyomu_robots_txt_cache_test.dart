@@ -6,8 +6,7 @@ void main() {
   group('isKakuyomuPathAllowed', () {
     test('robots permits /works/123', () async {
       final RobotsCache cache = RobotsCache(
-        fetcher: (String host) async =>
-            'User-agent: *\nDisallow: /admin/\n',
+        fetcher: (String host) async => 'User-agent: *\nDisallow: /admin/\n',
       );
       expect(await isKakuyomuPathAllowed(cache, '/works/123'), isTrue);
       expect(await isKakuyomuPathAllowed(cache, '/admin/foo'), isFalse);
@@ -32,8 +31,7 @@ void main() {
       // If kakuyomu itself disallows /works/, we still respect that
       // (robots wins over the allowlist for explicit denials).
       final RobotsCache cache = RobotsCache(
-        fetcher: (String host) async =>
-            'User-agent: *\nDisallow: /works/\n',
+        fetcher: (String host) async => 'User-agent: *\nDisallow: /works/\n',
       );
       // robots.txt denies /works/123 directly, allowlist would also
       // match — but the cache's rules.allows() returns false. Our

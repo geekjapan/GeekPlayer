@@ -66,12 +66,11 @@ class ParserFailureFallback extends StatelessWidget {
     final Uri uri = Uri.parse(url);
     final Future<bool> Function(Uri, {LaunchMode mode}) launcher =
         launchUrlOverride ?? launchUrl;
-    final bool ok =
-        await launcher(uri, mode: LaunchMode.externalApplication);
+    final bool ok = await launcher(uri, mode: LaunchMode.externalApplication);
     if (!ok && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('ブラウザを起動できませんでした')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('ブラウザを起動できませんでした')));
     }
   }
 
@@ -90,9 +89,9 @@ class ParserFailureFallback extends StatelessWidget {
     );
     await Clipboard.setData(ClipboardData(text: diag));
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('診断情報をクリップボードにコピーしました')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('診断情報をクリップボードにコピーしました')));
     }
   }
 }
@@ -107,8 +106,7 @@ String buildDiagnostic({
   required String appVersion,
   String? osNameOverride,
 }) {
-  final String os = osNameOverride ??
-      _safeOsName();
+  final String os = osNameOverride ?? _safeOsName();
   return <String>[
     'GeekPlayer Kakuyomu parse failure diagnostic',
     'app version: $appVersion',

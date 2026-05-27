@@ -25,7 +25,8 @@ final class ParagraphSegment extends ReaderSegment {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || (other is ParagraphSegment && other.text == text);
+      identical(this, other) ||
+      (other is ParagraphSegment && other.text == text);
 
   @override
   int get hashCode => text.hashCode;
@@ -101,8 +102,10 @@ final class TextRun extends RubyRun {
   final String text;
 
   @override
-  Map<String, dynamic> toJson() =>
-      <String, dynamic>{'kind': 'text', 'text': text};
+  Map<String, dynamic> toJson() => <String, dynamic>{
+    'kind': 'text',
+    'text': text,
+  };
 
   @override
   bool operator ==(Object other) =>
@@ -126,8 +129,11 @@ final class RubyPair extends RubyRun {
   final String reading;
 
   @override
-  Map<String, dynamic> toJson() =>
-      <String, dynamic>{'kind': 'ruby', 'base': base, 'reading': reading};
+  Map<String, dynamic> toJson() => <String, dynamic>{
+    'kind': 'ruby',
+    'base': base,
+    'reading': reading,
+  };
 
   @override
   bool operator ==(Object other) {

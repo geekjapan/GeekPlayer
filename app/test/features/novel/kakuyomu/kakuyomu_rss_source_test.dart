@@ -34,8 +34,10 @@ void main() {
 
     test('malformed item is skipped, remaining items survive', () async {
       final File file = File('test/fixtures/kakuyomu/rss/latest.xml');
-      final List<KakuyomuFeedItem> items =
-          parseFeedBody(await file.readAsString(), contentType: 'rss');
+      final List<KakuyomuFeedItem> items = parseFeedBody(
+        await file.readAsString(),
+        contentType: 'rss',
+      );
       // latest.xml contains 4 <item>s but one is missing <link>; expect 3.
       expect(items.length, 3);
       for (final KakuyomuFeedItem it in items) {
@@ -48,9 +50,7 @@ void main() {
   group('extractWorkIdFromUrl', () {
     test('returns numeric id from work URL', () {
       expect(
-        extractWorkIdFromUrl(
-          'https://kakuyomu.jp/works/1177354054881131863',
-        ),
+        extractWorkIdFromUrl('https://kakuyomu.jp/works/1177354054881131863'),
         '1177354054881131863',
       );
     });
@@ -72,8 +72,9 @@ void main() {
 
 Future<void> _runFixture(String name, {required String contentType}) async {
   final File fixture = File('test/fixtures/kakuyomu/rss/$name');
-  final File golden =
-      File('test/fixtures/kakuyomu/rss/${name.replaceAll('.xml', '.golden.json')}');
+  final File golden = File(
+    'test/fixtures/kakuyomu/rss/${name.replaceAll('.xml', '.golden.json')}',
+  );
 
   final List<KakuyomuFeedItem> items = parseFeedBody(
     await fixture.readAsString(),

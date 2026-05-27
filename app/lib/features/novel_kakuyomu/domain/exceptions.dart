@@ -48,7 +48,10 @@ final class KakuyomuParseException implements Exception {
 /// 404 from an episode page. Surfaces a friendlier UI state than the
 /// raw `DioException`.
 final class KakuyomuEpisodeNotFoundException implements Exception {
-  KakuyomuEpisodeNotFoundException({required this.workId, required this.episodeId});
+  KakuyomuEpisodeNotFoundException({
+    required this.workId,
+    required this.episodeId,
+  });
 
   /// Kakuyomu work id (numeric string).
   final String workId;
@@ -63,7 +66,10 @@ final class KakuyomuEpisodeNotFoundException implements Exception {
 
 /// All retry budgets exhausted (typically 6 consecutive 429/503).
 final class KakuyomuUpstreamUnavailableException implements Exception {
-  KakuyomuUpstreamUnavailableException({required this.message, this.lastStatus});
+  KakuyomuUpstreamUnavailableException({
+    required this.message,
+    this.lastStatus,
+  });
 
   final String message;
   final int? lastStatus;

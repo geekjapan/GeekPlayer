@@ -33,7 +33,10 @@ final List<RegExp> kKakuyomuAllowlistPatterns = <RegExp>[
 /// final cache = buildKakuyomuRobotsCache(dio: bareDio);
 /// final allowed = await isKakuyomuPathAllowed(cache, '/works/123');
 /// ```
-RobotsCache buildKakuyomuRobotsCache({required Dio dio, DateTime Function()? now}) {
+RobotsCache buildKakuyomuRobotsCache({
+  required Dio dio,
+  DateTime Function()? now,
+}) {
   return RobotsCache(
     fetcher: (String host) async {
       final Response<dynamic> resp = await dio.get<dynamic>(

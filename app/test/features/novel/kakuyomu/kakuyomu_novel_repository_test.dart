@@ -57,15 +57,12 @@ void main() {
       verifyNever(() => rss.latest());
     });
 
-    test(
-      'searchWorks (NovelRepository) throws without consent',
-      () async {
-        expect(
-          repo.searchWorks(const WorkQuery(site: Site.kakuyomu, keyword: 'x')),
-          throwsA(isA<SiteConsentRequiredError>()),
-        );
-      },
-    );
+    test('searchWorks (NovelRepository) throws without consent', () async {
+      expect(
+        repo.searchWorks(const WorkQuery(site: Site.kakuyomu, keyword: 'x')),
+        throwsA(isA<SiteConsentRequiredError>()),
+      );
+    });
   });
 
   group('with consent', () {

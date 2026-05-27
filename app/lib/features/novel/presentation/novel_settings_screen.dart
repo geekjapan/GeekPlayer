@@ -19,10 +19,7 @@ class NovelSettingsScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('オンライン小説 設定')),
       body: const SingleChildScrollView(
         child: Column(
-          children: <Widget>[
-            NovelSettingsSection(),
-            KakuyomuSettingsSection(),
-          ],
+          children: <Widget>[NovelSettingsSection(), KakuyomuSettingsSection()],
         ),
       ),
     );

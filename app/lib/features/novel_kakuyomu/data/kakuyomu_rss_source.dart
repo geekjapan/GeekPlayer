@@ -24,8 +24,8 @@ enum KakuyomuRankingPeriod { daily, weekly, monthly, cumulative }
 /// item does not abort the feed".
 class KakuyomuRssSource {
   KakuyomuRssSource({required Dio dio, Logger? logger})
-      : _dio = dio, // ignore: prefer_initializing_formals
-        _logger = logger ?? Logger();
+    : _dio = dio, // ignore: prefer_initializing_formals
+      _logger = logger ?? Logger();
 
   final Dio _dio;
   final Logger _logger;
@@ -36,10 +36,11 @@ class KakuyomuRssSource {
   Future<List<KakuyomuFeedItem>> search(KakuyomuSearchQuery query) async {
     final Map<String, String> params = query.toQueryParameters();
     return _fetchAndParse(
-      Uri.parse('$_baseHost/search').replace(queryParameters: <String, String>{
-        ...params,
-        'format': 'rss',
-      }).toString(),
+      Uri.parse('$_baseHost/search')
+          .replace(
+            queryParameters: <String, String>{...params, 'format': 'rss'},
+          )
+          .toString(),
     );
   }
 
@@ -160,10 +161,9 @@ List<KakuyomuFeedItem> _itemsFromAtom(AtomFeed feed, Logger log) {
           title: item.title ?? '',
           workId: extractWorkIdFromUrl(link),
           url: link,
-          author:
-              (item.authors != null && item.authors!.isNotEmpty)
-                  ? item.authors!.first.name
-                  : null,
+          author: (item.authors != null && item.authors!.isNotEmpty)
+              ? item.authors!.first.name
+              : null,
           publishedAt: _tryParseDate(item.published) ?? item.updated,
           summary: item.summary ?? item.content,
         ),

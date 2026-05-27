@@ -150,10 +150,7 @@ final class KakuyomuNovelRepository implements NovelRepository {
     await _assertConsent();
     final KakuyomuWorkDetail d = await fetchWorkDetail(workId.externalId);
     for (int i = 0; i < d.episodes.length; i++) {
-      yield core.Episode(
-        id: core.EpisodeId(i + 1),
-        title: d.episodes[i].title,
-      );
+      yield core.Episode(id: core.EpisodeId(i + 1), title: d.episodes[i].title);
     }
   }
 
@@ -178,8 +175,10 @@ final class KakuyomuNovelRepository implements NovelRepository {
         episodeIndex: episodeId.index,
       );
     }
-    final KakuyomuEpisodeBody body =
-        await fetchEpisodeFullBody(workId.externalId, d.episodes[idx].id);
+    final KakuyomuEpisodeBody body = await fetchEpisodeFullBody(
+      workId.externalId,
+      d.episodes[idx].id,
+    );
     return core.EpisodeBody(
       body: body.toPlainText(),
       fetchedAt: DateTime.now().toUtc(),

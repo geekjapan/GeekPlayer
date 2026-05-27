@@ -32,8 +32,9 @@ class _KakuyomuSettingsSectionState
   }
 
   void _refresh() {
-    _grantedFuture =
-        ref.read(consentRepositoryProvider).hasFreshConsent(Site.kakuyomu);
+    _grantedFuture = ref
+        .read(consentRepositoryProvider)
+        .hasFreshConsent(Site.kakuyomu);
   }
 
   Future<void> _toggle(bool desired) async {
@@ -90,10 +91,7 @@ class _KakuyomuSettingsSectionState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
-                'カクヨム',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
+              Text('カクヨム', style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 8),
               const Text(
                 '本セクションは ADR-0001 に従って動作します。\n'
@@ -110,9 +108,7 @@ class _KakuyomuSettingsSectionState
               TextButton(
                 key: const Key('kakuyomu-open-readme-link'),
                 onPressed: () {},
-                child: const Text(
-                  '詳細: README の「カクヨム機能の注意事項」セクション',
-                ),
+                child: const Text('詳細: README の「カクヨム機能の注意事項」セクション'),
               ),
               FutureBuilder<bool>(
                 future: _grantedFuture,

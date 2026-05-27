@@ -67,5 +67,6 @@ class KakuyomuWorkDetail {
   );
 
   @override
-  String toString() => 'KakuyomuWorkDetail($id, "$title", ${episodes.length} eps)';
+  String toString() =>
+      'KakuyomuWorkDetail($id, "$title", ${episodes.length} eps)';
 }

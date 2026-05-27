@@ -62,8 +62,9 @@ class KakuyomuHtmlParser {
         .where((String s) => s.isNotEmpty)
         .toList(growable: false);
 
-    final DateTime? lastUpdatedAt =
-        _parseDate(doc.querySelector(_selWorkLastUpdated)?.attributes['datetime']);
+    final DateTime? lastUpdatedAt = _parseDate(
+      doc.querySelector(_selWorkLastUpdated)?.attributes['datetime'],
+    );
 
     final List<KakuyomuEpisodeSummary> episodes = <KakuyomuEpisodeSummary>[];
     for (final Element item in doc.querySelectorAll(_selEpisodeListItem)) {
@@ -71,8 +72,7 @@ class KakuyomuHtmlParser {
       if (a == null) continue;
       final String? href = a.attributes['href'];
       if (href == null || !href.contains('/episodes/')) continue;
-      final RegExpMatch? m =
-          RegExp(r'/episodes/(\d+)').firstMatch(href);
+      final RegExpMatch? m = RegExp(r'/episodes/(\d+)').firstMatch(href);
       if (m == null) continue;
       final String epId = m.group(1)!;
       final String epTitle = a.text.trim();
@@ -106,8 +106,7 @@ class KakuyomuHtmlParser {
     required String episodeId,
   }) {
     final Document doc = html_parser.parse(html);
-    final String url =
-        'https://kakuyomu.jp/works/$workId/episodes/$episodeId';
+    final String url = 'https://kakuyomu.jp/works/$workId/episodes/$episodeId';
 
     final String title = doc.querySelector(_selEpisodeTitle)?.text.trim() ?? '';
 
@@ -121,7 +120,9 @@ class KakuyomuHtmlParser {
     }
 
     final List<ReaderSegment> segs = <ReaderSegment>[];
-    for (final Element p in bodyEl.querySelectorAll(_selEpisodeBodyParagraphs)) {
+    for (final Element p in bodyEl.querySelectorAll(
+      _selEpisodeBodyParagraphs,
+    )) {
       final ReaderSegment seg = _paragraphToSegment(p);
       segs.add(seg);
     }
@@ -156,13 +157,16 @@ class KakuyomuHtmlParser {
         if (n.localName == 'ruby') {
           flushText();
           final String base = n.nodes
-              .where((Node x) =>
-                  x is Text ||
-                  (x is Element && x.localName != 'rt' && x.localName != 'rp'))
+              .where(
+                (Node x) =>
+                    x is Text ||
+                    (x is Element &&
+                        x.localName != 'rt' &&
+                        x.localName != 'rp'),
+              )
               .map((Node x) => x.text ?? '')
               .join();
-          final String reading =
-              n.querySelector('rt')?.text.trim() ?? '';
+          final String reading = n.querySelector('rt')?.text.trim() ?? '';
           runs.add(RubyPair(base: base.trim(), reading: reading));
         } else if (n.localName == 'br') {
           // ignore inline <br> inside a paragraph (treat as space).

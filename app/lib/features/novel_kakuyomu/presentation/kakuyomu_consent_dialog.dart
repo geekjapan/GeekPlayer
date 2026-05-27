@@ -55,8 +55,12 @@ class _KakuyomuConsentDialogState extends ConsumerState<KakuyomuConsentDialog> {
             const _Bullet(text: '能動キャッシュのみ。ユーザーが「Library に追加」した作品の本文だけを保存します。'),
             const _Bullet(text: 'カクヨムへのアクセスは 1 リクエスト / 2 秒、並列度 1 に制限されます。'),
             const _Bullet(text: 'robots.txt の Disallow を 24 時間キャッシュ付きで尊重します。'),
-            const _Bullet(text: 'User-Agent に GeekPlayer のバージョンと連絡先 URL を明示します。'),
-            const _Bullet(text: '429 / 503 を受けたら指数バックオフ (最大 5 分) で再試行し、6 回で諦めます。'),
+            const _Bullet(
+              text: 'User-Agent に GeekPlayer のバージョンと連絡先 URL を明示します。',
+            ),
+            const _Bullet(
+              text: '429 / 503 を受けたら指数バックオフ (最大 5 分) で再試行し、6 回で諦めます。',
+            ),
             const SizedBox(height: 12),
             Text(
               '詳細は ADR-0001 / README のカクヨム機能の注意事項を参照してください。'

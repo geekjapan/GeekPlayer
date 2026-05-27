@@ -33,9 +33,9 @@ class _KakuyomuSearchScreenState extends ConsumerState<KakuyomuSearchScreen> {
     final String kw = _controller.text.trim();
     if (kw.isEmpty) return;
     setState(() {
-      _pending = ref
-          .read(kakuyomuNovelRepositoryProvider.future)
-          .then((dynamic repo) {
+      _pending = ref.read(kakuyomuNovelRepositoryProvider.future).then((
+        dynamic repo,
+      ) {
         if (repo == null) {
           throw StateError('Kakuyomu is disabled (kakuyomuEnabled=false)');
         }
@@ -81,51 +81,47 @@ class _KakuyomuSearchScreenState extends ConsumerState<KakuyomuSearchScreen> {
                   ? const Center(child: Text('キーワードを入力して検索してください'))
                   : FutureBuilder<List<KakuyomuFeedItem>>(
                       future: _pending,
-                      builder: (
-                        BuildContext context,
-                        AsyncSnapshot<List<KakuyomuFeedItem>> snap,
-                      ) {
-                        if (snap.connectionState != ConnectionState.done) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                        if (snap.hasError) {
-                          final Object err = snap.error!;
-                          return _ErrorCard(
-                            err: err,
-                            onRetry: _submit,
-                          );
-                        }
-                        final List<KakuyomuFeedItem> items = snap.data!;
-                        if (items.isEmpty) {
-                          return const Center(
-                            child: Text('結果が見つかりませんでした'),
-                          );
-                        }
-                        return ListView.separated(
-                          itemCount: items.length,
-                          separatorBuilder: (_, _) =>
-                              const Divider(height: 1),
-                          itemBuilder: (BuildContext context, int i) {
-                            final KakuyomuFeedItem it = items[i];
-                            return ListTile(
-                              title: Text(it.title),
-                              subtitle: Text(it.author ?? ''),
-                              onTap: it.workId.isEmpty
-                                  ? null
-                                  : () => Navigator.of(context).push(
-                                        MaterialPageRoute<void>(
-                                          builder: (_) =>
-                                              KakuyomuWorkDetailScreen(
-                                            workId: it.workId,
+                      builder:
+                          (
+                            BuildContext context,
+                            AsyncSnapshot<List<KakuyomuFeedItem>> snap,
+                          ) {
+                            if (snap.connectionState != ConnectionState.done) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                            if (snap.hasError) {
+                              final Object err = snap.error!;
+                              return _ErrorCard(err: err, onRetry: _submit);
+                            }
+                            final List<KakuyomuFeedItem> items = snap.data!;
+                            if (items.isEmpty) {
+                              return const Center(child: Text('結果が見つかりませんでした'));
+                            }
+                            return ListView.separated(
+                              itemCount: items.length,
+                              separatorBuilder: (_, _) =>
+                                  const Divider(height: 1),
+                              itemBuilder: (BuildContext context, int i) {
+                                final KakuyomuFeedItem it = items[i];
+                                return ListTile(
+                                  title: Text(it.title),
+                                  subtitle: Text(it.author ?? ''),
+                                  onTap: it.workId.isEmpty
+                                      ? null
+                                      : () => Navigator.of(context).push(
+                                          MaterialPageRoute<void>(
+                                            builder: (_) =>
+                                                KakuyomuWorkDetailScreen(
+                                                  workId: it.workId,
+                                                ),
                                           ),
                                         ),
-                                      ),
+                                );
+                              },
                             );
                           },
-                        );
-                      },
                     ),
             ),
           ],
@@ -145,8 +141,8 @@ class _ErrorCard extends StatelessWidget {
     final String msg = err is KakuyomuUpstreamUnavailableException
         ? 'カクヨムが混雑しています。時間を置いて再試行してください。'
         : err is SiteConsentDeniedException
-            ? 'カクヨムへの同意が必要です。設定画面から有効化してください。'
-            : 'エラーが発生しました: $err';
+        ? 'カクヨムへの同意が必要です。設定画面から有効化してください。'
+        : 'エラーが発生しました: $err';
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),

@@ -42,9 +42,9 @@ class _KakuyomuRankingScreenState extends ConsumerState<KakuyomuRankingScreen>
 
   Future<List<KakuyomuFeedItem>> _load(KakuyomuRankingPeriod period) {
     return _cache.putIfAbsent(period, () {
-      return ref
-          .read(kakuyomuNovelRepositoryProvider.future)
-          .then((dynamic repo) {
+      return ref.read(kakuyomuNovelRepositoryProvider.future).then((
+        dynamic repo,
+      ) {
         if (repo == null) return <KakuyomuFeedItem>[];
         // ignore: avoid_dynamic_calls
         return repo.ranking(period) as Future<List<KakuyomuFeedItem>>;
@@ -85,41 +85,39 @@ class _RankingList extends StatelessWidget {
   Widget build(BuildContext context) {
     return FutureBuilder<List<KakuyomuFeedItem>>(
       future: future,
-      builder: (
-        BuildContext context,
-        AsyncSnapshot<List<KakuyomuFeedItem>> snap,
-      ) {
-        if (snap.connectionState != ConnectionState.done) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (snap.hasError) {
-          return Center(child: Text('エラー: ${snap.error}'));
-        }
-        final List<KakuyomuFeedItem> items = snap.data!;
-        if (items.isEmpty) {
-          return const Center(child: Text('項目がありません'));
-        }
-        return ListView.separated(
-          itemCount: items.length,
-          separatorBuilder: (_, _) => const Divider(height: 1),
-          itemBuilder: (BuildContext context, int i) {
-            final KakuyomuFeedItem it = items[i];
-            return ListTile(
-              leading: Text('${i + 1}'),
-              title: Text(it.title),
-              subtitle: Text(it.author ?? ''),
-              onTap: it.workId.isEmpty
-                  ? null
-                  : () => Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                          builder: (_) =>
-                              KakuyomuWorkDetailScreen(workId: it.workId),
+      builder:
+          (BuildContext context, AsyncSnapshot<List<KakuyomuFeedItem>> snap) {
+            if (snap.connectionState != ConnectionState.done) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snap.hasError) {
+              return Center(child: Text('エラー: ${snap.error}'));
+            }
+            final List<KakuyomuFeedItem> items = snap.data!;
+            if (items.isEmpty) {
+              return const Center(child: Text('項目がありません'));
+            }
+            return ListView.separated(
+              itemCount: items.length,
+              separatorBuilder: (_, _) => const Divider(height: 1),
+              itemBuilder: (BuildContext context, int i) {
+                final KakuyomuFeedItem it = items[i];
+                return ListTile(
+                  leading: Text('${i + 1}'),
+                  title: Text(it.title),
+                  subtitle: Text(it.author ?? ''),
+                  onTap: it.workId.isEmpty
+                      ? null
+                      : () => Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) =>
+                                KakuyomuWorkDetailScreen(workId: it.workId),
+                          ),
                         ),
-                      ),
+                );
+              },
             );
           },
-        );
-      },
     );
   }
 }

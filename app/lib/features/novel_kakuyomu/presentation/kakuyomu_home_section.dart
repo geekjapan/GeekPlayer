@@ -25,8 +25,7 @@ class KakuyomuSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (!kakuyomuEnabled) return const SizedBox.shrink();
-    final AsyncValue<bool> granted =
-        ref.watch(_kakuyomuGrantedProvider);
+    final AsyncValue<bool> granted = ref.watch(_kakuyomuGrantedProvider);
     return granted.when(
       loading: () => const SizedBox.shrink(),
       error: (Object _, StackTrace _) => const SizedBox.shrink(),
@@ -44,10 +43,7 @@ class KakuyomuSection extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(
-                    'カクヨム',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
+                  Text('カクヨム', style: Theme.of(context).textTheme.titleMedium),
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 8,
@@ -157,7 +153,8 @@ class _Chip extends StatelessWidget {
   }
 }
 
-final FutureProvider<bool> _kakuyomuGrantedProvider =
-    FutureProvider<bool>((Ref ref) async {
+final FutureProvider<bool> _kakuyomuGrantedProvider = FutureProvider<bool>((
+  Ref ref,
+) async {
   return ref.read(consentRepositoryProvider).hasFreshConsent(Site.kakuyomu);
 });

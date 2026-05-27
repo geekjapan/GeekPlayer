@@ -30,7 +30,9 @@ void main() {
   });
 
   group('ParserFailureFallback widget', () {
-    testWidgets('tapping 公式ビューアで開く invokes the launcher', (WidgetTester tester) async {
+    testWidgets('tapping 公式ビューアで開く invokes the launcher', (
+      WidgetTester tester,
+    ) async {
       Uri? launched;
       LaunchMode? capturedMode;
       await tester.pumpWidget(
@@ -38,15 +40,20 @@ void main() {
           home: Scaffold(
             body: ParserFailureFallback(
               error: KakuyomuParseException(
-                message: 'x', selector: 's', url: 'u',
+                message: 'x',
+                selector: 's',
+                url: 'u',
               ),
               url: 'https://kakuyomu.jp/works/A/episodes/B',
-              launchUrlOverride: (Uri u,
-                  {LaunchMode mode = LaunchMode.platformDefault}) async {
-                launched = u;
-                capturedMode = mode;
-                return true;
-              },
+              launchUrlOverride:
+                  (
+                    Uri u, {
+                    LaunchMode mode = LaunchMode.platformDefault,
+                  }) async {
+                    launched = u;
+                    capturedMode = mode;
+                    return true;
+                  },
             ),
           ),
         ),

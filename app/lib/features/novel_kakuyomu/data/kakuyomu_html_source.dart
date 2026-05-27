@@ -31,8 +31,8 @@ import 'kakuyomu_html_parser.dart';
 /// 外部ブラウザで開く）で読書継続を保証する。
 class KakuyomuHtmlSource {
   KakuyomuHtmlSource({required Dio dio, KakuyomuHtmlParser? parser})
-      : _dio = dio, // ignore: prefer_initializing_formals
-        _parser = parser ?? const KakuyomuHtmlParser();
+    : _dio = dio, // ignore: prefer_initializing_formals
+      _parser = parser ?? const KakuyomuHtmlParser();
 
   final Dio _dio;
   final KakuyomuHtmlParser _parser;
@@ -40,8 +40,10 @@ class KakuyomuHtmlSource {
   static const String _baseHost = 'https://kakuyomu.jp';
 
   /// Fetch and parse a work-detail page.
-  Future<KakuyomuWorkDetail> fetchWork(String workId,
-      {CancelToken? cancelToken}) async {
+  Future<KakuyomuWorkDetail> fetchWork(
+    String workId, {
+    CancelToken? cancelToken,
+  }) async {
     final String url = '$_baseHost/works/$workId';
     final String body = await _get(url, cancelToken: cancelToken);
     try {

@@ -48,9 +48,9 @@ class _KakuyomuReaderScreenState extends ConsumerState<KakuyomuReaderScreen> {
   void _load() {
     final String epId = widget.episodeIds[_index];
     setState(() {
-      _pending = ref
-          .read(kakuyomuNovelRepositoryProvider.future)
-          .then((dynamic repo) {
+      _pending = ref.read(kakuyomuNovelRepositoryProvider.future).then((
+        dynamic repo,
+      ) {
         if (repo == null) {
           throw StateError('Kakuyomu disabled');
         }
@@ -76,10 +76,7 @@ class _KakuyomuReaderScreenState extends ConsumerState<KakuyomuReaderScreen> {
       ),
       body: FutureBuilder<KakuyomuEpisodeBody>(
         future: _pending,
-        builder: (
-          BuildContext context,
-          AsyncSnapshot<KakuyomuEpisodeBody> snap,
-        ) {
+        builder: (BuildContext context, AsyncSnapshot<KakuyomuEpisodeBody> snap) {
           if (snap.connectionState != ConnectionState.done) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -103,10 +100,7 @@ class _KakuyomuReaderScreenState extends ConsumerState<KakuyomuReaderScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
-                  body.title,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
+                Text(body.title, style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: 16),
                 for (final ReaderSegment s in body.paragraphs)
                   _SegmentView(segment: s),
@@ -145,28 +139,28 @@ class _SegmentView extends StatelessWidget {
   Widget build(BuildContext context) {
     return switch (segment) {
       ParagraphSegment(:final String text) => Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: Text(text),
-        ),
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Text(text),
+      ),
       BlankLineSegment() => const SizedBox(height: 12),
       RubyParagraphSegment(:final List<RubyRun> runs) => Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: Text.rich(
-            TextSpan(
-              children: <InlineSpan>[
-                for (final RubyRun r in runs)
-                  switch (r) {
-                    TextRun(:final String text) => TextSpan(text: text),
-                    // Compact ruby: render base + bracketed reading.
-                    // A richer vertical ruby layout is left to a future
-                    // change once the shared reader UI lands.
-                    RubyPair(:final String base, :final String reading) =>
-                      TextSpan(text: '$base($reading)'),
-                  },
-              ],
-            ),
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Text.rich(
+          TextSpan(
+            children: <InlineSpan>[
+              for (final RubyRun r in runs)
+                switch (r) {
+                  TextRun(:final String text) => TextSpan(text: text),
+                  // Compact ruby: render base + bracketed reading.
+                  // A richer vertical ruby layout is left to a future
+                  // change once the shared reader UI lands.
+                  RubyPair(:final String base, :final String reading) =>
+                    TextSpan(text: '$base($reading)'),
+                },
+            ],
           ),
         ),
+      ),
     };
   }
 }
