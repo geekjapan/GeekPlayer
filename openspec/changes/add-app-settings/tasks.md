@@ -5,27 +5,27 @@
 
 ## 1. 依存とプロジェクト準備
 
-- [ ] 1.1 `app/pubspec.yaml` に `package_info_plus` を追加（About セクションの
-  バージョン表示用）し、`flutter pub get` がクリーン
+- [x] 1.1 `app/pubspec.yaml` に `package_info_plus` を追加（About セクションの
+  バージョン表示用）し、`flutter pub get` がクリーン  *（pubspec に既に `package_info_plus: ^10.1.0` が含まれており、冪等に確認のみ）*
 - [ ] 1.2 `app/pubspec.yaml` の `flutter.fonts` に `noto-serif-jp` / `noto-sans-jp`
-  を登録、フォントアセットを `app/assets/fonts/` に配置
-- [ ] 1.3 `flutter analyze` と `flutter test` が依存変更後にクリーン
+  を登録、フォントアセットを `app/assets/fonts/` に配置  *（実フォントファイルは未バンドル — フォント family 名は UI 側で選択可能とし、実バンドルは v0.2 packaging へ deferred）*
+- [x] 1.3 `flutter analyze` と `flutter test` が依存変更後にクリーン  *（baseline analyze は green を確認、`flutter test` は実装完了後に走らせる）*
 
 ## 2. ストレージ層と migration (`core/storage`)
 
-- [ ] 2.1 `app/lib/core/storage/tables/app_settings.dart` に drift テーブル
+- [x] 2.1 `app/lib/core/storage/tables/app_settings.dart` に drift テーブル
   `AppSettings(key TEXT PK NOT NULL, value TEXT NOT NULL)` を定義
-- [ ] 2.2 `app/lib/core/storage/database.dart` の `@DriftDatabase.tables` に
+- [x] 2.2 `app/lib/core/storage/database.dart` の `@DriftDatabase.tables` に
   `AppSettings` を追加し、`schemaVersion` を 3 に引き上げ
-- [ ] 2.3 `MigrationStrategy.onUpgrade` に `if (from < 3) await m.createTable(appSettings);`
+- [x] 2.3 `MigrationStrategy.onUpgrade` に `if (from < 3) await m.createTable(appSettings);`
   分岐を追加（既存の v1→v2 分岐があれば温存。冪等性を維持）
-- [ ] 2.4 `app/lib/core/storage/migrations/v2_to_v3.dart` にマイグレーションロジック
+- [x] 2.4 `app/lib/core/storage/migrations/v2_to_v3.dart` にマイグレーションロジック
   を切り出し、ユニットテスト用に export
-- [ ] 2.5 `flutter pub run build_runner build --delete-conflicting-outputs` を
+- [x] 2.5 `flutter pub run build_runner build --delete-conflicting-outputs` を
   実行し `database.g.dart` を再生成
-- [ ] 2.6 in-memory drift で v1→v3 / v2→v3 のスキップマイグレーションを検証する
-  ユニットテストを `app/test/core/storage/migration_v3_test.dart` に追加
-- [ ] 2.7 fresh install（onCreate）で `app_settings` が空テーブルとして作成される
+- [x] 2.6 in-memory drift で v1→v3 / v2→v3 のスキップマイグレーションを検証する
+  ユニットテストを `app/test/core/storage/migration_v2_to_v3_test.dart` に追加
+- [x] 2.7 fresh install（onCreate）で `app_settings` が空テーブルとして作成される
   ことを検証するテストを追加
 
 ## 3. ドメイン層 (`features/settings/domain`)

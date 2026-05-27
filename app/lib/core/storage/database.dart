@@ -1,6 +1,8 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
+import 'migrations/v2_to_v3.dart';
+import 'tables/app_settings.dart';
 import 'tables/novel_bookmarks.dart';
 import 'tables/novel_episodes.dart';
 import 'tables/novel_works.dart';
@@ -28,6 +30,7 @@ const int kRecentItemsCap = 50;
     NovelEpisodes,
     NovelBookmarks,
     SiteConsents,
+    AppSettings,
   ],
   daos: <Type>[
     PlaybackPositionsDao,
@@ -36,6 +39,7 @@ const int kRecentItemsCap = 50;
     NovelEpisodesDao,
     NovelBookmarksDao,
     SiteConsentsDao,
+    AppSettingsDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -45,7 +49,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.connection);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -62,6 +66,14 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(novelEpisodes);
         await m.createTable(novelBookmarks);
         await m.createTable(siteConsents);
+      }
+      // v2 -> v3: introduce app_settings (EAV). Additive only — every
+      // earlier table is preserved. See
+      // app/test/core/storage/migration_v2_to_v3_test.dart and
+      // app/lib/core/storage/migrations/v2_to_v3.dart for the migration
+      // logic and skip-migration coverage (v1 -> v3).
+      if (from < 3) {
+        await migrateV2ToV3(m, appSettings);
       }
     },
   );
@@ -470,5 +482,45 @@ class SiteConsentsDao extends DatabaseAccessor<AppDatabase>
     return (delete(
       siteConsents,
     )..where(($SiteConsentsTable t) => t.site.equals(site))).go();
+  }
+}
+
+/// DAO for [AppSettings]. Thin CRUD wrapper used by
+/// `AppSettingsRepository` (the only intended caller per spec
+/// `settings-persistence` Requirement "`app_settings` drift table").
+@DriftAccessor(tables: <Type>[AppSettings])
+class AppSettingsDao extends DatabaseAccessor<AppDatabase>
+    with _$AppSettingsDaoMixin {
+  AppSettingsDao(super.db);
+
+  /// Returns every persisted `(key, value)` row.
+  Future<List<AppSettingRow>> getAll() {
+    return select(appSettings).get();
+  }
+
+  /// Idempotent upsert. Used by `writeDiff` inside a transaction.
+  Future<void> upsert(String key, String value) {
+    return into(appSettings).insertOnConflictUpdate(
+      AppSettingsCompanion.insert(key: key, value: value),
+    );
+  }
+
+  /// Apply a map of `(key -> value)` upserts inside a single drift
+  /// transaction so `writeDiff` is all-or-nothing
+  /// (`settings-persistence` Requirement "Write path is transactional").
+  Future<void> upsertAll(Map<String, String> rows) {
+    return db.transaction<void>(() async {
+      for (final MapEntry<String, String> e in rows.entries) {
+        await upsert(e.key, e.value);
+      }
+    });
+  }
+
+  /// Read a single value by [key]; returns `null` when absent.
+  Future<String?> get(String key) async {
+    final AppSettingRow? row = await (select(
+      appSettings,
+    )..where(($AppSettingsTable t) => t.key.equals(key))).getSingleOrNull();
+    return row?.value;
   }
 }
