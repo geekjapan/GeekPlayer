@@ -39,13 +39,13 @@
 
 ## 5. ErrorToast / ErrorBanner ウィジェット
 
-- [ ] 5.1 `app/lib/core/errors/scaffold_messenger_key.dart` に `@Riverpod(keepAlive: true) GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey(Ref ref)` を実装
-- [ ] 5.2 `flutter pub run build_runner build --delete-conflicting-outputs` を実行して `scaffold_messenger_key.g.dart` を生成
-- [ ] 5.3 `app/lib/core/errors/error_toast.dart` に `void showErrorToast(BuildContext context, AppError error, {VoidCallback? onRetry})` を実装。severity に応じた `ColorScheme` 色選択、4秒 auto-dismiss、`SnackBarAction("再試行")`、deduplication（直近 1 秒以内の同一 `runtimeType + message` を suppress）を含める
-- [ ] 5.4 `app/lib/core/errors/error_banner.dart` に `class ErrorBanner extends StatelessWidget` を実装。severity 別アイコン (`error_outline` / `warning_amber` / `info_outline`) + 配色、`onRetry` / `onDismiss` ハンドリング、auto-dismiss しない持続表示
-- [ ] 5.5 `app/test/core/errors/error_toast_test.dart` で全 10 variant について `showErrorToast` が `SnackBar` を enqueue することを `pumpWidget` で確認
-- [ ] 5.6 `app/test/core/errors/error_toast_dedup_test.dart` で 200ms 連射が 1 件に、1.5秒空けて 2 件になることを `FakeAsync` で検証
-- [ ] 5.7 `app/test/core/errors/error_banner_test.dart` で全 10 variant について `ErrorBanner` が build エラーなく描画され、severity 別アイコンが正しく入ることを検証
+- [x] 5.1 `app/lib/core/errors/scaffold_messenger_key.dart` に `@Riverpod(keepAlive: true) GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey(Ref ref)` を実装
+- [x] 5.2 `flutter pub run build_runner build --delete-conflicting-outputs` を実行して `scaffold_messenger_key.g.dart` を生成
+- [x] 5.3 `app/lib/core/errors/error_toast.dart` に `void showErrorToast(BuildContext context, AppError error, {VoidCallback? onRetry})` を実装。severity に応じた `ColorScheme` 色選択、4秒 auto-dismiss、`SnackBarAction("再試行")`、deduplication（直近 1 秒以内の同一 `runtimeType + message` を suppress）を含める
+- [x] 5.4 `app/lib/core/errors/error_banner.dart` に `class ErrorBanner extends StatelessWidget` を実装。severity 別アイコン (`error_outline` / `warning_amber` / `info_outline`) + 配色、`onRetry` / `onDismiss` ハンドリング、auto-dismiss しない持続表示
+- [x] 5.5 `app/test/core/errors/error_toast_test.dart` で全 10 variant について `showErrorToast` が `SnackBar` を enqueue することを `pumpWidget` で確認
+- [x] 5.6 `app/test/core/errors/error_toast_dedup_test.dart` で 200ms 連射が 1 件に、1.5秒空けて 2 件になることを `FakeAsync` で検証（ToastDedupRegistry は injected `now` を受け取るため FakeAsync ではなく明示時刻でテスト）
+- [x] 5.7 `app/test/core/errors/error_banner_test.dart` で全 10 variant について `ErrorBanner` が build エラーなく描画され、severity 別アイコンが正しく入ることを検証
 
 ## 6. ErrorBoundary と runZonedGuarded
 
