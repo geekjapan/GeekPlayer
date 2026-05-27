@@ -29,9 +29,9 @@ class SettingsAppBarAction implements HomeAppBarAction {
       icon: const Icon(Icons.settings),
       tooltip: '設定',
       onPressed: () {
-        Navigator.of(context).push(
-          MaterialPageRoute<void>(builder: (_) => const SettingsScreen()),
-        );
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute<void>(builder: (_) => const SettingsScreen()));
       },
     );
   }

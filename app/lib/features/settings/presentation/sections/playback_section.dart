@@ -12,15 +12,20 @@ class PlaybackSection extends ConsumerWidget {
   const PlaybackSection({super.key});
 
   static const List<double> presets = <double>[
-    0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0,
+    0.5,
+    0.75,
+    1.0,
+    1.25,
+    1.5,
+    1.75,
+    2.0,
   ];
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final double current = ref.watch(
       appSettingsProvider.select(
-        (AsyncValue<AppSettings> s) =>
-            s.value?.defaultPlaybackSpeed ?? 1.0,
+        (AsyncValue<AppSettings> s) => s.value?.defaultPlaybackSpeed ?? 1.0,
       ),
     );
 
@@ -41,7 +46,9 @@ class PlaybackSection extends ConsumerWidget {
                   selected: current == p,
                   onSelected: (bool sel) {
                     if (!sel) return;
-                    ref.read(appSettingsProvider.notifier).mutate(
+                    ref
+                        .read(appSettingsProvider.notifier)
+                        .mutate(
                           (AppSettings s) =>
                               s.copyWith(defaultPlaybackSpeed: p),
                         );

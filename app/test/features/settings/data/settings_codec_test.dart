@@ -97,10 +97,14 @@ void main() {
     );
 
     test('roundtrips both variants', () {
-      expect(c.decode(c.encode(NovelWritingMode.vertical)),
-          NovelWritingMode.vertical);
-      expect(c.decode(c.encode(NovelWritingMode.horizontal)),
-          NovelWritingMode.horizontal);
+      expect(
+        c.decode(c.encode(NovelWritingMode.vertical)),
+        NovelWritingMode.vertical,
+      );
+      expect(
+        c.decode(c.encode(NovelWritingMode.horizontal)),
+        NovelWritingMode.horizontal,
+      );
     });
   });
 }

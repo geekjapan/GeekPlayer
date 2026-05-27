@@ -40,7 +40,9 @@ class LibrarySection extends ConsumerWidget {
                   selected: current == c,
                   onSelected: (bool sel) {
                     if (!sel) return;
-                    ref.read(appSettingsProvider.notifier).mutate(
+                    ref
+                        .read(appSettingsProvider.notifier)
+                        .mutate(
                           (AppSettings s) => s.copyWith(recentItemsCap: c),
                         );
                   },

@@ -110,28 +110,30 @@ void main() {
   });
 
   group('writeDiff failure path', () {
-    test('throws and leaves the table unchanged when the DB is closed',
-        () async {
-      final AppDatabase db = _freshDb();
-      final AppSettingsRepository repo = AppSettingsRepository(
-        db.appSettingsDao,
-      );
-      // Persist one known row, then close the DB so the next transaction
-      // fails synchronously inside drift.
-      await repo.writeDiff(
-        AppSettings.defaults(),
-        AppSettings.defaults().copyWith(themeMode: ThemeMode.dark),
-      );
-      await db.close();
-
-      expect(
-        () => repo.writeDiff(
+    test(
+      'throws and leaves the table unchanged when the DB is closed',
+      () async {
+        final AppDatabase db = _freshDb();
+        final AppSettingsRepository repo = AppSettingsRepository(
+          db.appSettingsDao,
+        );
+        // Persist one known row, then close the DB so the next transaction
+        // fails synchronously inside drift.
+        await repo.writeDiff(
           AppSettings.defaults(),
-          AppSettings.defaults().copyWith(themeMode: ThemeMode.light),
-        ),
-        throwsA(anything),
-      );
-    });
+          AppSettings.defaults().copyWith(themeMode: ThemeMode.dark),
+        );
+        await db.close();
+
+        expect(
+          () => repo.writeDiff(
+            AppSettings.defaults(),
+            AppSettings.defaults().copyWith(themeMode: ThemeMode.light),
+          ),
+          throwsA(anything),
+        );
+      },
+    );
   });
 
   group('writeAll', () {

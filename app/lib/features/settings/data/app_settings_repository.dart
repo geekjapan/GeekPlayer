@@ -229,10 +229,9 @@ class AppSettingsRepository {
       subtitlesByDefault: !s.subtitlesByDefault,
       audioBackgroundPlayback: !s.audioBackgroundPlayback,
       audioNotificationPersistent: !s.audioNotificationPersistent,
-      novelWritingMode:
-          s.novelWritingMode == NovelWritingMode.vertical
-              ? NovelWritingMode.horizontal
-              : NovelWritingMode.vertical,
+      novelWritingMode: s.novelWritingMode == NovelWritingMode.vertical
+          ? NovelWritingMode.horizontal
+          : NovelWritingMode.vertical,
       novelFontSizeSp: -s.novelFontSizeSp - 1,
       novelLineHeight: -s.novelLineHeight - 1,
       novelFontFamily: '__force_diff__',

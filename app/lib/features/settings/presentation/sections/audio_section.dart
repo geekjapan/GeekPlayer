@@ -18,8 +18,7 @@ class AudioSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final bool bg = ref.watch(
       appSettingsProvider.select(
-        (AsyncValue<AppSettings> s) =>
-            s.value?.audioBackgroundPlayback ?? true,
+        (AsyncValue<AppSettings> s) => s.value?.audioBackgroundPlayback ?? true,
       ),
     );
     final bool notif = ref.watch(
@@ -38,7 +37,9 @@ class AudioSection extends ConsumerWidget {
           title: const Text('バックグラウンド再生'),
           value: bg,
           onChanged: (bool v) {
-            ref.read(appSettingsProvider.notifier).mutate(
+            ref
+                .read(appSettingsProvider.notifier)
+                .mutate(
                   (AppSettings s) => s.copyWith(audioBackgroundPlayback: v),
                 );
           },
@@ -48,9 +49,10 @@ class AudioSection extends ConsumerWidget {
           title: const Text('通知を継続表示'),
           value: notif,
           onChanged: (bool v) {
-            ref.read(appSettingsProvider.notifier).mutate(
-                  (AppSettings s) =>
-                      s.copyWith(audioNotificationPersistent: v),
+            ref
+                .read(appSettingsProvider.notifier)
+                .mutate(
+                  (AppSettings s) => s.copyWith(audioNotificationPersistent: v),
                 );
           },
         ),

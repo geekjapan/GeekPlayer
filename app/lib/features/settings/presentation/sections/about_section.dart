@@ -68,9 +68,7 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
           body: const Center(
             child: Padding(
               padding: EdgeInsets.all(24),
-              child: Text(
-                'この画面は add-about-and-licenses change で実装されます。',
-              ),
+              child: Text('この画面は add-about-and-licenses change で実装されます。'),
             ),
           ),
         ),

@@ -33,7 +33,12 @@ class _R18SectionState extends ConsumerState<R18Section> {
     return ref.read(consentRepositoryProvider).hasFreshConsent(Site.noc);
   }
 
-  void _refresh() => setState(() => _granted = _load());
+  void _refresh() {
+    final Future<bool> next = _load();
+    setState(() {
+      _granted = next;
+    });
+  }
 
   Future<void> _reset() async {
     final bool? ok = await showDialog<bool>(

@@ -42,13 +42,18 @@ class _CacheSectionState extends ConsumerState<CacheSection> {
     return res.read<int>('total');
   }
 
-  void _refresh() => setState(() => _sizeBytes = _computeSizeBytes());
+  void _refresh() {
+    final Future<int> next = _computeSizeBytes();
+    setState(() {
+      _sizeBytes = next;
+    });
+  }
 
   Future<void> _clearSite(String site) async {
     final db = ref.read(appDatabaseProvider);
-    await (db.delete(db.novelEpisodes)
-          ..where(($NovelEpisodesTable t) => t.site.equals(site)))
-        .go();
+    await (db.delete(
+      db.novelEpisodes,
+    )..where(($NovelEpisodesTable t) => t.site.equals(site))).go();
     _refresh();
   }
 
@@ -98,9 +103,7 @@ class _CacheSectionState extends ConsumerState<CacheSection> {
                     ),
                     child: Row(
                       children: <Widget>[
-                        const Expanded(
-                          child: Text('キャッシュが上限を超えています'),
-                        ),
+                        const Expanded(child: Text('キャッシュが上限を超えています')),
                         TextButton(
                           key: const Key('cache-delete-oldest'),
                           onPressed: () => _deleteOldestUntilUnderCap(),
@@ -146,11 +149,7 @@ class _CacheSectionState extends ConsumerState<CacheSection> {
             ],
           ),
         ),
-        for (final String site in const <String>[
-          'narou',
-          'noc',
-          'kakuyomu',
-        ])
+        for (final String site in const <String>['narou', 'noc', 'kakuyomu'])
           ListTile(
             key: Key('cache-clear-$site'),
             title: Text('${_siteLabel(site)} のキャッシュをクリア'),
@@ -202,15 +201,14 @@ class _CacheSectionState extends ConsumerState<CacheSection> {
   }
 
   Future<void> _deleteOldestUntilUnderCap() async {
-    final int? capMb = ref
-        .read(appSettingsProvider)
-        .value
-        ?.novelCacheCapMb;
+    final int? capMb = ref.read(appSettingsProvider).value?.novelCacheCapMb;
     if (capMb == null) return;
     final int capBytes = capMb * 1024 * 1024;
     final db = ref.read(appDatabaseProvider);
     final List<NovelEpisodeRow> rows =
-        await (db.select(db.novelEpisodes)..orderBy(<OrderClauseGenerator<$NovelEpisodesTable>>[
+        await (db.select(
+              db.novelEpisodes,
+            )..orderBy(<OrderClauseGenerator<$NovelEpisodesTable>>[
               ($NovelEpisodesTable t) =>
                   OrderingTerm(expression: t.fetchedAt, mode: OrderingMode.asc),
             ]))
@@ -218,10 +216,12 @@ class _CacheSectionState extends ConsumerState<CacheSection> {
     int total = await _computeSizeBytes();
     for (final NovelEpisodeRow row in rows) {
       if (total <= capBytes) break;
-      await (db.delete(db.novelEpisodes)..where(($NovelEpisodesTable t) =>
-              t.site.equals(row.site) &
-              t.externalId.equals(row.externalId) &
-              t.episodeIndex.equals(row.episodeIndex)))
+      await (db.delete(db.novelEpisodes)..where(
+            ($NovelEpisodesTable t) =>
+                t.site.equals(row.site) &
+                t.externalId.equals(row.externalId) &
+                t.episodeIndex.equals(row.episodeIndex),
+          ))
           .go();
       total -= row.body.length;
     }
@@ -229,10 +229,9 @@ class _CacheSectionState extends ConsumerState<CacheSection> {
   }
 
   String _siteLabel(String code) => switch (code) {
-        'narou' => '小説家になろう',
-        'noc' => 'ノクターン系',
-        'kakuyomu' => 'カクヨム',
-        _ => code,
-      };
+    'narou' => '小説家になろう',
+    'noc' => 'ノクターン系',
+    'kakuyomu' => 'カクヨム',
+    _ => code,
+  };
 }
-

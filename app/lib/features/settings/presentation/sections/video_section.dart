@@ -27,9 +27,9 @@ class VideoSection extends ConsumerWidget {
           title: const Text('字幕を最初から表示する'),
           value: value,
           onChanged: (bool v) {
-            ref.read(appSettingsProvider.notifier).mutate(
-                  (AppSettings s) => s.copyWith(subtitlesByDefault: v),
-                );
+            ref
+                .read(appSettingsProvider.notifier)
+                .mutate((AppSettings s) => s.copyWith(subtitlesByDefault: v));
           },
         ),
         const NextLaunchHelper(),

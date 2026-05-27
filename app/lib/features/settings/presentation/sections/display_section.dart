@@ -14,8 +14,7 @@ class DisplaySection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final ThemeMode mode = ref.watch(
       appSettingsProvider.select(
-        (AsyncValue<AppSettings> s) =>
-            s.value?.themeMode ?? ThemeMode.system,
+        (AsyncValue<AppSettings> s) => s.value?.themeMode ?? ThemeMode.system,
       ),
     );
 
@@ -27,9 +26,9 @@ class DisplaySection extends ConsumerWidget {
           groupValue: mode,
           onChanged: (ThemeMode? v) {
             if (v == null) return;
-            ref.read(appSettingsProvider.notifier).mutate(
-                  (AppSettings s) => s.copyWith(themeMode: v),
-                );
+            ref
+                .read(appSettingsProvider.notifier)
+                .mutate((AppSettings s) => s.copyWith(themeMode: v));
           },
           child: Column(
             children: <Widget>[
@@ -56,8 +55,8 @@ class DisplaySection extends ConsumerWidget {
   }
 
   String _label(ThemeMode m) => switch (m) {
-        ThemeMode.system => 'システム',
-        ThemeMode.light => 'ライト',
-        ThemeMode.dark => 'ダーク',
-      };
+    ThemeMode.system => 'システム',
+    ThemeMode.light => 'ライト',
+    ThemeMode.dark => 'ダーク',
+  };
 }

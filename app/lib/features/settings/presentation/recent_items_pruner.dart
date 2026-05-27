@@ -19,7 +19,7 @@ part 'recent_items_pruner.g.dart';
 Future<int> recentItemsPrune(Ref ref) async {
   final AsyncValue<AppSettings> async = ref.watch(appSettingsProvider);
   final int cap = async.value?.recentItemsCap ?? 50;
-  final RecentItemsDao dao = ref.read(recentItemsDaoProvider);
+  final RecentItemsDao dao = ref.watch(recentItemsDaoProvider);
   int total = 0;
   for (final String kind in const <String>['video', 'audio', 'novel']) {
     total += await dao.pruneOlderThan(kind, cap);

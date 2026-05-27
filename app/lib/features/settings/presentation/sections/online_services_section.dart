@@ -20,8 +20,7 @@ class OnlineServicesSection extends ConsumerStatefulWidget {
       _OnlineServicesSectionState();
 }
 
-class _OnlineServicesSectionState
-    extends ConsumerState<OnlineServicesSection> {
+class _OnlineServicesSectionState extends ConsumerState<OnlineServicesSection> {
   Future<Map<Site, bool>>? _granted;
 
   @override
@@ -39,16 +38,25 @@ class _OnlineServicesSectionState
     return out;
   }
 
-  void _refresh() => setState(() => _granted = _load());
+  void _refresh() {
+    final Future<Map<Site, bool>> next = _load();
+    setState(() {
+      _granted = next;
+    });
+  }
 
   Future<int> _bodyBytesForSite(Site site) async {
     final AppDatabase db = ref.read(appDatabaseProvider);
-    final res = await db.customSelect(
-      'SELECT COALESCE(SUM(LENGTH(body)), 0) AS total '
-      'FROM novel_episodes WHERE site = ?',
-      variables: <Variable<Object>>[Variable<String>(site.code)],
-      readsFrom: <ResultSetImplementation<dynamic, dynamic>>{db.novelEpisodes},
-    ).getSingle();
+    final res = await db
+        .customSelect(
+          'SELECT COALESCE(SUM(LENGTH(body)), 0) AS total '
+          'FROM novel_episodes WHERE site = ?',
+          variables: <Variable<Object>>[Variable<String>(site.code)],
+          readsFrom: <ResultSetImplementation<dynamic, dynamic>>{
+            db.novelEpisodes,
+          },
+        )
+        .getSingle();
     return res.read<int>('total');
   }
 
@@ -90,9 +98,9 @@ class _OnlineServicesSectionState
     );
     if (wipe == true) {
       final db = ref.read(appDatabaseProvider);
-      await (db.delete(db.novelEpisodes)
-            ..where(($NovelEpisodesTable t) => t.site.equals(site.code)))
-          .go();
+      await (db.delete(
+        db.novelEpisodes,
+      )..where(($NovelEpisodesTable t) => t.site.equals(site.code))).go();
     }
     _refresh();
   }

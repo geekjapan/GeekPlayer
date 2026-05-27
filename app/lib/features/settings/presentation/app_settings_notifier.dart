@@ -37,10 +37,12 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
 
   @override
   Future<AppSettings> build() async {
-    ref.onDispose(_onDispose);
-    final AppSettings hydrated = await ref
-        .read(appSettingsRepositoryProvider)
-        .readAll();
+    // Capture the repo BEFORE registering onDispose so the dispose path
+    // can flush without using `ref` (Riverpod forbids `ref.read` inside
+    // lifecycle callbacks).
+    final AppSettingsRepository repo = ref.read(appSettingsRepositoryProvider);
+    ref.onDispose(() => _onDispose(repo));
+    final AppSettings hydrated = await repo.readAll();
     _committed = hydrated;
     return hydrated;
   }
@@ -52,7 +54,8 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
   /// Named `mutate` (not `update`) because `AsyncNotifier.update` already
   /// exists on the base class with a different signature.
   void mutate(AppSettings Function(AppSettings) f) {
-    final AppSettings current = state.value ?? (_pending ?? AppSettings.defaults());
+    final AppSettings current =
+        state.value ?? (_pending ?? AppSettings.defaults());
     final AppSettings next = f(current);
     if (next == current) return;
     state = AsyncData<AppSettings>(next);
@@ -78,10 +81,9 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
       return;
     }
     try {
-      await ref.read(appSettingsRepositoryProvider).writeDiff(
-        committed,
-        pending,
-      );
+      await ref
+          .read(appSettingsRepositoryProvider)
+          .writeDiff(committed, pending);
       _committed = pending;
       _pending = null;
     } catch (e, st) {
@@ -93,23 +95,19 @@ class AppSettingsNotifier extends _$AppSettingsNotifier {
     }
   }
 
-  void _onDispose() {
+  void _onDispose(AppSettingsRepository repo) {
     _debounce?.cancel();
     _debounce = null;
     // Best-effort synchronous flush: schedule the write but don't block
-    // dispose on its completion. Drift's transaction queue will drain
-    // before the underlying connection is closed (the database provider
-    // disposes after all feature providers).
+    // dispose on its completion. The repository was captured in build()
+    // so we don't touch `ref` here (Riverpod forbids that inside
+    // lifecycle callbacks).
     final AppSettings? pending = _pending;
     final AppSettings? committed = _committed;
     if (pending == null || committed == null || pending == committed) {
       return;
     }
     // Fire-and-forget so we don't await inside a sync teardown.
-    unawaited(
-      ref
-          .read(appSettingsRepositoryProvider)
-          .writeDiff(committed, pending),
-    );
+    unawaited(repo.writeDiff(committed, pending));
   }
 }

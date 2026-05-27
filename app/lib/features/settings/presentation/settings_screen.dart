@@ -32,11 +32,14 @@ class SettingsScreen extends ConsumerStatefulWidget {
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
-  void dispose() {
-    // Fire-and-forget flush. Pending writes drain via drift's queue.
+  void deactivate() {
+    // Fire-and-forget flush while the widget tree is still intact —
+    // running this here (instead of in `dispose`) keeps `ref` usable
+    // because the widget is not yet finalized. Pending writes drain
+    // via drift's transaction queue afterwards.
     // ignore: discarded_futures
     ref.read(appSettingsProvider.notifier).flush();
-    super.dispose();
+    super.deactivate();
   }
 
   @override
@@ -45,8 +48,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('設定')),
       body: async.when(
-        loading: () =>
-            const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: CircularProgressIndicator()),
         error: (Object e, StackTrace st) => Center(
           child: Padding(
             padding: const EdgeInsets.all(24),

@@ -11,6 +11,9 @@ import 'package:drift/drift.dart';
 /// Exported here so the migration test in
 /// `app/test/core/storage/migration_v2_to_v3_test.dart` can call it
 /// directly without instantiating the full [AppDatabase] migrator.
-Future<void> migrateV2ToV3(Migrator m, TableInfo<Table, dynamic> appSettings) async {
+Future<void> migrateV2ToV3(
+  Migrator m,
+  TableInfo<Table, dynamic> appSettings,
+) async {
   await m.createTable(appSettings);
 }

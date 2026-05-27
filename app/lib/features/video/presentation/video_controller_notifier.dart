@@ -48,9 +48,7 @@ class VideoControllerNotifier extends _$VideoControllerNotifier {
     // sets default playback speed", a NEW session adopts the default; a
     // session that is already playing is untouched (we are still in
     // build() so this is the new-session branch).
-    final AppSettings? settings = ref
-        .read(appSettingsProvider)
-        .value;
+    final AppSettings? settings = ref.read(appSettingsProvider).value;
     if (settings != null && settings.defaultPlaybackSpeed != 1.0) {
       await session.setSpeed(MediaSpeed(settings.defaultPlaybackSpeed));
     }
