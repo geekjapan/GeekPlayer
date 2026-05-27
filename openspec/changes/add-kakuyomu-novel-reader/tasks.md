@@ -22,11 +22,11 @@
 
 ## 3. HTTP / レート制限 / robots.txt インフラ
 
-- [ ] 3.1 `data/kakuyomu_dio_factory.dart` を実装: `Dio` インスタンスを生成し、`BaseOptions.headers['User-Agent']` を `GeekPlayer/<version> (+https://github.com/geekjapan/GeekPlayer; personal-use)` 形式で設定（`package_info_plus` 経由）
-- [ ] 3.2 共通 `RateLimiter` を `RateLimiter(rate: 0.5, burst: 1, maxConcurrency: 1)`（0.5 req/sec = 2 秒に 1 回）で構築する Riverpod プロバイダを実装
-- [ ] 3.3 Dio `InterceptorsWrapper` を実装: `onRequest` で `limiter.run(() async { ... })` でラップ、`onError` で 429/503 を捕捉して指数バックオフ（初期 1s / ×2 / 上限 5min / `Retry-After` 優先 / 最大 6 リトライ）でリトライし、6 回失敗で `KakuyomuUpstreamUnavailableException` に変換
-- [ ] 3.4 `data/kakuyomu_robots_txt_cache.dart` を実装: 初回 fetch / 24 時間メモリキャッシュ / disallow 評価 / 取得失敗時の許可リストフォールバック（`/works/`, `/works/.+/episodes/`, RSS endpoints）
-- [ ] 3.5 Dio Interceptor に robots 評価を組み込み、disallow パスへの送信前に `RobotsDisallowedException` を投げる
+- [x] 3.1 `data/kakuyomu_dio_factory.dart` を実装: `Dio` インスタンスを生成し、`BaseOptions.headers['User-Agent']` を `GeekPlayer/<version> (+https://github.com/geekjapan/GeekPlayer; personal-use)` 形式で設定（`package_info_plus` 経由）
+- [x] 3.2 共通 `RateLimiter` を `RateLimiter(rate: 0.5, burst: 1, maxConcurrency: 1)`（0.5 req/sec = 2 秒に 1 回）で構築する Riverpod プロバイダを実装
+- [x] 3.3 Dio `InterceptorsWrapper` を実装: `onRequest` で `limiter.run(() async { ... })` でラップ、`onError` で 429/503 を捕捉して指数バックオフ（初期 1s / ×2 / 上限 5min / `Retry-After` 優先 / 最大 6 リトライ）でリトライし、6 回失敗で `KakuyomuUpstreamUnavailableException` に変換 — reused the shared `BackoffInterceptor` + `RateLimitInterceptor` from `core/network/interceptors/`; the source-layer adapter wraps the resulting `RateLimitExceededError` into `KakuyomuUpstreamUnavailableException`
+- [x] 3.4 `data/kakuyomu_robots_txt_cache.dart` を実装: 初回 fetch / 24 時間メモリキャッシュ / disallow 評価 / 取得失敗時の許可リストフォールバック（`/works/`, `/works/.+/episodes/`, RSS endpoints） — `buildKakuyomuRobotsCache` returns a `RobotsCache` wired with the kakuyomu fetcher; `isKakuyomuPathAllowed` adds the allowlist fallback on top of the shared cache's deny-all fail-closed path
+- [x] 3.5 Dio Interceptor に robots 評価を組み込み、disallow パスへの送信前に `RobotsDisallowedException` を投げる — shared `RobotsTxtInterceptor` (in `core/network/interceptors/robots_txt_interceptor.dart`) is installed by `buildSiteDio` and rejects with `RobotsDisallowedError`
 - [ ] 3.6 ユニットテスト: User-Agent 正規表現、2 秒間隔、並列度 1、429/503 バックオフ、`Retry-After` 優先、robots disallow 拒否、robots fetch 失敗時の許可リスト動作
 
 ## 4. RSS / Atom ソース
