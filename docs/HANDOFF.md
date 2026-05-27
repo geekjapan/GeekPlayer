@@ -2,7 +2,19 @@
 
 このドキュメントは、ここまでの設計・足場作りを引き継ぐ後続の人 / 後続のエージェントが、
 **読まなくて済む対話履歴をスキップして** すぐに作業に入れることを目的にしています。
-最終更新: 2026-05-27（Wave 0 完了直後）。
+最終更新: 2026-05-27（**v0.1 全 Wave 完了 — 全 8 changes archived、20 capabilities 確定、394 tests pass**）。
+
+## v0.1 完了状態 (2026-05-27)
+
+- **Wave 1 (sequential)**: video foundation — 40/45 tasks、34 tests
+- **Wave 2 (3 並列)**: audio + online-novel-library + error-ux — 41+49+57 tasks
+- **Wave 3 (3 並列)**: narou + kakuyomu + app-settings — 50+46+47 tasks
+- **Wave 4 (sequential)**: about-and-licenses — 32/32 tasks
+- **合計**: ~360 / 約 400 tasks 完了（残は manual on-device verification と archive 操作のみ）
+- **テスト**: 394 件全 pass、`flutter analyze` clean、`dart format` clean
+- **drift schema**: v3 (playback_positions, recent_items, novel_works, novel_episodes, novel_bookmarks, site_consents, app_settings)
+- **capabilities**: 20 capability が `openspec/specs/` に確定
+- **archives**: 8 changes が `openspec/changes/archive/` に保管
 
 > **実装を始める方へ**: 本ファイルは high-level entry point です。
 > 実装手順（waves / worktree / sub-agent prompt / conflict resolution / exit criteria）の

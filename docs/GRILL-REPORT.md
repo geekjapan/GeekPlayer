@@ -54,6 +54,7 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
 - **2026-05-27 (initial)**: 38 findings identified, all unresolved.
 - **2026-05-27 (round 1)**: HIGH-priority sweep applied. Q-CROSS-001/002/005/006/007/011/014/015/016 plus Q-GAP-002 auto-applied. Q-NOV-001 attempted (defer PageSession) but user reversed — PageSession kept in v0.1 with `part of` layout per Q-CROSS-011. Q-NAR-002 resolved via new ADR-0003. Q-GAP-001 resolved by spawning a new propose (`add-error-ux-infra`). See `## Applied Edits` for the per-file changelog.
 - **2026-05-27 (Wave 0)**: Parallelization prep round. Q-CROSS-013 resolved via new ADR-0004 (HomeScreen section registry). Q-CROSS-017/018/019/020 resolved by introducing `docs/CONVENTIONS.md` and patching all 8 change `tasks.md` to point at it. Foundation tasks for `HomeScreen` + registry now owned by `add-local-video-playback` Section 5. See Edits #18-#19.
+- **2026-05-27 (Wave 1-4 implementation)**: All 8 v0.1 changes implemented and merged. Wave 1 sequential (video foundation), Waves 2-3 each 3 parallel agents with isolation=worktree, Wave 4 sequential. Conflicts resolved at merge time: media_session.dart `part` directives consolidated, main.dart wired through ErrorBoundary + AudioService.init + ConsentDialog hook + themeMode, exhaustive switches updated for all 3 MediaSession variants (Video/Audio/Page). Final state: 394 tests pass, 20 capabilities in openspec/specs/, drift v3, ready for v0.1.0 release tag.
 
 ---
 
