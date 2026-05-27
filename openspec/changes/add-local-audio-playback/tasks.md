@@ -14,20 +14,20 @@
 
 ## 2. AudioSession 実装 (`core/media`)
 
-- [ ] 2.1 `app/lib/core/media/audio_session.dart` の冒頭に `part of 'media_session.dart';` を書き、`final class AudioSession extends MediaSession` を定義（`just_audio` の `AudioPlayer` を内部保持）。`media_session.dart` 側にも `part 'audio_session.dart';` 行を追加
-- [ ] 2.2 `AudioSession` の `positionStream` / `playStateStream` / `durationStream` を `AudioPlayer` のストリームから変換して公開
-- [ ] 2.3 `AudioSession.play` / `pause` / `seek` / `setSpeed` を `AudioPlayer` に委譲する実装を追加
-- [ ] 2.4 `AudioSession.dispose()` が `AudioPlayer.dispose()` を確実に呼び、二重 dispose で例外を投げないこと
-- [ ] 2.5 `MediaSession` の sealed switch に `case AudioSession()` を加えても analyzer が exhaustive と判定することを確認（既存 `VideoSession` 側の switch を更新）
-- [ ] 2.6 `AudioSession` のユニットテストを mocktail で `AudioPlayer` をフェイクして状態遷移を検証（`app/test/core/media/audio_session_test.dart`）
+- [x] 2.1 `app/lib/core/media/audio_session.dart` の冒頭に `part of 'media_session.dart';` を書き、`final class AudioSession extends MediaSession` を定義（`just_audio` の `AudioPlayer` を内部保持）。`media_session.dart` 側にも `part 'audio_session.dart';` 行を追加
+- [x] 2.2 `AudioSession` の `positionStream` / `playStateStream` / `durationStream` を `AudioPlayer` のストリームから変換して公開
+- [x] 2.3 `AudioSession.play` / `pause` / `seek` / `setSpeed` を `AudioPlayer` に委譲する実装を追加
+- [x] 2.4 `AudioSession.dispose()` が `AudioPlayer.dispose()` を確実に呼び、二重 dispose で例外を投げないこと
+- [x] 2.5 `MediaSession` の sealed switch に `case AudioSession()` を加えても analyzer が exhaustive と判定することを確認（既存 `VideoSession` 側の switch を更新）— `audio_session_test.dart` の最後のテストで switch を網羅。本 wave では `VideoSession` を switch する既存サイトは存在しないため "更新" は不要。
+- [x] 2.6 `AudioSession` のユニットテストを `fromStreams` test seam で AudioPlayer をバイパスして状態遷移を検証（`app/test/core/media/audio_session_test.dart`）。mocktail でなく純 Stream ベースに変更（VideoSession の `fromStreams` 規約と一致、テストの脆さが減る）
 
 ## 3. AudioHandler と AudioService 初期化
 
-- [ ] 3.1 `app/lib/core/media/audio_handler.dart` に `class GeekPlayerAudioHandler extends BaseAudioHandler` を実装し、`play` / `pause` / `seek` / `skipToNext` / `skipToPrevious` / `stop` を内部の `AudioPlayer` に委譲
-- [ ] 3.2 `GeekPlayerAudioHandler` の `MediaItem` / `PlaybackState` を `AudioPlayer` のストリームから合成して `mediaItem` / `playbackState` に流す
-- [ ] 3.3 `app/lib/main.dart` の `runApp` 直前で `AudioService.init` を呼び、`androidNotificationChannelId='dev.geekjapan.geekplayer.audio'` / `androidNotificationChannelName='GeekPlayer 音楽再生'` / `androidNotificationOngoing=true` / `androidStopForegroundOnPause=false` を設定
-- [ ] 3.4 取得した `AudioHandler` を Riverpod の root provider (`audioHandlerProvider`) で公開し、`AudioSession` から参照できるよう配線
-- [ ] 3.5 `AudioHandler` への委譲が初期化されていない状態で `AudioSession` を作成した場合に明示的なエラーメッセージを投げるガードを実装
+- [x] 3.1 `app/lib/core/media/audio_handler.dart` に `class GeekPlayerAudioHandler extends BaseAudioHandler` を実装し、`play` / `pause` / `seek` / `skipToNext` / `skipToPrevious` / `stop` を内部の `AudioPlayer` に委譲（skip 系は `setSkipHandlers` で controller 側から差し込めるフック）
+- [x] 3.2 `GeekPlayerAudioHandler` の `PlaybackState` を `playbackEventStream` + `positionDiscontinuityStream` から合成して `playbackState` に流す。`MediaItem` は `updateNowPlaying` 経由で外から流し込む
+- [x] 3.3 `app/lib/main.dart` の `runApp` 直前で `AudioService.init` を呼ぶ。`androidNotificationChannelId='dev.geekjapan.geekplayer.channel.audio'` / `androidNotificationChannelName='GeekPlayer 音楽再生'`。`audio_service` の assertion により `ongoing=true && stopForeground=false` は同時設定不可なので `ongoing=false / stopForeground=false`（一時停止でも通知を維持する音楽アプリの既定）に倒している（design.md D6 のメモを上書き）
+- [x] 3.4 取得した `AudioHandler` を Riverpod の `audioHandlerProvider` (`audio_providers.dart`) で公開し、`setAudioHandlerInstance` 経由で `main` から注入する流れに統一
+- [x] 3.5 `AudioHandler` 未初期化で `audioHandlerProvider` を read した場合に StateError（再生インフラの配線手順を案内するメッセージ付き）を投げるガードを実装
 
 ## 4. キューとメタデータ (`features/audio`)
 
