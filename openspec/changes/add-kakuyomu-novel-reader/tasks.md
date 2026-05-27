@@ -50,12 +50,12 @@
 
 ## 6. Repository と同意連携
 
-- [ ] 6.1 `data/kakuyomu_novel_repository.dart` に `KakuyomuNovelRepository implements NovelRepository` を実装し、`search` / `latest` / `ranking` / `fetchWork` / `fetchEpisodes` / `fetchEpisodeBody` を提供。Library 追加は共通の `LibraryRepository.addToLibrary(KakuyomuNovelRepository, workId)` で呼び出される（このリポジトリ自体に `addToLibrary` メソッドは持たない）
-- [ ] 6.2 各メソッドの先頭で `SiteConsentRepository.isGranted(Site.kakuyomu)` を確認し、未同意なら `SiteConsentDeniedException` を投げる（HTTP は飛ばさない）
-- [ ] 6.3 `LibraryRepository.addToLibrary` から呼ばれる `fetchEpisodes` / `fetchEpisodeBody` が、本文取得を順次行えること（レート制限・キャンセル可能）を保証。永続化は共通 `LibraryRepository` 側の責務
-- [ ] 6.4 `CancelToken` 連携でフェッチ中断対応
-- [ ] 6.5 同意取り消し時の本文キャッシュ削除は共通 `LibraryRepository.purgeBySite(Site.kakuyomu)` を呼ぶ
-- [ ] 6.6 リポジトリ単体テスト: 同意なし → 全メソッドが HTTP を飛ばさず例外、能動キャッシュ（reader 開きはキャッシュしない / library add のみキャッシュ）
+- [x] 6.1 `data/kakuyomu_novel_repository.dart` に `KakuyomuNovelRepository implements NovelRepository` を実装し、`search` / `latest` / `ranking` / `fetchWork` / `fetchEpisodes` / `fetchEpisodeBody` を提供。Library 追加は共通の `LibraryRepository.addToLibrary(KakuyomuNovelRepository, workId)` で呼び出される（このリポジトリ自体に `addToLibrary` メソッドは持たない）
+- [x] 6.2 各メソッドの先頭で `SiteConsentRepository.isGranted(Site.kakuyomu)` を確認し、未同意なら `SiteConsentDeniedException` を投げる（HTTP は飛ばさない） — uses the existing `ConsentRepository.hasFreshConsent(Site)`; `SiteConsentDeniedException` is a typedef alias of `SiteConsentRequiredError`
+- [x] 6.3 `LibraryRepository.addToLibrary` から呼ばれる `fetchEpisodes` / `fetchEpisodeBody` が、本文取得を順次行えること（レート制限・キャンセル可能）を保証。永続化は共通 `LibraryRepository` 側の責務 — rate limit happens inside `KakuyomuHtmlSource` via the Dio interceptor stack
+- [x] 6.4 `CancelToken` 連携でフェッチ中断対応 — `KakuyomuNovelRepository` accepts an optional `CancelToken`; forwarded to all `htmlSource.fetchWork` / `htmlSource.fetchEpisodeBody` calls
+- [ ] 6.5 同意取り消し時の本文キャッシュ削除は共通 `LibraryRepository.purgeBySite(Site.kakuyomu)` を呼ぶ — DEFERRED: `LibraryRepository.purgeBySite` does not exist yet in the shared module (added in narou-reader / app-settings); UI side (§7.4) calls a TODO placeholder until the cross-site purge API lands
+- [x] 6.6 リポジトリ単体テスト: 同意なし → 全メソッドが HTTP を飛ばさず例外、能動キャッシュ（reader 開きはキャッシュしない / library add のみキャッシュ） — Repository test verifies consent short-circuit; the active-cache rule is enforced by `LibraryRepository` (no DB writes in this repository — see class-level comment)
 
 ## 7. 同意ダイアログと設定画面
 

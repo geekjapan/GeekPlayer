@@ -2,10 +2,15 @@ import 'package:dio/dio.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../core/config/feature_flags.dart';
 import '../../../core/network/rate_limiter.dart';
 import '../../../core/network/robots_txt.dart';
+import '../../novel/data/consent_repository.dart';
 import 'kakuyomu_dio_factory.dart';
+import 'kakuyomu_html_source.dart';
+import 'kakuyomu_novel_repository.dart';
 import 'kakuyomu_robots_txt_cache.dart';
+import 'kakuyomu_rss_source.dart';
 
 part 'kakuyomu_providers.g.dart';
 
@@ -60,5 +65,38 @@ Future<Dio> kakuyomuDio(Ref ref) async {
     appVersion: version,
     limiter: limiter,
     robotsCache: robots,
+  );
+}
+
+/// `KakuyomuRssSource` (DI-friendly wrapper for screens).
+@Riverpod(keepAlive: true)
+Future<KakuyomuRssSource> kakuyomuRssSource(Ref ref) async {
+  final Dio dio = await ref.watch(kakuyomuDioProvider.future);
+  return KakuyomuRssSource(dio: dio);
+}
+
+/// `KakuyomuHtmlSource`.
+@Riverpod(keepAlive: true)
+Future<KakuyomuHtmlSource> kakuyomuHtmlSource(Ref ref) async {
+  final Dio dio = await ref.watch(kakuyomuDioProvider.future);
+  return KakuyomuHtmlSource(dio: dio);
+}
+
+/// Composite `KakuyomuNovelRepository`.
+///
+/// Returns `null` if the kill-switch `kakuyomuEnabled` is `false`
+/// (kakuyomu-resilience spec: "Disabling the flag hides Kakuyomu").
+@Riverpod(keepAlive: true)
+Future<KakuyomuNovelRepository?> kakuyomuNovelRepository(Ref ref) async {
+  if (!kakuyomuEnabled) return null;
+  final KakuyomuRssSource rss =
+      await ref.watch(kakuyomuRssSourceProvider.future);
+  final KakuyomuHtmlSource html =
+      await ref.watch(kakuyomuHtmlSourceProvider.future);
+  final ConsentRepository consent = ref.watch(consentRepositoryProvider);
+  return KakuyomuNovelRepository(
+    rssSource: rss,
+    htmlSource: html,
+    consent: consent,
   );
 }
