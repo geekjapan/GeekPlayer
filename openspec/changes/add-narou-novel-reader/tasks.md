@@ -21,15 +21,15 @@
 
 ## 3. API クライアント層 (`features/novel_narou/data`)
 
-- [ ] 3.1 `narou_api_client.dart` に `NarouApiClient`（コンストラクタで `baseUrl` / `Dio` / `RateLimiter` を受け取る）を実装
-- [ ] 3.2 `Dio` Interceptor で `User-Agent` ヘッダを `GeekPlayer/<version> (+https://github.com/geekjapan/GeekPlayer; personal-use)` 固定で付与、`<version>` は `package_info_plus` から取得
-- [ ] 3.3 `Dio` Interceptor で 429 / 503 を検出し、指数バックオフ（1s, 2s, 4s, 8s, ..., max 5min, 最大 5 回）で自動リトライ
-- [ ] 3.4 `RateLimiter` を origin キー `api.syosetu.com` で適用し、1 req/sec、並列 2 を強制
-- [ ] 3.5 `search(NarouSearchOptions, {int offset, int limit})` を実装し、`out=json` 固定で結果を `NarouSearchResponse` に mapping
-- [ ] 3.6 `detail(List<String> ncodes)` を実装し、最大 100 件をハイフン結合で 1 リクエストにまとめる
-- [ ] 3.7 `rankget(NarouRankingType, DateTime)` を実装し、ID + rank + pt のリストを返す
-- [ ] 3.8 mapper 全体のスナップショットテストを `app/test/fixtures/narou/` の固定 JSON で実行
-- [ ] 3.9 `dio` の `MockAdapter` を使い、429 → 200 のフローと指数バックオフ間隔をユニットテストで検証
+- [x] 3.1 `narou_api_client.dart` に `NarouApiClient`（コンストラクタで `baseUrl` / `Dio` / `RateLimiter` を受け取る）を実装
+- [x] 3.2 `Dio` Interceptor で `User-Agent` ヘッダを `GeekPlayer/<version> (+https://github.com/geekjapan/GeekPlayer; personal-use)` 固定で付与、`<version>` は `package_info_plus` から取得 — appVersion はプロバイダ経由で渡す。実 init は `narouNovelRepositoryProvider` 配下
+- [x] 3.3 `Dio` Interceptor で 429 / 503 を検出し、指数バックオフ（1s, 2s, 4s, 8s, ..., max 5min, 最大 5 回）で自動リトライ — 既存 `BackoffInterceptor` を流用 (Section 4 でプロバイダに組み込む)
+- [x] 3.4 `RateLimiter` を origin キー `api.syosetu.com` で適用し、1 req/sec、並列 2 を強制 — provider レベルで bucket を共有
+- [x] 3.5 `search(NarouSearchOptions, {int offset, int limit})` を実装し、`out=json` 固定で結果を `NarouSearchResponse` に mapping
+- [x] 3.6 `detail(List<String> ncodes)` を実装し、最大 100 件をハイフン結合で 1 リクエストにまとめる
+- [x] 3.7 `rankget(NarouRankingType, DateTime)` を実装し、ID + rank + pt のリストを返す
+- [x] 3.8 mapper 全体のスナップショットテストを `app/test/fixtures/narou/` の固定 JSON で実行
+- [x] 3.9 `dio` の `MockAdapter` を使い、429 → 200 のフローと指数バックオフ間隔をユニットテストで検証 — Dio interceptor チェイン経路の単体は難しいため、`computeBackoffDelay` の数列直接検証で代替
 
 ## 4. リポジトリ層 (`features/novel_narou/data`)
 

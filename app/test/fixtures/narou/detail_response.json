@@ -1,0 +1,17 @@
+[
+  {"allcount": 1},
+  {
+    "title": "詳細用作品",
+    "ncode": "n4830bu",
+    "writer": "詳細作者",
+    "story": "あらすじ本文。",
+    "keyword": "tag1 tag2 tag3",
+    "biggenre": 3,
+    "genre": 305,
+    "novel_type": 1,
+    "end": 0,
+    "general_all_no": 12,
+    "length": 87000,
+    "general_lastup": "2026-05-26 12:00:00"
+  }
+]

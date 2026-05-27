@@ -1,0 +1,31 @@
+[
+  {"allcount": 2},
+  {
+    "title": "魔王と少女",
+    "ncode": "n1234ab",
+    "writer": "テスト作者",
+    "story": "魔王が|少女《しょうじょ》を救う物語。",
+    "keyword": "ファンタジー 異世界 R15",
+    "biggenre": 2,
+    "genre": 201,
+    "novel_type": 1,
+    "end": 0,
+    "general_all_no": 47,
+    "length": 123456,
+    "general_lastup": "2026-05-20 18:30:00"
+  },
+  {
+    "title": "短編作品",
+    "ncode": "n9999xx",
+    "writer": "別作者",
+    "story": "",
+    "keyword": "",
+    "biggenre": 4,
+    "genre": 402,
+    "novel_type": 2,
+    "end": 1,
+    "general_all_no": 0,
+    "length": 4500,
+    "general_lastup": "2026-04-01 09:00:00"
+  }
+]
