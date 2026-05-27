@@ -63,21 +63,21 @@ class VideoRepository {
   }
 
   /// Reverse-chronological recent items, mapped back to [VideoFile]s for
-  /// display. Filters to `kind == 'video'`.
+  /// display. Filters to `kind == 'video'` server-side.
   Future<List<VideoFile>> fetchRecentItems({
     int limit = kRecentItemsCap,
   }) async {
-    final List<RecentItemRow> rows = await recentItemsDao.list(limit: limit);
-    return rows
-        .where((RecentItemRow r) => r.kind == 'video')
-        .map((RecentItemRow r) {
-          final Uri uri = Uri.parse(r.uri);
-          final String name = uri.scheme == 'file'
-              ? p.basename(uri.toFilePath())
-              : r.uri;
-          return VideoFile(uri: uri, displayName: name);
-        })
-        .toList(growable: false);
+    final List<RecentItemRow> rows = await recentItemsDao.fetchByKind(
+      'video',
+      limit: limit,
+    );
+    return rows.map((RecentItemRow r) {
+      final Uri uri = Uri.parse(r.uri);
+      final String name = uri.scheme == 'file'
+          ? p.basename(uri.toFilePath())
+          : r.uri;
+      return VideoFile(uri: uri, displayName: name);
+    }).toList(growable: false);
   }
 
   /// Remove [uri] from both the recent-items list and the playback

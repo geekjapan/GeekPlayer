@@ -31,14 +31,14 @@
 
 ## 4. キューとメタデータ (`features/audio`)
 
-- [ ] 4.1 `app/lib/features/audio/domain/audio_track.dart` に `AudioTrack` 値オブジェクト（`Uri`, `String displayName`, `AudioMetadata? metadata`）を定義
-- [ ] 4.2 `app/lib/features/audio/domain/audio_queue.dart` に `AudioQueue`（`List<AudioTrack> tracks`、`int currentIndex`、`bool shuffle`、`RepeatMode repeat`、`skipNext` / `skipPrevious` / `toggleShuffle` / `cycleRepeat`）を実装し、シャッフルは現在曲を維持
-- [ ] 4.3 `AudioQueue` の skipNext / skipPrevious / shuffle / repeat の純 Dart ユニットテストを `app/test/features/audio/domain/audio_queue_test.dart` に追加
-- [ ] 4.4 `app/lib/features/audio/data/audio_metadata_source.dart` に `audio_metadata_reader` を使ってタイトル / アーティスト / アルバム / アートワークを読む `readMetadata(Uri uri)` を実装し、欠落時のフォールバック（ファイル名 / "不明なアーティスト" / 空アルバム / null アートワーク）を返す
-- [ ] 4.5 `app/lib/features/audio/data/audio_repository.dart` に `AudioRepository`（`pickFileOrFolder` / `expandFolderToQueue` / `loadResumePoint` / `saveResumePoint` / `recordRecentOpen` / `fetchRecentAudioItems`）を実装、フォルダ展開は対応拡張子のみを名前順にソート
-- [ ] 4.6 `app/lib/features/audio/domain/play_audio_use_case.dart` に「URI → ResumePoint 解決 → 末尾 5 秒以内なら 0、それ以外は保存位置を返す」ロジックを実装（動画と同じ閾値定数を再利用）
-- [ ] 4.7 `app/lib/core/storage/tables/recent_items.dart` の DAO API を `kind` 引数で受け取れるよう拡張し、`fetchByKind(String kind, {int limit = 50})` と `pruneOlderThan(String kind, int keep)` を追加
-- [ ] 4.8 `RecentItemsDao` を `kind='audio'` で呼び出した時に 50 件キャップが `kind='video'` を巻き込まないことのテストを追加
+- [x] 4.1 `app/lib/features/audio/domain/audio_track.dart` に `AudioTrack` 値オブジェクト（`Uri`, `String displayName`, `AudioMetadata? metadata`）+ `AudioMetadata` を定義（`effectiveTitle/Artist/Album` フォールバック付き）
+- [x] 4.2 `app/lib/features/audio/domain/audio_queue.dart` に `AudioQueue`（`List<AudioTrack> tracks`、`int currentIndex`、`bool shuffle`、`RepeatMode repeat`、`skipNext` / `skipPrevious` / `toggleShuffle` / `cycleRepeat`）を実装し、シャッフルは現在曲を `shuffledOrder.first` にピンする方式で実装
+- [x] 4.3 `AudioQueue` の skipNext / skipPrevious / shuffle / repeat の純 Dart ユニットテストを `app/test/features/audio/domain/audio_queue_test.dart` に追加
+- [x] 4.4 `app/lib/features/audio/data/audio_metadata_source.dart` に `audio_metadata_reader` を使ってタイトル / アーティスト / アルバム / アートワークを読む `readMetadata(Uri uri)` を実装し、欠落時のフォールバック（タイトルは AudioTrack.effectiveTitle 側で実装、アーティスト "不明なアーティスト" / 空アルバム / null アートワーク）を返す
+- [x] 4.5 `app/lib/features/audio/data/audio_repository.dart` に `AudioRepository`（`pickFileOrFolder` / `expandFolderToQueue` / `loadResumePoint` / `saveResumePoint` / `recordRecentOpen` / `fetchRecentAudioItems` / `forgetStaleEntry` / `sourceExists`）を実装、フォルダ展開は対応拡張子のみを名前順にソート
+- [x] 4.6 `app/lib/features/audio/domain/play_audio_use_case.dart` に「URI → ResumePoint 解決 → 末尾 5 秒以内なら 0、それ以外は保存位置を返す」ロジックを実装（動画と同じ `kEndOfPlaybackThreshold` 定数を再利用）
+- [x] 4.7 `RecentItemsDao` の API を拡張: `fetchByKind(String kind, {int limit})` と `pruneOlderThan(String kind, int keep)` を追加し、`recordOpen` を per-kind の枝刈りに切り替え。`VideoRepository.fetchRecentItems` も `fetchByKind('video')` に乗せ替え
+- [x] 4.8 `RecentItemsDao` を `kind='audio'` で呼び出した時に 50 件キャップが `kind='video'` を巻き込まないことのテストを `test/core/storage/database_test.dart` に追加
 
 ## 5. UI (`features/audio/presentation`)
 
