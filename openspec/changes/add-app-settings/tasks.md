@@ -47,20 +47,20 @@
 
 ## 4. データ層 (`features/settings/data`)
 
-- [ ] 4.1 `app/lib/features/settings/data/settings_codec.dart` に
+- [x] 4.1 `app/lib/features/settings/data/settings_codec.dart` に
   `SettingCodec<T>` interface と `BoolCodec` / `IntCodec` / `DoubleCodec` /
   `NullableIntCodec` / `EnumCodec<ThemeMode>` / `EnumCodec<NovelWritingMode>` /
   `StringCodec` を実装
-- [ ] 4.2 各 codec のユニットテストを `app/test/features/settings/data/settings_codec_test.dart`
+- [x] 4.2 各 codec のユニットテストを `app/test/features/settings/data/settings_codec_test.dart`
   に追加（roundtrip / `FormatException` / null distinct encoding）
-- [ ] 4.3 `app/lib/features/settings/data/app_settings_repository.dart` に
+- [x] 4.3 `app/lib/features/settings/data/app_settings_repository.dart` に
   `AppSettingsRepository`（`readAll()` / `writeDiff(old, new)`）を実装、drift
   DAO とトランザクションを扱う
-- [ ] 4.4 `readAll()` が空テーブル / 不正値で defaults にフォールバックし、構造化
+- [x] 4.4 `readAll()` が空テーブル / 不正値で defaults にフォールバックし、構造化
   ログを発する挙動をテスト
-- [ ] 4.5 `writeDiff` が差分キーのみを 1 トランザクションで upsert することを
+- [x] 4.5 `writeDiff` が差分キーのみを 1 トランザクションで upsert することを
   in-memory drift で検証
-- [ ] 4.6 `writeDiff` の失敗時にトランザクションがロールバックすることをテスト
+- [x] 4.6 `writeDiff` の失敗時にトランザクションがロールバックすることをテスト
 
 ## 5. プレゼンテーション層 — Notifier と画面骨格
 
