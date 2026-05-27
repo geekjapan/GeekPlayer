@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -9,7 +8,6 @@ import 'package:geekplayer/core/novel/models/site.dart';
 import 'package:geekplayer/features/novel_narou/data/narou_api_client.dart';
 import 'package:geekplayer/features/novel_narou/domain/narou_ranking_type.dart';
 import 'package:geekplayer/features/novel_narou/domain/narou_work_query.dart';
-import 'package:geekplayer/features/novel_narou/domain/narou_work_summary.dart';
 
 /// 簡易の Dio Interceptor ベース fake adapter。
 /// `dio_adapter` パッケージを足さずに `RequestInterceptor` で responseHandler

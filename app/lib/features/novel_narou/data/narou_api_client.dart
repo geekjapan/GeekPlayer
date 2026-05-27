@@ -55,8 +55,8 @@ class NarouApiClient {
     required RateLimiter limiter,
     required this.site,
     required String appVersion,
-  }) : _dio = dio,
-       _limiter = limiter,
+  }) : _dio = dio, // ignore: prefer_initializing_formals
+       _limiter = limiter, // ignore: prefer_initializing_formals
        _baseUrl = baseUrl {
     // 既存 baseOptions を尊重しつつ baseUrl と User-Agent を上書き。
     _dio.options = _dio.options.copyWith(

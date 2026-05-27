@@ -33,15 +33,15 @@
 
 ## 4. リポジトリ層 (`features/novel_narou/data`)
 
-- [ ] 4.1 `narou_novel_repository.dart` に `NarouNovelRepository implements NovelRepository` を実装（search / fetchWork / fetchEpisodes / fetchEpisodeBody を `NarouApiClient` 経由で）
-- [ ] 4.2 `narou_r18_novel_repository.dart` に `NarouR18NovelRepository` を実装。コンストラクタで `SiteConsentRepository.isGranted(Site.noc)` を検査し未同意なら `StateError`
-- [ ] 4.3 R18 リポジトリは `SiteConsentRepository` の `Stream<SiteConsentEvent>` を購読し、`revoked` イベントで内部の disposed フラグを true にして以降のメソッド呼び出しを `StateError` に
-- [ ] 4.4 `narou_ranking_repository.dart` に `NarouRankingRepository` を実装。`rankget` → `detail` の 2 段階呼び出しでランキング作品リストを構築
-- [ ] 4.5 `narou_episode_fetcher.dart` に短編 / 連載分岐を持つ `fetchBody` を実装。短編は API、連載は `https://ncode.syosetu.com/<ncode>/<n>/` を `html` パッケージでパースし本文セクションを抽出
-- [ ] 4.6 R18 系統用の `narou_r18_episode_fetcher.dart` も同様に実装、`novel18.syosetu.com` のドメインで動作
-- [ ] 4.7 Riverpod プロバイダ定義（`narouNovelRepositoryProvider`、`narouR18NovelRepositoryProvider` は `SiteConsent` の grant を gating）
-- [ ] 4.8 ユニットテスト: `NarouR18NovelRepository` の grant / revoke ライフサイクル
-- [ ] 4.9 ユニットテスト: `NarouEpisodeFetcher` の短編 / 連載分岐と rate limit 遵守
+- [x] 4.1 `narou_novel_repository.dart` に `NarouNovelRepository implements NovelRepository` を実装（search / fetchWork / fetchEpisodes / fetchEpisodeBody を `NarouApiClient` 経由で）
+- [x] 4.2 `narou_r18_novel_repository.dart` に `NarouR18NovelRepository` を実装。コンストラクタで `SiteConsentRepository.isGranted(Site.noc)` を検査し未同意なら `StateError` — 非同期 IO を排除するため `create()` factory 経由 (ADR 整合)
+- [x] 4.3 R18 リポジトリは `SiteConsentRepository` の `Stream<SiteConsentEvent>` を購読し、`revoked` イベントで内部の disposed フラグを true にして以降のメソッド呼び出しを `StateError` に
+- [x] 4.4 `narou_ranking_repository.dart` に `NarouRankingRepository` を実装。`rankget` → `detail` の 2 段階呼び出しでランキング作品リストを構築
+- [x] 4.5 `narou_episode_fetcher.dart` に短編 / 連載分岐を持つ `fetchBody` を実装。短編は API、連載は `https://ncode.syosetu.com/<ncode>/<n>/` を `html` パッケージでパースし本文セクションを抽出 — ADR-0003 確定通り、短編も同じ URL 形式 (`/<ncode>/1/`) なので 1 経路に統合
+- [x] 4.6 R18 系統用の `narou_r18_episode_fetcher.dart` も同様に実装、`novel18.syosetu.com` のドメインで動作 — 同 `NarouEpisodeFetcher` クラスを `bodyBaseUrl` で切替（DRY、design.md D2）
+- [x] 4.7 Riverpod プロバイダ定義（`narouNovelRepositoryProvider`、`narouR18NovelRepositoryProvider` は `SiteConsent` の grant を gating）
+- [x] 4.8 ユニットテスト: `NarouR18NovelRepository` の grant / revoke ライフサイクル
+- [x] 4.9 ユニットテスト: `NarouEpisodeFetcher` の短編 / 連載分岐と rate limit 遵守
 
 ## 5. R18 年齢確認 (`features/age_gate`)
 
