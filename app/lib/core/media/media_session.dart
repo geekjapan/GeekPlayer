@@ -22,9 +22,9 @@ import 'package:media_kit_video/media_kit_video.dart';
 import 'models.dart';
 
 part 'audio_session.dart';
+part 'page_position.dart';
+part 'page_session.dart';
 part 'video_session.dart';
-// Future:
-// part 'page_session.dart';    // v0.2 manga / book
 
 /// Common interface for media sessions across video / audio / page variants.
 ///
