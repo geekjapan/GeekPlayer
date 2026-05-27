@@ -87,7 +87,9 @@ class RecentItemsDao extends DatabaseAccessor<AppDatabase>
   RecentItemsDao(super.db);
 
   /// Upsert a recent-open row for [uri]; afterwards prune entries beyond
-  /// [kRecentItemsCap]. Returns the number of pruned rows.
+  /// [kRecentItemsCap] **scoped to [kind]** so a flood of audio opens
+  /// doesn't evict video entries (and vice versa). Returns the number
+  /// of pruned rows.
   Future<int> recordOpen(String uri, String kind) async {
     await into(recentItems).insertOnConflictUpdate(
       RecentItemsCompanion.insert(
@@ -96,12 +98,29 @@ class RecentItemsDao extends DatabaseAccessor<AppDatabase>
         openedAt: DateTime.now().toUtc(),
       ),
     );
-    return pruneToCap();
+    return pruneOlderThan(kind, kRecentItemsCap);
   }
 
   /// List the most recent [limit] items (default = cap), newest first.
+  /// Includes every kind (callers filter client-side when they want
+  /// only one). Prefer [fetchByKind] when the caller is kind-specific.
   Future<List<RecentItemRow>> list({int limit = kRecentItemsCap}) {
     return (select(recentItems)
+          ..orderBy(<OrderClauseGenerator<$RecentItemsTable>>[
+            ($RecentItemsTable t) =>
+                OrderingTerm(expression: t.openedAt, mode: OrderingMode.desc),
+          ])
+          ..limit(limit))
+        .get();
+  }
+
+  /// Most recent [limit] items whose `kind` matches, newest first.
+  Future<List<RecentItemRow>> fetchByKind(
+    String kind, {
+    int limit = kRecentItemsCap,
+  }) {
+    return (select(recentItems)
+          ..where(($RecentItemsTable t) => t.kind.equals(kind))
           ..orderBy(<OrderClauseGenerator<$RecentItemsTable>>[
             ($RecentItemsTable t) =>
                 OrderingTerm(expression: t.openedAt, mode: OrderingMode.desc),
@@ -117,8 +136,42 @@ class RecentItemsDao extends DatabaseAccessor<AppDatabase>
     )..where(($RecentItemsTable t) => t.uri.equals(uri))).go();
   }
 
-  /// Keep only the [kRecentItemsCap] most recent entries; delete the
-  /// rest. Returns the number of deleted rows.
+  /// Keep at most [keep] most recent entries for [kind]; delete the
+  /// rest. Other kinds are untouched. Returns the number of deleted
+  /// rows.
+  Future<int> pruneOlderThan(String kind, int keep) async {
+    final int count =
+        await (selectOnly(recentItems)
+              ..addColumns(<Expression<Object>>[recentItems.uri.count()])
+              ..where(recentItems.kind.equals(kind)))
+            .map(
+              (TypedResult row) => row.read<int>(recentItems.uri.count()) ?? 0,
+            )
+            .getSingle();
+    if (count <= keep) return 0;
+    final int toDelete = count - keep;
+    final List<RecentItemRow> oldest =
+        await (select(recentItems)
+              ..where(($RecentItemsTable t) => t.kind.equals(kind))
+              ..orderBy(<OrderClauseGenerator<$RecentItemsTable>>[
+                ($RecentItemsTable t) => OrderingTerm(
+                  expression: t.openedAt,
+                  mode: OrderingMode.asc,
+                ),
+              ])
+              ..limit(toDelete))
+            .get();
+    int removed = 0;
+    for (final RecentItemRow row in oldest) {
+      removed += await (delete(
+        recentItems,
+      )..where(($RecentItemsTable t) => t.uri.equals(row.uri))).go();
+    }
+    return removed;
+  }
+
+  /// Backwards-compatible global cap (prunes oldest across all kinds).
+  /// Retained for callers that don't care about kind isolation.
   Future<int> pruneToCap() async {
     final int count =
         await (selectOnly(recentItems)
@@ -129,7 +182,6 @@ class RecentItemsDao extends DatabaseAccessor<AppDatabase>
             .getSingle();
     if (count <= kRecentItemsCap) return 0;
     final int toDelete = count - kRecentItemsCap;
-    // Find the URIs of the oldest entries beyond the cap.
     final List<RecentItemRow> oldest =
         await (select(recentItems)
               ..orderBy(<OrderClauseGenerator<$RecentItemsTable>>[

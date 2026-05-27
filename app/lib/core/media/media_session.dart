@@ -13,15 +13,17 @@ library;
 
 import 'dart:async';
 
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:media_kit/media_kit.dart' hide PlayerState;
 import 'package:media_kit_video/media_kit_video.dart';
 
 import 'models.dart';
 
+part 'audio_session.dart';
 part 'video_session.dart';
 // Future:
-// part 'audio_session.dart';   // add-local-audio-playback
 // part 'page_session.dart';    // v0.2 manga / book
 
 /// Common interface for media sessions across video / audio / page variants.

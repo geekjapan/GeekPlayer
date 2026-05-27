@@ -63,13 +63,15 @@ class VideoRepository {
   }
 
   /// Reverse-chronological recent items, mapped back to [VideoFile]s for
-  /// display. Filters to `kind == 'video'`.
+  /// display. Filters to `kind == 'video'` server-side.
   Future<List<VideoFile>> fetchRecentItems({
     int limit = kRecentItemsCap,
   }) async {
-    final List<RecentItemRow> rows = await recentItemsDao.list(limit: limit);
+    final List<RecentItemRow> rows = await recentItemsDao.fetchByKind(
+      'video',
+      limit: limit,
+    );
     return rows
-        .where((RecentItemRow r) => r.kind == 'video')
         .map((RecentItemRow r) {
           final Uri uri = Uri.parse(r.uri);
           final String name = uri.scheme == 'file'
