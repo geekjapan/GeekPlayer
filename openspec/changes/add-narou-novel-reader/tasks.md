@@ -55,27 +55,27 @@
 
 ## 6. 検索 / ランキング / 詳細画面 (`features/novel_narou/presentation`)
 
-- [ ] 6.1 `search_screen.dart` を実装（キーワード入力、ジャンル multi-select chip、文字数レンジスライダー、最終更新日 picker、完結 / ピックアップ checkbox、検索ボタン）
-- [ ] 6.2 検索結果リストを 20 件ずつの infinite-scroll で表示し、末尾 200 px で次ページ取得
-- [ ] 6.3 アクティブな filter chips を結果リストの上に表示し、X タップで除去 + 再検索
-- [ ] 6.4 空結果時の placeholder 文言「該当する作品が見つかりませんでした」を表示
-- [ ] 6.5 `ranking_screen.dart` を実装（6 タブ: 日間 / 週間 / 月間 / 四半期 / 年間 / 累計）、各タブ切り替えで `NarouRankingRepository` を呼び、上位 100 件を rank 順表示
-- [ ] 6.6 `work_detail_screen.dart` を実装（タイトル / 著者 / あらすじ / タグ / 文字数 / 話数 / 最終更新 / エピソード一覧 / Library 追加ボタン）
-- [ ] 6.7 あらすじとタイトル中のルビ記法 `|漢字《かんじ》` を `RubyText` で描画する `NarouRubyParser` を実装
-- [ ] 6.8 Library 追加時の確認ダイアログ（話数 ÷ 60 分の予想時間表示）と `LibraryRepository.addToLibrary(NarouNovelRepository, work.id)` 呼び出し
-- [ ] 6.9 `narou_home_section.dart` で `NovelHomeSection` interface を実装（検索 / ランキング / ピックアップ + R18 タブの条件付き表示）
-- [ ] 6.10 R18 タブの初回タップ時に `showAgeGate` を経由するフローを実装
+- [x] 6.1 `search_screen.dart` を実装（キーワード入力、ジャンル multi-select chip、文字数レンジスライダー、最終更新日 picker、完結 / ピックアップ checkbox、検索ボタン） — 文字数スライダー/日付 picker は v0.1 では簡易（オプション値直入力）に倒した
+- [x] 6.2 検索結果リストを 20 件ずつの infinite-scroll で表示し、末尾 200 px で次ページ取得
+- [x] 6.3 アクティブな filter chips を結果リストの上に表示し、X タップで除去 + 再検索
+- [x] 6.4 空結果時の placeholder 文言「該当する作品が見つかりませんでした」を表示
+- [x] 6.5 `ranking_screen.dart` を実装（6 タブ: 日間 / 週間 / 月間 / 四半期 / 年間 / 累計）、各タブ切り替えで `NarouRankingRepository` を呼び、上位 100 件を rank 順表示
+- [x] 6.6 `work_detail_screen.dart` を実装（タイトル / 著者 / あらすじ / タグ / 文字数 / 話数 / 最終更新 / エピソード一覧 / Library 追加ボタン）
+- [x] 6.7 あらすじとタイトル中のルビ記法 `|漢字《かんじ》` を `RubyText` で描画する `NarouRubyParser` を実装
+- [x] 6.8 Library 追加時の確認ダイアログ（話数 ÷ 60 分の予想時間表示）と `LibraryRepository.addToLibrary(NarouNovelRepository, work.id)` 呼び出し
+- [x] 6.9 `narou_home_section.dart` で `NovelHomeSection` interface を実装（検索 / ランキング / ピックアップ + R18 タブの条件付き表示） — 現状の `NovelHomeSection` (Wave 2) に panel として組み込み、registry には独立登録しない
+- [x] 6.10 R18 タブの初回タップ時に `showAgeGate` を経由するフローを実装
 
 ## 7. リーダー画面 (`features/novel_narou/presentation`)
 
-- [ ] 7.1 `reader_screen.dart` を `SingleChildScrollView` + `SelectableText.rich` で実装、縦スクロール
-- [ ] 7.2 `reader_settings.dart` に `ReaderTheme` 値オブジェクト（fontSize 12-32 / lineHeight 1.2-2.4 / colorScheme {light, sepia, dark}）を定義し、`add-app-settings` 提供の `app_settings` テーブルに `novel.reader.fontSize` / `novel.reader.lineHeight` / `novel.reader.colorScheme` の 3 key で保存
-- [ ] 7.3 `AppSettingsNotifier` を購読してリーダー画面が設定変更に即座に反応するようにする
-- [ ] 7.4 リーダー画面の上部に設定ボタン、下部に前話 / 次話ボタン、最終話では次話ボタンを disable
-- [ ] 7.5 設定パネル（フォントサイズ +/- / 行間スライダー / テーマ切り替え）を BottomSheet で実装
-- [ ] 7.6 本文中の `|漢字《かんじ》` と `《ルビ》` を `RubyText` の `WidgetSpan` で描画
-- [ ] 7.7 挿絵タグ `<i...>` を `[挿絵]` プレースホルダーに置換
-- [ ] 7.8 スクロールオフセットを `novel_bookmarks` に navigation 離脱時に保存し、再入場時に復元（末尾 5% は 0 リセット）
+- [x] 7.1 `reader_screen.dart` を `SingleChildScrollView` + `SelectableText.rich` で実装、縦スクロール
+- [x] 7.2 `reader_settings.dart` に `ReaderTheme` 値オブジェクト（fontSize 12-32 / lineHeight 1.2-2.4 / colorScheme {light, sepia, dark}）を定義し、`add-app-settings` 提供の `app_settings` テーブルに `novel.reader.fontSize` / `novel.reader.lineHeight` / `novel.reader.colorScheme` の 3 key で保存 — `app_settings` テーブル未存在のため、in-memory Riverpod (`keepAlive: true`) でフォールバック。TODO コメントで v0.2 切替を明記
+- [x] 7.3 `AppSettingsNotifier` を購読してリーダー画面が設定変更に即座に反応するようにする — `readerThemeProvider` を `ref.watch` する形で実現
+- [x] 7.4 リーダー画面の上部に設定ボタン、下部に前話 / 次話ボタン、最終話では次話ボタンを disable
+- [x] 7.5 設定パネル（フォントサイズ +/- / 行間スライダー / テーマ切り替え）を BottomSheet で実装
+- [x] 7.6 本文中の `|漢字《かんじ》` と `《ルビ》` を `RubyText` の `WidgetSpan` で描画
+- [x] 7.7 挿絵タグ `<i...>` を `[挿絵]` プレースホルダーに置換
+- [x] 7.8 スクロールオフセットを `novel_bookmarks` に navigation 離脱時に保存し、再入場時に復元（末尾 5% は 0 リセット）
 - [ ] 7.9 ウィジェットテスト: フォントサイズ変更 / テーマ変更 / 前話次話遷移 / 栞復元
 
 ## 8. ホーム画面合成
