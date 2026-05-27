@@ -1,0 +1,21 @@
+{
+  "id": "1",
+  "title": "第1話: マージの森",
+  "paragraphs": [
+    {
+      "type": "paragraph",
+      "text": "森の入り口で、彼女は立ち止まった。"
+    },
+    {
+      "type": "paragraph",
+      "text": "「ここから先は git のブランチが交差する。気をつけて。」"
+    },
+    {
+      "type": "blank"
+    },
+    {
+      "type": "paragraph",
+      "text": "遠くから rebase の風が吹いてきた。"
+    }
+  ]
+}

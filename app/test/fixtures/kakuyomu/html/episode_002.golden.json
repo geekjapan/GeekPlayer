@@ -1,0 +1,76 @@
+{
+  "id": "2",
+  "title": "第2話: ブランチの分かれ道",
+  "paragraphs": [
+    {
+      "type": "rubyParagraph",
+      "runs": [
+        {
+          "kind": "text",
+          "text": "主人公の"
+        },
+        {
+          "kind": "ruby",
+          "base": "彼女",
+          "reading": "かのじょ"
+        },
+        {
+          "kind": "text",
+          "text": "は分岐点に立った。"
+        }
+      ]
+    },
+    {
+      "type": "rubyParagraph",
+      "runs": [
+        {
+          "kind": "text",
+          "text": "右の道は"
+        },
+        {
+          "kind": "ruby",
+          "base": "本流",
+          "reading": "ほんりゅう"
+        },
+        {
+          "kind": "text",
+          "text": "に続いている。"
+        }
+      ]
+    },
+    {
+      "type": "rubyParagraph",
+      "runs": [
+        {
+          "kind": "text",
+          "text": "左は"
+        },
+        {
+          "kind": "ruby",
+          "base": "支流",
+          "reading": "しりゅう"
+        },
+        {
+          "kind": "text",
+          "text": "、"
+        },
+        {
+          "kind": "ruby",
+          "base": "未来",
+          "reading": "みらい"
+        },
+        {
+          "kind": "text",
+          "text": "のどこかに繋がっているらしい。"
+        }
+      ]
+    },
+    {
+      "type": "blank"
+    },
+    {
+      "type": "paragraph",
+      "text": "「どちらを選んでも、いずれは合流する。」"
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "id": "5",
+  "title": "第5話: 同等視認性",
+  "paragraphs": [
+    {
+      "type": "rubyParagraph",
+      "runs": [
+        {
+          "kind": "ruby",
+          "base": "視認性",
+          "reading": "しにんせい"
+        },
+        {
+          "kind": "text",
+          "text": "とは、見えるべきものが見えること。"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "ダークパターンに沈黙してはならない、と彼は言った。"
+    },
+    {
+      "type": "rubyParagraph",
+      "runs": [
+        {
+          "kind": "text",
+          "text": "「"
+        },
+        {
+          "kind": "ruby",
+          "base": "同意",
+          "reading": "どうい"
+        },
+        {
+          "kind": "text",
+          "text": "する」と「"
+        },
+        {
+          "kind": "ruby",
+          "base": "同意",
+          "reading": "どうい"
+        },
+        {
+          "kind": "text",
+          "text": "しない」は、まったく同じ視覚的重みでなければならない。"
+        }
+      ]
+    },
+    {
+      "type": "blank"
+    },
+    {
+      "type": "paragraph",
+      "text": "これが、UI 設計者としての彼の信念だった。"
+    }
+  ]
+}

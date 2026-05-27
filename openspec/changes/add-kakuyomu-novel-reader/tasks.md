@@ -40,13 +40,13 @@
 
 ## 5. HTML ソースとパーサ
 
-- [ ] 5.1 `data/kakuyomu_html_parser.dart` を実装: `parseWorkPage(html)` と `parseEpisodePage(html)`。CSS セレクタはファイル先頭に `const` で集約
-- [ ] 5.2 ルビ（`<ruby>` / `<rt>`）、段落、空行を `ReaderSegment` 列に正規化するロジックを実装
-- [ ] 5.3 `data/kakuyomu_html_source.dart` を実装: `fetchWork(workId)` / `fetchEpisodeBody(workId, episodeId)`、404 を `KakuyomuEpisodeNotFoundException` にマップ、パース失敗を `KakuyomuParseException` に
-- [ ] 5.4 `KakuyomuHtmlSource` のクラス docstring に ADR-0001 の注意書き（「個人利用」「能動キャッシュ」「1 リクエスト / 2 秒」「robots.txt」「429」「503」「ADR-0001」全部含む）を書き、ADR-0001 への相対リンクを記載
-- [ ] 5.5 fixture `app/test/fixtures/kakuyomu/html/work_001.html` 〜 `work_005.html`、`episode_001.html` 〜 `episode_005.html` を実環境から月 1 回手動取得して保存（ジャンル / 本文長 / ルビ有無で分散）
-- [ ] 5.6 ゴールデン JSON `*.golden.json` を初回生成し、CI 比較テストを `kakuyomu_html_parser_test.dart` に実装
-- [ ] 5.7 `app/test/fixtures/kakuyomu/README.md` に月 1 回更新手順、レート制限を尊重する手動取得の注意、golden 再生成手順を記載（30 行以上、「月 1 回」「robots.txt」「golden」を含む）
+- [x] 5.1 `data/kakuyomu_html_parser.dart` を実装: `parseWorkPage(html)` と `parseEpisodePage(html)`。CSS セレクタはファイル先頭に `const` で集約
+- [x] 5.2 ルビ（`<ruby>` / `<rt>`）、段落、空行を `ReaderSegment` 列に正規化するロジックを実装 — `_paragraphToSegment` walks DOM nodes producing `RubyPair`/`TextRun` runs
+- [x] 5.3 `data/kakuyomu_html_source.dart` を実装: `fetchWork(workId)` / `fetchEpisodeBody(workId, episodeId)`、404 を `KakuyomuEpisodeNotFoundException` にマップ、パース失敗を `KakuyomuParseException` に
+- [x] 5.4 `KakuyomuHtmlSource` のクラス docstring に ADR-0001 の注意書き（「個人利用」「能動キャッシュ」「1 リクエスト / 2 秒」「robots.txt」「429」「503」「ADR-0001」全部含む）を書き、ADR-0001 への相対リンクを記載
+- [x] 5.5 fixture `app/test/fixtures/kakuyomu/html/work_001.html` 〜 `work_005.html`、`episode_001.html` 〜 `episode_005.html` を実環境から月 1 回手動取得して保存（ジャンル / 本文長 / ルビ有無で分散） — initial synthetic baseline; first real monthly refresh follows the procedure in `README.md`
+- [x] 5.6 ゴールデン JSON `*.golden.json` を初回生成し、CI 比較テストを `kakuyomu_html_parser_test.dart` に実装
+- [x] 5.7 `app/test/fixtures/kakuyomu/README.md` に月 1 回更新手順、レート制限を尊重する手動取得の注意、golden 再生成手順を記載（30 行以上、「月 1 回」「robots.txt」「golden」を含む） — 68 lines
 
 ## 6. Repository と同意連携
 
