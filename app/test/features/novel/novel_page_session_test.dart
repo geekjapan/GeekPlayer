@@ -156,6 +156,7 @@ void main() {
 
     final String label = switch (s) {
       VideoSession() => 'video',
+      AudioSession() => 'audio',
       PageSession() => 'page',
     };
     expect(label, 'page');
