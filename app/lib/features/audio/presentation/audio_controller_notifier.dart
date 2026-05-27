@@ -9,6 +9,8 @@ import '../../../core/media/audio_handler.dart';
 import '../../../core/media/audio_providers.dart';
 import '../../../core/media/media_session.dart';
 import '../../../core/media/models.dart';
+import '../../settings/domain/app_settings.dart';
+import '../../settings/presentation/app_settings_notifier.dart';
 import '../data/audio_providers.dart';
 import '../data/audio_repository.dart';
 import '../domain/audio_queue.dart';
@@ -119,6 +121,16 @@ class AudioController extends _$AudioController {
         .read(playAudioUseCaseProvider)
         .resolveStart(track.uri);
     await s.session.open(track.uriString, startAt: start);
+
+    // Apply the default playback speed from AppSettings before we hit
+    // play. New sessions adopt the user-configured default; sessions
+    // already playing are not retroactively touched (add-app-settings
+    // spec Requirement "Playback section sets default playback speed").
+    final AppSettings? settings = ref.read(appSettingsProvider).value;
+    if (settings != null && settings.defaultPlaybackSpeed != 1.0) {
+      await s.session.setSpeed(MediaSpeed(settings.defaultPlaybackSpeed));
+    }
+
     await s.session.play();
     _updateNowPlayingItem(track);
     // Fire-and-forget metadata read; the UI updates when state changes.

@@ -2,6 +2,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/media/media_session.dart';
 import '../../../core/media/models.dart';
+import '../../settings/domain/app_settings.dart';
+import '../../settings/presentation/app_settings_notifier.dart';
 import '../data/video_providers.dart';
 import '../domain/video_file.dart';
 
@@ -40,6 +42,17 @@ class VideoControllerNotifier extends _$VideoControllerNotifier {
     // Lock the saved position into [`session.open`] so the libmpv handle
     // seeks before the first frame is shown.
     await session.open(file.uriString, startAt: start);
+
+    // Apply the default playback speed from AppSettings before the first
+    // frame plays. Per add-app-settings spec Requirement "Playback section
+    // sets default playback speed", a NEW session adopts the default; a
+    // session that is already playing is untouched (we are still in
+    // build() so this is the new-session branch).
+    final AppSettings? settings = ref.read(appSettingsProvider).value;
+    if (settings != null && settings.defaultPlaybackSpeed != 1.0) {
+      await session.setSpeed(MediaSpeed(settings.defaultPlaybackSpeed));
+    }
+
     await session.play();
 
     ref.onDispose(() async {

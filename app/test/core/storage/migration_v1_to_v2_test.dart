@@ -78,9 +78,13 @@ void main() {
       expect(await db.novelBookmarksDao.getBookmark('narou', 'x'), isNull);
       expect(await db.siteConsentsDao.getAll(), isEmpty);
 
-      // user_version updated to 2.
+      // user_version is bumped to the current AppDatabase.schemaVersion.
+      // After add-app-settings (v3), v1 → v3 runs both onUpgrade
+      // branches, but this test asserts only the v1 → v2 portion (novel
+      // tables). The full v1 → v3 skip path is exercised by
+      // migration_v2_to_v3_test.dart.
       final ResultSet versionRow = raw.select('PRAGMA user_version');
-      expect(versionRow.first.values.first, 2);
+      expect(versionRow.first.values.first, 3);
     },
   );
 }

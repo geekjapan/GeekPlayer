@@ -43,3 +43,8 @@ NovelBookmarksDao novelBookmarksDao(Ref ref) {
 SiteConsentsDao siteConsentsDao(Ref ref) {
   return ref.watch(appDatabaseProvider).siteConsentsDao;
 }
+
+@Riverpod(keepAlive: true)
+AppSettingsDao appSettingsDao(Ref ref) {
+  return ref.watch(appDatabaseProvider).appSettingsDao;
+}
