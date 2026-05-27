@@ -22,20 +22,20 @@
 
 ## 3. AppErrorLogger と severity マッピング
 
-- [ ] 3.1 `app/lib/core/errors/app_error_logger.dart` に `class AppErrorLogger { static void log(AppError error) { ... } }` を実装。内部で `Logger` シングルトンを保持し、severity に応じて `Logger.e` / `Logger.w` / `Logger.i` を呼び分け
-- [ ] 3.2 構造化ログのフォーマット（`type` / `message` / 各 variant 固有フィールド / `cause` / `stackTrace`）を `Map<String, Object?>` に組み立てるヘルパ関数を内部実装
-- [ ] 3.3 リリースビルドでは `SimplePrinter`、デバッグでは `PrettyPrinter` を使い分ける（`kReleaseMode` で判定）
-- [ ] 3.4 `app/lib/core/errors/error_banner.dart` （まだファイルが無ければ作成）に `enum ErrorSeverity { info, warning, error }` と top-level `ErrorSeverity severityOf(AppError error)` を実装（exhaustive switch、design.md D3 のマッピング）
-- [ ] 3.5 `app/test/core/errors/app_error_logger_test.dart` で `Logger` をモック（`mocktail` の `Mock` で `Logger` をフェイク）し、`UnknownError` が `Level.error` で / `RateLimitError` が `Level.warning` で logged されることを検証
-- [ ] 3.6 `app/test/core/errors/severity_of_test.dart` で 10 variant それぞれの `severityOf` 戻り値を assert
+- [x] 3.1 `app/lib/core/errors/app_error_logger.dart` に `class AppErrorLogger { static void log(AppError error) { ... } }` を実装。内部で `Logger` シングルトンを保持し、severity に応じて `Logger.e` / `Logger.w` / `Logger.i` を呼び分け
+- [x] 3.2 構造化ログのフォーマット（`type` / `message` / 各 variant 固有フィールド / `cause` / `stackTrace`）を `Map<String, Object?>` に組み立てるヘルパ関数を内部実装
+- [x] 3.3 リリースビルドでは `SimplePrinter`、デバッグでは `PrettyPrinter` を使い分ける（`kReleaseMode` で判定）
+- [x] 3.4 `app/lib/core/errors/error_banner.dart` （まだファイルが無ければ作成）に `enum ErrorSeverity { info, warning, error }` と top-level `ErrorSeverity severityOf(AppError error)` を実装（exhaustive switch、design.md D3 のマッピング）
+- [x] 3.5 `app/test/core/errors/app_error_logger_test.dart` で `Logger` をモック（`mocktail` の `Mock` で `Logger` をフェイク）し、`UnknownError` が `Level.error` で / `RateLimitError` が `Level.warning` で logged されることを検証
+- [x] 3.6 `app/test/core/errors/severity_of_test.dart` で 10 variant それぞれの `severityOf` 戻り値を assert
 
 ## 4. ErrorMessages ローカライザ
 
-- [ ] 4.1 `app/lib/core/errors/error_messages.dart` に `class ErrorMessages { static String localize(AppError error, BuildContext context) { ... } }` を実装。`AppLocalizations.of(context)` が null の時は `error.message` を返す fallback を実装
-- [ ] 4.2 全 10 variant について `localize` の exhaustive switch を実装し、`RateLimitError.retryAfter` などのプレースホルダ展開を l10n 経由で行う
-- [ ] 4.3 `app/test/core/errors/error_messages_test.dart` で全 10 variant に対する `localize` 結果が non-empty であることを `MaterialApp` を pump して確認
-- [ ] 4.4 `RateLimitError(retryAfter: Duration(seconds: 30))` をローカライズした時に文字列に `'30秒'` が含まれることをテスト
-- [ ] 4.5 detached context で `localize` を呼んだ時に `error.message` が返ることをテスト
+- [x] 4.1 `app/lib/core/errors/error_messages.dart` に `class ErrorMessages { static String localize(AppError error, BuildContext context) { ... } }` を実装。`AppLocalizations.of(context)` が null の時は `error.message` を返す fallback を実装
+- [x] 4.2 全 10 variant について `localize` の exhaustive switch を実装し、`RateLimitError.retryAfter` などのプレースホルダ展開を l10n 経由で行う
+- [x] 4.3 `app/test/core/errors/error_messages_test.dart` で全 10 variant に対する `localize` 結果が non-empty であることを `MaterialApp` を pump して確認
+- [x] 4.4 `RateLimitError(retryAfter: Duration(seconds: 30))` をローカライズした時に文字列に `'30秒'` が含まれることをテスト
+- [x] 4.5 detached context で `localize` を呼んだ時に `error.message` が返ることをテスト
 
 ## 5. ErrorToast / ErrorBanner ウィジェット
 

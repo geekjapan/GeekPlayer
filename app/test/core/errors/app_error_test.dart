@@ -128,9 +128,9 @@ void main() {
     });
 
     test('mentions cause when present', () {
-      final e = HtmlParseError(
+      const e = HtmlParseError(
         message: 'shape changed',
-        cause: const FormatException('x'),
+        cause: FormatException('x'),
       );
       expect(e.toString(), contains('caused by'));
     });
