@@ -31,28 +31,28 @@
 
 ## 4. 動画機能 (`features/video`)
 
-- [ ] 4.1 `app/lib/features/video/domain/video_file.dart` に `VideoFile` 値オブジェクト（`Uri`, `String displayName`）を定義
-- [ ] 4.2 `app/lib/features/video/data/video_repository.dart` に `VideoRepository`（pickFile / loadResumePoint / saveResumePoint / recordRecentOpen / fetchRecentItems）を実装、`file_picker` と DAO を組み合わせる
-- [ ] 4.3 `app/lib/features/video/domain/play_video_use_case.dart` に「URI → ResumePoint 解決 → 5秒末尾なら 0、それ以外は保存位置を返す」ロジックを実装
-- [ ] 4.4 `app/lib/features/video/presentation/video_controller_notifier.dart` に AutoDispose Notifier を実装し、`VideoSession` のライフサイクルを管理
-- [ ] 4.5 `app/lib/features/video/presentation/player_screen.dart` を実装（`media_kit_video` の `Video` ウィジェット + オーバーレイ: top bar / play-pause / seek bar / 速度ボタン / 字幕トグル / 戻る）
-- [ ] 4.6 オーバーレイの 3 秒自動 fade-out 動作を実装
-- [ ] 4.7 速度プリセット（0.5 / 0.75 / 1.0 / 1.25 / 1.5 / 1.75 / 2.0）の UI と `MediaSession.setSpeed` 呼び出しを実装
-- [ ] 4.8 字幕トグル: `media_kit` の `setSubtitleTrack` で最初の埋め込みトラックと off を切り替える
-- [ ] 4.9 `app/lib/features/video/presentation/home_section.dart` に「動画を開く」ボタン + "最近開いた" リストを実装（空状態の placeholder 文言含む）
-- [ ] 4.10 stale entry（ファイルが消えた）タップ時のエラーハンドリングと `recent_items` からの削除
+- [x] 4.1 `app/lib/features/video/domain/video_file.dart` に `VideoFile` 値オブジェクト（`Uri`, `String displayName`）を定義
+- [x] 4.2 `app/lib/features/video/data/video_repository.dart` に `VideoRepository`（pickFile / loadResumePoint / saveResumePoint / recordRecentOpen / fetchRecentItems）を実装、`file_picker` と DAO を組み合わせる
+- [x] 4.3 `app/lib/features/video/domain/play_video_use_case.dart` に「URI → ResumePoint 解決 → 5秒末尾なら 0、それ以外は保存位置を返す」ロジックを実装
+- [x] 4.4 `app/lib/features/video/presentation/video_controller_notifier.dart` に AutoDispose Notifier を実装し、`VideoSession` のライフサイクルを管理
+- [x] 4.5 `app/lib/features/video/presentation/player_screen.dart` を実装（`media_kit_video` の `Video` ウィジェット + オーバーレイ: top bar / play-pause / seek bar / 速度ボタン / 字幕トグル / 戻る）
+- [x] 4.6 オーバーレイの 3 秒自動 fade-out 動作を実装
+- [x] 4.7 速度プリセット（0.5 / 0.75 / 1.0 / 1.25 / 1.5 / 1.75 / 2.0）の UI と `MediaSession.setSpeed` 呼び出しを実装
+- [x] 4.8 字幕トグル: `media_kit` の `setSubtitleTrack` で最初の埋め込みトラックと off を切り替える
+- [x] 4.9 `app/lib/features/video/presentation/home_section.dart` に「動画を開く」ボタン + "最近開いた" リストを実装（空状態の placeholder 文言含む）
+- [x] 4.10 stale entry（ファイルが消えた）タップ時のエラーハンドリングと `recent_items` からの削除
 
 ## 5. HomeScreen + Section レジストリ foundation（ADR-0004）
 
 この change で **後続 6 change が乗せる土台** を構築する。
 
-- [ ] 5.1 `app/lib/features/library/home_section.dart` に `abstract class HomeSection { String get id; int get order; Widget build(BuildContext, WidgetRef); }` を定義。`HomeAppBarAction` も同様に定義
-- [ ] 5.2 `app/lib/features/library/home_section_registry.dart` に `@Riverpod(keepAlive: true) List<HomeSection> homeSections(...)` と `@Riverpod(keepAlive: true) List<HomeAppBarAction> homeAppBarActions(...)` を実装（spread で複数サブプロバイダから集約、`order` 順にソート）
-- [ ] 5.3 `app/lib/features/library/home_screen.dart` に `ConsumerWidget HomeScreen` を実装（AppBar + ListView 構成、各セクションは `s.build(context, ref)`）
-- [ ] 5.4 `app/lib/features/video/presentation/video_home_section.dart` に `VideoHomeSection implements HomeSection`（order = 200）と `@Riverpod` サブプロバイダを実装
-- [ ] 5.5 `app/lib/main.dart:1` の `_HelloScreen` を `HomeScreen` に置き換え、`ProviderScope` で囲んだまま起動できることを確認
-- [ ] 5.6 `app/test/widget_test.dart` を新 `HomeScreen` 用に更新（"動画を開く" ボタン存在 + "最近開いた" 空状態文言を確認、既存の "Hello, GeekPlayer" アサーションを削除）
-- [ ] 5.7 `build_runner` で `*.g.dart` を生成、`flutter analyze` / `flutter test` クリーン
+- [x] 5.1 `app/lib/features/library/home_section.dart` に `abstract class HomeSection { String get id; int get order; Widget build(BuildContext, WidgetRef); }` を定義。`HomeAppBarAction` も同様に定義
+- [x] 5.2 `app/lib/features/library/home_section_registry.dart` に `@Riverpod(keepAlive: true) List<HomeSection> homeSections(...)` と `@Riverpod(keepAlive: true) List<HomeAppBarAction> homeAppBarActions(...)` を実装（spread で複数サブプロバイダから集約、`order` 順にソート）
+- [x] 5.3 `app/lib/features/library/home_screen.dart` に `ConsumerWidget HomeScreen` を実装（AppBar + ListView 構成、各セクションは `s.build(context, ref)`）
+- [x] 5.4 `app/lib/features/video/presentation/video_home_section.dart` に `VideoHomeSection implements HomeSection`（order = 200）と `@Riverpod` サブプロバイダを実装
+- [x] 5.5 `app/lib/main.dart:1` の `_HelloScreen` を `HomeScreen` に置き換え、`ProviderScope` で囲んだまま起動できることを確認
+- [x] 5.6 `app/test/widget_test.dart` を新 `HomeScreen` 用に更新（"動画を開く" ボタン存在 + "最近開いた" 空状態文言を確認、既存の "Hello, GeekPlayer" アサーションを削除）
+- [x] 5.7 `build_runner` で `*.g.dart` を生成、`flutter analyze` / `flutter test` クリーン
 
 ## 6. ウィジェットテスト
 
