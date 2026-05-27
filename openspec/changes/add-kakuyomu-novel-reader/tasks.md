@@ -5,11 +5,11 @@
 
 ## 1. 依存と前提
 
-- [ ] 1.1 `add-online-novel-library` で `NovelRepository` / `LibraryRepository` / `RateLimiter` / `SiteConsentRepository` / `Site` enum / `Work` / `Episode` / drift `novel_works` / `novel_episodes` / `novel_bookmarks` / `site_consents` テーブルが定義されていることを確認
-- [ ] 1.2 `app/pubspec.yaml` に `url_launcher` を `flutter pub add` で追加（冪等: 既に存在すれば skip）。`webfeed_revised` / `html` / `dio` / `package_info_plus` は共通 change で導入済み前提
-- [ ] 1.3 `flutter pub get` がクリーンで通り、`flutter analyze` が green
-- [ ] 1.4 `THIRD_PARTY_NOTICES.md` に `webfeed_revised` / `html` / `url_launcher` / `package_info_plus` のライセンス記載を追加
-- [ ] 1.5 `app/lib/core/config/feature_flags.dart` に `const bool kakuyomuEnabled = true;` を追加（kill-switch）
+- [x] 1.1 `add-online-novel-library` で `NovelRepository` / `LibraryRepository` / `RateLimiter` / `SiteConsentRepository` / `Site` enum / `Work` / `Episode` / drift `novel_works` / `novel_episodes` / `novel_bookmarks` / `site_consents` テーブルが定義されていることを確認
+- [x] 1.2 `app/pubspec.yaml` に `url_launcher` を `flutter pub add` で追加（冪等: 既に存在すれば skip）。`webfeed_revised` / `html` / `dio` / `package_info_plus` は共通 change で導入済み前提
+- [x] 1.3 `flutter pub get` がクリーンで通り、`flutter analyze` が green
+- [x] 1.4 `THIRD_PARTY_NOTICES.md` に `webfeed_revised` / `html` / `url_launcher` / `package_info_plus` のライセンス記載を追加
+- [x] 1.5 `app/lib/core/config/feature_flags.dart` に `const bool kakuyomuEnabled = true;` を追加（kill-switch）
 
 ## 2. ドメインモデルと例外
 
