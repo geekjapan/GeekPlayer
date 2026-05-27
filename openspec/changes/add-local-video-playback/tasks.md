@@ -11,13 +11,13 @@
 
 ## 2. MediaSession 抽象 (`core/media`)
 
-- [ ] 2.1 `app/lib/core/media/models.dart` に `MediaPosition`、`MediaSpeed`（>0 検証）、`MediaPlayState`（sealed: idle / loading / playing / paused / ended）を実装
-- [ ] 2.2 `kEndOfPlaybackThreshold = Duration(seconds: 5)` 定数を `models.dart` に定義
-- [ ] 2.3 `app/lib/core/media/media_session.dart` に `sealed abstract class MediaSession` を定義（positionStream / playStateStream / durationStream / speed / play / pause / seek / setSpeed / dispose）。ファイル冒頭に `library media_session;` directive を書き、`part 'video_session.dart';` で variant ファイルを取り込む
-- [ ] 2.4 `app/lib/core/media/video_session.dart` に `part of 'media_session.dart';` + `media_kit` の `Player` をラップした `final class VideoSession extends MediaSession` を実装し、`videoController` getter で `VideoController` を公開
-- [ ] 2.5 `VideoSession.dispose()` が `media_kit` Player を確実に解放し、二重 dispose で例外を投げないこと
-- [ ] 2.6 `MediaPosition` / `MediaSpeed` のユニットテストを `app/test/core/media/models_test.dart` に追加（バリデーション、equality）
-- [ ] 2.7 `VideoSession` のユニットテストを mocktail で `Player` をフェイクして state 遷移を検証（`app/test/core/media/video_session_test.dart`）
+- [x] 2.1 `app/lib/core/media/models.dart` に `MediaPosition`、`MediaSpeed`（>0 検証）、`MediaPlayState`（sealed: idle / loading / playing / paused / ended）を実装
+- [x] 2.2 `kEndOfPlaybackThreshold = Duration(seconds: 5)` 定数を `models.dart` に定義
+- [x] 2.3 `app/lib/core/media/media_session.dart` に `sealed abstract class MediaSession` を定義（positionStream / playStateStream / durationStream / speed / play / pause / seek / setSpeed / dispose）。ファイル冒頭に `library media_session;` directive を書き、`part 'video_session.dart';` で variant ファイルを取り込む
+- [x] 2.4 `app/lib/core/media/video_session.dart` に `part of 'media_session.dart';` + `media_kit` の `Player` をラップした `final class VideoSession extends MediaSession` を実装し、`videoController` getter で `VideoController` を公開
+- [x] 2.5 `VideoSession.dispose()` が `media_kit` Player を確実に解放し、二重 dispose で例外を投げないこと
+- [x] 2.6 `MediaPosition` / `MediaSpeed` のユニットテストを `app/test/core/media/models_test.dart` に追加（バリデーション、equality）
+- [x] 2.7 `VideoSession` のユニットテストを mocktail で `Player` をフェイクして state 遷移を検証（`app/test/core/media/video_session_test.dart`）
 
 ## 3. ストレージ層 (`core/storage`)
 
