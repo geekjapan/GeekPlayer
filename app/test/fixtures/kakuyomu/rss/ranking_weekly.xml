@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>カクヨム 週次ランキング</title>
+  <link href="https://kakuyomu.jp/rss/ranking/weekly"/>
+  <updated>2026-05-26T12:00:00+09:00</updated>
+  <id>tag:kakuyomu.jp,2026-05-26:/rss/ranking/weekly</id>
+  <entry>
+    <title>週次1位: 万華鏡の世界</title>
+    <link href="https://kakuyomu.jp/works/3000000000000000001"/>
+    <id>https://kakuyomu.jp/works/3000000000000000001</id>
+    <published>2026-05-20T09:00:00+09:00</published>
+    <updated>2026-05-26T09:00:00+09:00</updated>
+    <summary>万華鏡の中で迷子になる短編。</summary>
+    <author><name>鏡子</name></author>
+  </entry>
+  <entry>
+    <title>週次2位: 終わらない朝</title>
+    <link href="https://kakuyomu.jp/works/3000000000000000002"/>
+    <id>https://kakuyomu.jp/works/3000000000000000002</id>
+    <published>2026-05-19T10:00:00+09:00</published>
+    <updated>2026-05-26T10:00:00+09:00</updated>
+    <summary>朝が永遠に続く街での物語。</summary>
+    <author><name>夜明け作家</name></author>
+  </entry>
+</feed>

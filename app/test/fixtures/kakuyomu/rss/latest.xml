@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>カクヨム 新着</title>
+    <link>https://kakuyomu.jp/rss/latest</link>
+    <description>カクヨム新着小説</description>
+    <language>ja</language>
+    <item>
+      <title>テストの森で迷ったわたし</title>
+      <link>https://kakuyomu.jp/works/1177354054881131863</link>
+      <description>森に住む奇妙なテストランナーたちの物語。</description>
+      <dc:creator>テスト太郎</dc:creator>
+      <pubDate>Mon, 26 May 2026 09:00:00 +0900</pubDate>
+    </item>
+    <item>
+      <title>第2の作品: 並列開発の罠</title>
+      <link>https://kakuyomu.jp/works/1177354054881131864</link>
+      <description>Merge conflict を恐れない少女の冒険譚。</description>
+      <dc:creator>並列花子</dc:creator>
+      <pubDate>Mon, 26 May 2026 10:30:00 +0900</pubDate>
+    </item>
+    <item>
+      <title>リンクなし作品 (壊れたアイテム)</title>
+      <description>このアイテムはパース成功すべきでない (link 欠落)</description>
+      <pubDate>Mon, 26 May 2026 11:00:00 +0900</pubDate>
+    </item>
+    <item>
+      <title>第4の作品: 結末への扉</title>
+      <link>https://kakuyomu.jp/works/1177354054881131866</link>
+      <description>最終章を書ききるための物語。</description>
+      <dc:creator>結末次郎</dc:creator>
+      <pubDate>Mon, 26 May 2026 12:00:00 +0900</pubDate>
+    </item>
+  </channel>
+</rss>

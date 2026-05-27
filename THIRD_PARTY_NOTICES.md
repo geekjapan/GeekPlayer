@@ -16,7 +16,9 @@ GeekPlayer は以下のサードパーティライブラリを利用していま
 | [dio](https://github.com/cfug/dio) | MIT | HTTP クライアント |
 | [riverpod](https://github.com/rrousselGit/riverpod) | MIT | 状態管理 |
 | [html](https://github.com/dart-lang/html) | BSD-3-Clause | HTML パース |
-| [webfeed](https://pub.dev/packages/webfeed) | MIT | RSS/Atom パース |
+| [webfeed_revised](https://pub.dev/packages/webfeed_revised) | MIT | RSS/Atom パース（webfeed のメンテ fork） |
+| [url_launcher](https://pub.dev/packages/url_launcher) | BSD-3-Clause | 外部ブラウザ起動（パーサ失敗時の公式ビューアフォールバック） |
+| [package_info_plus](https://pub.dev/packages/package_info_plus) | BSD-3-Clause | アプリバージョン取得（User-Agent 構築） |
 
 ## libmpv (LGPL) について
 
