@@ -31,12 +31,12 @@
 
 ## 4. RSS / Atom ソース
 
-- [ ] 4.1 `data/kakuyomu_rss_source.dart` を実装: `search(query)` / `latest()` / `ranking(period)` / `workUpdates(workId)` のメソッド、`Content-Type` で RSS / Atom 振り分け、`webfeed_revised` でパース
-- [ ] 4.2 `KakuyomuFeedItem` への正規化ロジック（`item.link` から `workId` を URL パスから抽出）を実装
-- [ ] 4.3 アイテム単位 try-catch でベストエフォート（壊れたアイテムは skip + warn）
-- [ ] 4.4 fixture `app/test/fixtures/kakuyomu/rss/latest.xml` / `ranking_daily.xml` / `ranking_weekly.xml` を実環境から月 1 回手動取得して保存
-- [ ] 4.5 ゴールデン JSON `*.golden.json` を初回生成し、CI 比較テストを `app/test/features/novel/kakuyomu/kakuyomu_rss_source_test.dart` に実装
-- [ ] 4.6 1 アイテム破損で全体が落ちないことのテストを追加
+- [x] 4.1 `data/kakuyomu_rss_source.dart` を実装: `search(query)` / `latest()` / `ranking(period)` / `workUpdates(workId)` のメソッド、`Content-Type` で RSS / Atom 振り分け、`webfeed_revised` でパース
+- [x] 4.2 `KakuyomuFeedItem` への正規化ロジック（`item.link` から `workId` を URL パスから抽出）を実装 — `extractWorkIdFromUrl` helper covers `/works/{id}` and `/works/{id}/episodes/{id}`
+- [x] 4.3 アイテム単位 try-catch でベストエフォート（壊れたアイテムは skip + warn）
+- [x] 4.4 fixture `app/test/fixtures/kakuyomu/rss/latest.xml` / `ranking_daily.xml` / `ranking_weekly.xml` を実環境から月 1 回手動取得して保存 — initial synthetic fixtures committed (real-environment monthly refresh is a human task per ADR-0001; README in §5.7 documents the procedure)
+- [x] 4.5 ゴールデン JSON `*.golden.json` を初回生成し、CI 比較テストを `app/test/features/novel/kakuyomu/kakuyomu_rss_source_test.dart` に実装 — goldens regenerate when `KAKUYOMU_UPDATE_GOLDENS=1` is set
+- [x] 4.6 1 アイテム破損で全体が落ちないことのテストを追加 — `latest.xml` contains a deliberately link-less item; the test asserts 3/4 items survive
 
 ## 5. HTML ソースとパーサ
 
