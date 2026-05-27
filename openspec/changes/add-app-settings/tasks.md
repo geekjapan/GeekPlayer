@@ -64,13 +64,13 @@
 
 ## 5. プレゼンテーション層 — Notifier と画面骨格
 
-- [ ] 5.1 `app/lib/features/settings/presentation/app_settings_notifier.dart` に
-  `AppSettingsNotifier`（Riverpod v2 / `keepAlive: true`）を実装、`build()`
+- [x] 5.1 `app/lib/features/settings/presentation/app_settings_notifier.dart` に
+  `AppSettingsNotifier`（Riverpod v3 / `@Riverpod(keepAlive: true) class`）を実装、`build()`
   で `readAll()` を呼ぶ
-- [ ] 5.2 `update(AppSettings Function(AppSettings))` を実装、state を即時更新
-  しつつ `writeDiff` を **key 単位 250ms debounce** で呼ぶ
-- [ ] 5.3 Notifier の `dispose` で debounce 中の保留書き込みを flush
-- [ ] 5.4 debounce / flush / partial-failure rollback のユニットテストを
+- [x] 5.2 `mutate(AppSettings Function(AppSettings))` を実装、state を即時更新
+  しつつ `writeDiff` を **250ms debounce** で呼ぶ  *（メソッド名は AsyncNotifier 基底クラスの `update` と衝突するため `mutate` を採用）*
+- [x] 5.3 Notifier の `dispose` で debounce 中の保留書き込みを flush
+- [x] 5.4 debounce / flush / partial-failure rollback のユニットテストを
   `app/test/features/settings/presentation/app_settings_notifier_test.dart` に追加
 - [ ] 5.5 `app/lib/features/settings/presentation/settings_screen.dart` を実装
   （Material 3 `ListView` + 10 セクションを spec の順序で配置）
