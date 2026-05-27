@@ -21,13 +21,13 @@
 
 ## 3. ストレージ層 (`core/storage`)
 
-- [ ] 3.1 `app/lib/core/storage/tables/playback_positions.dart` に drift テーブル定義（`uri TEXT PK`, `positionMs INTEGER`, `updatedAt DATETIME`）
-- [ ] 3.2 `app/lib/core/storage/tables/recent_items.dart` に drift テーブル定義（`uri TEXT PK`, `kind TEXT`, `openedAt DATETIME`）
-- [ ] 3.3 `app/lib/core/storage/database.dart` に `@DriftDatabase` を定義し、`drift_flutter` の `driftDatabase` で `path_provider` ベースのファイル DB を初期化
-- [ ] 3.4 `flutter pub run build_runner build --delete-conflicting-outputs` を実行して `database.g.dart` を生成
-- [ ] 3.5 `app/lib/core/storage/database.dart` に `PlaybackPositionsDao`（upsert / getByUri）と `RecentItemsDao`（upsert / list 50 件 / delete / pruneOlderThan50）を実装
-- [ ] 3.6 in-memory drift (`NativeDatabase.memory()`) で DAO の CRUD ユニットテストを `app/test/core/storage/` に追加
-- [ ] 3.7 `RecentItemsDao` の「50 件超過時に古いものを削除」動作のテストを追加
+- [x] 3.1 `app/lib/core/storage/tables/playback_positions.dart` に drift テーブル定義（`uri TEXT PK`, `positionMs INTEGER`, `updatedAt DATETIME`）
+- [x] 3.2 `app/lib/core/storage/tables/recent_items.dart` に drift テーブル定義（`uri TEXT PK`, `kind TEXT`, `openedAt DATETIME`）
+- [x] 3.3 `app/lib/core/storage/database.dart` に `@DriftDatabase` を定義し、`drift_flutter` の `driftDatabase` で `path_provider` ベースのファイル DB を初期化
+- [x] 3.4 `flutter pub run build_runner build --delete-conflicting-outputs` を実行して `database.g.dart` を生成
+- [x] 3.5 `app/lib/core/storage/database.dart` に `PlaybackPositionsDao`（upsert / getByUri）と `RecentItemsDao`（upsert / list 50 件 / delete / pruneOlderThan50）を実装
+- [x] 3.6 in-memory drift (`NativeDatabase.memory()`) で DAO の CRUD ユニットテストを `app/test/core/storage/` に追加
+- [x] 3.7 `RecentItemsDao` の「50 件超過時に古いものを削除」動作のテストを追加
 
 ## 4. 動画機能 (`features/video`)
 
