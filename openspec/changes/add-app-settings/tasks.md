@@ -30,19 +30,19 @@
 
 ## 3. ドメイン層 (`features/settings/domain`)
 
-- [ ] 3.1 `app/lib/features/settings/domain/setting_keys.dart` に dotted-namespace
+- [x] 3.1 `app/lib/features/settings/domain/setting_keys.dart` に dotted-namespace
   の `SettingKeys` const map を定義（`theme.mode`, `playback.default_speed`,
   `video.subtitles_default`, `audio.background_playback`,
   `audio.notification_persistent`, `novel.writing_mode`, `novel.font_size_sp`,
   `novel.line_height`, `novel.font_family`, `novel.background_light`,
   `novel.background_dark`, `library.recent_cap`, `cache.cap_mb`）
-- [ ] 3.2 `app/lib/features/settings/domain/app_settings.dart` に `AppSettings`
+- [x] 3.2 `app/lib/features/settings/domain/app_settings.dart` に `AppSettings`
   値オブジェクトと `.defaults()` / `.copyWith(...)` / `==` / `hashCode` を実装
-- [ ] 3.3 `NovelWritingMode` enum を `app/lib/features/settings/domain/novel_writing_mode.dart`
+- [x] 3.3 `NovelWritingMode` enum を `app/lib/features/settings/domain/novel_writing_mode.dart`
   に定義（`vertical` / `horizontal`）
-- [ ] 3.4 `SettingKeys.all` が `^[a-z][a-z_]*(\.[a-z][a-z_]*)+$` regex に
+- [x] 3.4 `SettingKeys.all` が `^[a-z][a-z_]*(\.[a-z][a-z_]*)+$` regex に
   マッチすることを検証するユニットテストを追加
-- [ ] 3.5 `AppSettings.defaults()` が spec で定義された全 13 フィールドの初期値
+- [x] 3.5 `AppSettings.defaults()` が spec で定義された全 13 フィールドの初期値
   を返すことを検証するテストを追加
 
 ## 4. データ層 (`features/settings/data`)
