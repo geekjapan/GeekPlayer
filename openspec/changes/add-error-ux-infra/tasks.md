@@ -12,13 +12,13 @@
 
 ## 2. AppError ドメイン (`core/errors/app_error.dart`)
 
-- [ ] 2.1 `app/lib/core/errors/app_error.dart` に `sealed class AppError implements Exception` を定義（`message` / `cause` / `stackTrace` フィールド + `const` constructor + `toString()`）
-- [ ] 2.2 同ファイルに 10 個の `final class` variant を追加（`NetworkUnreachableError`, `RateLimitError`（`Duration? retryAfter`）, `SiteConsentRequiredError`（`String site`）, `RobotsDisallowedError`（`String path`）, `HtmlParseError`（`String? sourceUrl`）, `FileNotFoundError`（`Uri uri`）, `UnsupportedFormatError`（`String? extension`）, `UpstreamUnavailableError`（`int? statusCode`）, `StorageQuotaError`（`int? requestedBytes`）, `UnknownError`）
-- [ ] 2.3 各 variant に `==` / `hashCode` を実装（`runtimeType` + `message` + variant 固有フィールド、`cause` / `stackTrace` は除外）
-- [ ] 2.4 `UnknownError(Object original, {StackTrace? stackTrace})` ファクトリで `super(original.toString(), cause: original, stackTrace: stackTrace)` を呼ぶ
-- [ ] 2.5 `app/test/core/errors/app_error_test.dart` に各 variant の構築・equality・hashCode・`toString()` のユニットテストを追加
-- [ ] 2.6 `app/test/core/errors/app_error_exhaustive_switch_test.dart` で `switch (error)` over `AppError` が 10 variant 全網羅でコンパイルすることをコンパイル時に保証する関数を書く（実行時には trivial に true を返すだけで OK）
-- [ ] 2.7 `app/test/core/errors/dependency_direction_test.dart` を追加: `app/lib/core/errors/` 配下の全 `.dart` ファイルの import 文を `Process.run('grep', ...)` 等で走査し、禁止プレフィックス（`package:geekplayer/core/network/`, `core/storage/`, `core/media/`, `core/novel/`, `features/`）が現れたら fail
+- [x] 2.1 `app/lib/core/errors/app_error.dart` に `sealed class AppError implements Exception` を定義（`message` / `cause` / `stackTrace` フィールド + `const` constructor + `toString()`）
+- [x] 2.2 同ファイルに 10 個の `final class` variant を追加（`NetworkUnreachableError`, `RateLimitError`（`Duration? retryAfter`）, `SiteConsentRequiredError`（`String site`）, `RobotsDisallowedError`（`String path`）, `HtmlParseError`（`String? sourceUrl`）, `FileNotFoundError`（`Uri uri`）, `UnsupportedFormatError`（`String? extension`）, `UpstreamUnavailableError`（`int? statusCode`）, `StorageQuotaError`（`int? requestedBytes`）, `UnknownError`）
+- [x] 2.3 各 variant に `==` / `hashCode` を実装（`runtimeType` + `message` + variant 固有フィールド、`cause` / `stackTrace` は除外）
+- [x] 2.4 `UnknownError(Object original, {StackTrace? stackTrace})` ファクトリで `super(original.toString(), cause: original, stackTrace: stackTrace)` を呼ぶ
+- [x] 2.5 `app/test/core/errors/app_error_test.dart` に各 variant の構築・equality・hashCode・`toString()` のユニットテストを追加
+- [x] 2.6 `app/test/core/errors/app_error_exhaustive_switch_test.dart` で `switch (error)` over `AppError` が 10 variant 全網羅でコンパイルすることをコンパイル時に保証する関数を書く（実行時には trivial に true を返すだけで OK）
+- [x] 2.7 `app/test/core/errors/dependency_direction_test.dart` を追加: `app/lib/core/errors/` 配下の全 `.dart` ファイルの import 文を `Process.run('grep', ...)` 等で走査し、禁止プレフィックス（`package:geekplayer/core/network/`, `core/storage/`, `core/media/`, `core/novel/`, `features/`）が現れたら fail
 
 ## 3. AppErrorLogger と severity マッピング
 
