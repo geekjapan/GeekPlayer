@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geekplayer/core/errors/app_error.dart';
 import 'package:geekplayer/core/errors/app_error_logger.dart';
+import 'package:geekplayer/core/errors/error_boundary.dart';
 import 'package:logger/logger.dart';
 
 /// Capture log events without rendering them.
@@ -29,6 +30,7 @@ void main() {
   });
 
   tearDown(() {
+    ErrorBoundary.resetForTesting();
     AppErrorLogger.setLoggerForTesting(previous);
   });
 
@@ -83,6 +85,48 @@ void main() {
 
       expect(filter.events, hasLength(1));
       expect(filter.events.single.level, Level.error);
+      expect(previousCalled, 1);
+    },
+  );
+
+  test('runWithErrorBoundary logs and surfaces async startup errors', () async {
+    final error = StateError('startup failed');
+
+    await expectLater(
+      runWithErrorBoundary(() async {
+        await Future<void>.delayed(Duration.zero);
+        throw error;
+      }),
+      throwsA(same(error)),
+    );
+
+    expect(filter.events, hasLength(1));
+    final payload = filter.events.single.message as Map<String, Object?>;
+    expect(payload['type'], 'UnknownError');
+    expect(payload['cause'], contains('startup failed'));
+  });
+
+  test(
+    'runWithErrorBoundary does not wrap FlutterError.onError twice',
+    () async {
+      var previousCalled = 0;
+      final originalHandler = FlutterError.onError;
+      FlutterError.onError = (details) {
+        previousCalled++;
+      };
+      addTearDown(() => FlutterError.onError = originalHandler);
+
+      await runWithErrorBoundary(() {});
+      await runWithErrorBoundary(() {});
+
+      FlutterError.reportError(
+        FlutterErrorDetails(
+          exception: Exception('framework'),
+          stack: StackTrace.current,
+        ),
+      );
+
+      expect(filter.events, hasLength(1));
       expect(previousCalled, 1);
     },
   );

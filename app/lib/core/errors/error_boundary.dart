@@ -18,6 +18,10 @@ bool? debugIsReleaseModeOverride;
 /// override when set; otherwise falls back to [kReleaseMode].
 bool _isReleaseMode() => debugIsReleaseModeOverride ?? kReleaseMode;
 
+void _flutterErrorHandler(FlutterErrorDetails details) {
+  ErrorBoundary._handleFlutterError(details);
+}
+
 /// Installs an [ErrorWidget.builder] override and wires up
 /// `runZonedGuarded` / `FlutterError.onError` so that uncaught errors flow
 /// through [AppErrorLogger] instead of disappearing into the void.
@@ -26,6 +30,8 @@ class ErrorBoundary {
 
   static bool _isInstalled = false;
   static ErrorWidgetBuilder? _previousBuilder;
+  static bool _isFlutterErrorHandlerInstalled = false;
+  static FlutterExceptionHandler? _previousFlutterErrorHandler;
 
   /// Test-only view of the idempotency latch.
   @visibleForTesting
@@ -57,6 +63,27 @@ class ErrorBoundary {
     return fallback(details);
   }
 
+  static void installFlutterErrorHandler() {
+    final currentHandler = FlutterError.onError;
+    if (identical(currentHandler, _flutterErrorHandler)) {
+      return;
+    }
+    _previousFlutterErrorHandler = currentHandler;
+    FlutterError.onError = _flutterErrorHandler;
+    _isFlutterErrorHandlerInstalled = true;
+  }
+
+  static void _handleFlutterError(FlutterErrorDetails details) {
+    AppErrorLogger.log(
+      UnknownError(details.exception, stackTrace: details.stack),
+    );
+    if (_previousFlutterErrorHandler != null) {
+      _previousFlutterErrorHandler!(details);
+    } else {
+      FlutterError.presentError(details);
+    }
+  }
+
   /// Test-only escape hatch to restore the original [ErrorWidget.builder]
   /// and reset the idempotency latch between tests.
   @visibleForTesting
@@ -66,6 +93,13 @@ class ErrorBoundary {
     }
     _previousBuilder = null;
     _isInstalled = false;
+
+    if (_isFlutterErrorHandlerInstalled &&
+        identical(FlutterError.onError, _flutterErrorHandler)) {
+      FlutterError.onError = _previousFlutterErrorHandler;
+    }
+    _previousFlutterErrorHandler = null;
+    _isFlutterErrorHandlerInstalled = false;
   }
 }
 
@@ -132,29 +166,33 @@ class _ReleaseErrorFallbackState extends State<_ReleaseErrorFallback> {
 /// [runApp], so callers that do async startup work before rendering should put
 /// that work inside [body].
 Future<void> runWithErrorBoundary(FutureOr<void> Function() body) async {
-  await runZonedGuarded<Future<void>>(
-    () async {
-      WidgetsFlutterBinding.ensureInitialized();
-      ErrorBoundary.install();
-
-      final previousHandler = FlutterError.onError;
-      FlutterError.onError = (FlutterErrorDetails details) {
-        AppErrorLogger.log(
-          UnknownError(details.exception, stackTrace: details.stack),
-        );
-        if (previousHandler != null) {
-          previousHandler(details);
-        } else {
-          FlutterError.presentError(details);
-        }
-      };
-
-      await body();
+  final completer = Completer<void>();
+  runZonedGuarded<void>(
+    () {
+      Future<void>.sync(() {
+        WidgetsFlutterBinding.ensureInitialized();
+        ErrorBoundary.install();
+        ErrorBoundary.installFlutterErrorHandler();
+        return body();
+      }).then(
+        (_) {
+          if (!completer.isCompleted) {
+            completer.complete();
+          }
+        },
+        onError: (Object error, StackTrace stack) {
+          AppErrorLogger.log(UnknownError(error, stackTrace: stack));
+          if (!completer.isCompleted) {
+            completer.completeError(error, stack);
+          }
+        },
+      );
     },
     (error, stack) {
       AppErrorLogger.log(UnknownError(error, stackTrace: stack));
     },
   );
+  await completer.future;
 }
 
 /// Wraps [runApp] in the standard GeekPlayer error boundary.
