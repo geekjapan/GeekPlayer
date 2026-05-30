@@ -1,0 +1,146 @@
+name: Release Artifacts
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  FLUTTER_VERSION: '3.44.0'
+
+jobs:
+  build-windows-release:
+    name: Build Windows release zip
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Set artifact metadata
+        shell: pwsh
+        run: |
+          $sha = git rev-parse --short HEAD
+          if ("${{ github.ref_type }}" -eq "tag") {
+            $suffix = "${{ github.ref_name }}"
+          } else {
+            $suffix = "run-${{ github.run_number }}"
+          }
+          "GIT_SHA=$sha" >> $env:GITHUB_ENV
+          "ARTIFACT_SUFFIX=$suffix" >> $env:GITHUB_ENV
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate code (drift / riverpod)
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Build Windows release
+        shell: pwsh
+        run: flutter build windows --release --dart-define=GIT_SHA=$env:GIT_SHA
+
+      - name: Package Windows release
+        shell: pwsh
+        run: |
+          $releaseDir = "build/windows/x64/runner/Release"
+          $exePath = Join-Path $releaseDir "geekplayer.exe"
+          if (!(Test-Path $exePath)) {
+            throw "Expected Windows executable was not found: $exePath"
+          }
+          $package = "GeekPlayer-windows-$env:ARTIFACT_SUFFIX.zip"
+          Compress-Archive -Path "$releaseDir/*" -DestinationPath $package -Force
+
+      - name: Upload Windows release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: geekplayer-windows
+          path: app/GeekPlayer-windows-*.zip
+          if-no-files-found: error
+          retention-days: 14
+
+  build-macos-release:
+    name: Build unsigned macOS dmg
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Set artifact metadata
+        run: |
+          echo "GIT_SHA=$(git rev-parse --short HEAD)" >> "$GITHUB_ENV"
+          if [ "${{ github.ref_type }}" = "tag" ]; then
+            echo "ARTIFACT_SUFFIX=${{ github.ref_name }}" >> "$GITHUB_ENV"
+          else
+            echo "ARTIFACT_SUFFIX=run-${{ github.run_number }}" >> "$GITHUB_ENV"
+          fi
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate code (drift / riverpod)
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Build macOS release
+        run: flutter build macos --release --dart-define=GIT_SHA="$GIT_SHA"
+
+      - name: Package unsigned macOS dmg
+        run: |
+          app_path="build/macos/Build/Products/Release/geekplayer.app"
+          if [ ! -d "$app_path" ]; then
+            echo "::error::Expected macOS app bundle was not found: $app_path"
+            exit 1
+          fi
+          dmg="GeekPlayer-macos-$ARTIFACT_SUFFIX-unsigned.dmg"
+          hdiutil create \
+            -volname "GeekPlayer" \
+            -srcfolder "$app_path" \
+            -ov \
+            -format UDZO \
+            "$dmg"
+
+      - name: Upload macOS dmg artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: geekplayer-macos-unsigned
+          path: app/GeekPlayer-macos-*-unsigned.dmg
+          if-no-files-found: error
+          retention-days: 14
+
+  publish-github-release:
+    name: Attach artifacts to GitHub Release
+    if: github.ref_type == 'tag'
+    needs:
+      - build-windows-release
+      - build-macos-release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download release artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-artifacts
+          merge-multiple: true
+
+      - name: Create or update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release-artifacts/*
+          generate_release_notes: true
