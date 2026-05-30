@@ -123,30 +123,41 @@ class _ReleaseErrorFallbackState extends State<_ReleaseErrorFallback> {
   }
 }
 
-/// Wraps [runApp] in `runZonedGuarded` so that uncaught async errors land in
+/// Runs app startup in `runZonedGuarded` so that uncaught async errors land in
 /// [AppErrorLogger] rather than the framework's default `print`. Also wires
 /// up [FlutterError.onError] to log first and delegate to whatever handler
 /// was previously installed.
 ///
-/// Returns a `Future<void>` that completes once `runApp` has been kicked off
-/// inside the guarded zone.
+/// The Flutter binding must be initialized in the same zone that later calls
+/// [runApp], so callers that do async startup work before rendering should put
+/// that work inside [body].
+Future<void> runWithErrorBoundary(FutureOr<void> Function() body) async {
+  await runZonedGuarded<Future<void>>(
+    () async {
+      WidgetsFlutterBinding.ensureInitialized();
+      ErrorBoundary.install();
+
+      final previousHandler = FlutterError.onError;
+      FlutterError.onError = (FlutterErrorDetails details) {
+        AppErrorLogger.log(
+          UnknownError(details.exception, stackTrace: details.stack),
+        );
+        if (previousHandler != null) {
+          previousHandler(details);
+        } else {
+          FlutterError.presentError(details);
+        }
+      };
+
+      await body();
+    },
+    (error, stack) {
+      AppErrorLogger.log(UnknownError(error, stackTrace: stack));
+    },
+  );
+}
+
+/// Wraps [runApp] in the standard GeekPlayer error boundary.
 Future<void> runAppWithErrorBoundary(Widget app) async {
-  WidgetsFlutterBinding.ensureInitialized();
-  ErrorBoundary.install();
-
-  final previousHandler = FlutterError.onError;
-  FlutterError.onError = (FlutterErrorDetails details) {
-    AppErrorLogger.log(
-      UnknownError(details.exception, stackTrace: details.stack),
-    );
-    if (previousHandler != null) {
-      previousHandler(details);
-    } else {
-      FlutterError.presentError(details);
-    }
-  };
-
-  runZonedGuarded<void>(() => runApp(app), (error, stack) {
-    AppErrorLogger.log(UnknownError(error, stackTrace: stack));
-  });
+  await runWithErrorBoundary(() => runApp(app));
 }
