@@ -15,28 +15,29 @@ import 'features/settings/presentation/app_settings_notifier.dart';
 import 'l10n/app_localizations.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  MediaKit.ensureInitialized();
-  // Initialise audio_service once, before runApp. The resulting handler
-  // is registered with the Riverpod provider so any AudioSession created
-  // later in the app drives the same AudioPlayer instance.
-  // NOTE: audio_service enforces `!androidNotificationOngoing ||
-  // androidStopForegroundOnPause` at construction time, so the design.md
-  // combination (ongoing=true + stopForeground=false) cannot be expressed
-  // verbatim. We pick stopForeground=false (the music-app default — keep
-  // the notification visible when paused) and let ongoing fall back to
-  // false.
-  final GeekPlayerAudioHandler handler = await AudioService.init(
-    builder: GeekPlayerAudioHandler.new,
-    config: const AudioServiceConfig(
-      androidNotificationChannelId: 'dev.geekjapan.geekplayer.channel.audio',
-      androidNotificationChannelName: 'GeekPlayer 音楽再生',
-      androidNotificationOngoing: false,
-      androidStopForegroundOnPause: false,
-    ),
-  );
-  setAudioHandlerInstance(handler);
-  await runAppWithErrorBoundary(const ProviderScope(child: GeekPlayerApp()));
+  await runWithErrorBoundary(() async {
+    MediaKit.ensureInitialized();
+    // Initialise audio_service once, before runApp. The resulting handler
+    // is registered with the Riverpod provider so any AudioSession created
+    // later in the app drives the same AudioPlayer instance.
+    // NOTE: audio_service enforces `!androidNotificationOngoing ||
+    // androidStopForegroundOnPause` at construction time, so the design.md
+    // combination (ongoing=true + stopForeground=false) cannot be expressed
+    // verbatim. We pick stopForeground=false (the music-app default — keep
+    // the notification visible when paused) and let ongoing fall back to
+    // false.
+    final GeekPlayerAudioHandler handler = await AudioService.init(
+      builder: GeekPlayerAudioHandler.new,
+      config: const AudioServiceConfig(
+        androidNotificationChannelId: 'dev.geekjapan.geekplayer.channel.audio',
+        androidNotificationChannelName: 'GeekPlayer 音楽再生',
+        androidNotificationOngoing: false,
+        androidStopForegroundOnPause: false,
+      ),
+    );
+    setAudioHandlerInstance(handler);
+    runApp(const ProviderScope(child: GeekPlayerApp()));
+  });
 }
 
 class GeekPlayerApp extends ConsumerWidget {
