@@ -789,5 +789,27 @@
   "updateAvailableDismiss": "後で",
   "@updateAvailableDismiss": {
     "description": "Action button label on the update banner that dismisses it for the current session."
+  },
+  "updateDownloading": "ダウンロード中… {percent}%",
+  "@updateDownloading": {
+    "description": "Progress label shown while the update asset is being downloaded. Interpolates the integer percent complete.",
+    "placeholders": {
+      "percent": {
+        "type": "int",
+        "example": "42"
+      }
+    }
+  },
+  "updateDownloadFailed": "ダウンロードに失敗しました",
+  "@updateDownloadFailed": {
+    "description": "SnackBar message shown when the update download fails."
+  },
+  "updateInstall": "インストール / 開く",
+  "@updateInstall": {
+    "description": "Button label shown after the update file has been downloaded, to hand it off to the OS."
+  },
+  "updateNoCompatibleAsset": "対応アセットが見つかりません",
+  "@updateNoCompatibleAsset": {
+    "description": "SnackBar message shown when no release asset matches the running platform."
   }
 }

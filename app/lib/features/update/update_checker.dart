@@ -4,6 +4,8 @@
 /// version" — `UpdateChecker` is abstract so tests can inject a fake.
 library;
 
+import 'release_asset.dart';
+
 /// Result of an update check.
 sealed class UpdateResult {
   const UpdateResult();
@@ -16,14 +18,18 @@ final class UpToDate extends UpdateResult {
 
 /// A newer release is available. [latestVersion] is the stripped semver string
 /// (e.g. `"0.2.0"`). [releaseUrl] is the GitHub release HTML page URL.
+/// [assets] holds the downloadable release assets; may be empty when the API
+/// response contained no assets array.
 final class UpdateAvailable extends UpdateResult {
   const UpdateAvailable({
     required this.latestVersion,
     required this.releaseUrl,
+    this.assets = const [],
   });
 
   final String latestVersion;
   final String releaseUrl;
+  final List<ReleaseAsset> assets;
 }
 
 /// Checks GitHub Releases for a newer version of GeekPlayer.

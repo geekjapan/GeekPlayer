@@ -227,5 +227,17 @@
     }
   },
   "updateAvailableDownload": "Download",
-  "updateAvailableDismiss": "Later"
+  "updateAvailableDismiss": "Later",
+  "updateDownloading": "Downloading… {percent}%",
+  "@updateDownloading": {
+    "placeholders": {
+      "percent": {
+        "type": "int",
+        "example": "42"
+      }
+    }
+  },
+  "updateDownloadFailed": "Download failed",
+  "updateInstall": "Install / Open",
+  "updateNoCompatibleAsset": "No compatible asset found"
 }

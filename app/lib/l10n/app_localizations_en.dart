@@ -596,4 +596,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get updateAvailableDismiss => 'Later';
+
+  @override
+  String updateDownloading(int percent) {
+    return 'Downloading… $percent%';
+  }
+
+  @override
+  String get updateDownloadFailed => 'Download failed';
+
+  @override
+  String get updateInstall => 'Install / Open';
+
+  @override
+  String get updateNoCompatibleAsset => 'No compatible asset found';
 }
