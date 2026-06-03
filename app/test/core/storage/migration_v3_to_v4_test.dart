@@ -89,7 +89,7 @@ void main() {
 
         // user_version updated to 5 (AppDatabase schemaVersion is now 5).
         final ResultSet versionRow = raw.select('PRAGMA user_version');
-        expect(versionRow.first.values.first, 5);
+        expect(versionRow.first.values.first, 6);
       },
     );
   });
@@ -123,19 +123,19 @@ void main() {
       );
 
       final ResultSet versionRow = raw.select('PRAGMA user_version');
-      expect(versionRow.first.values.first, 5);
+      expect(versionRow.first.values.first, 6);
     });
   });
 
   group('fresh install (onCreate)', () {
-    test('schemaVersion is 5 and book tables are empty', () async {
+    test('schemaVersion is 6 and book tables are empty', () async {
       final AppDatabase db = AppDatabase.forTesting(
         DatabaseConnection(NativeDatabase.memory()),
       );
       addTearDown(db.close);
 
       // schemaVersion is now 5 (add-manga-zip-viewer bumped from 4).
-      expect(db.schemaVersion, 5);
+      expect(db.schemaVersion, 6);
       expect(await db.bookMetadataDao.listAll(), isEmpty);
       expect(await db.bookBookmarksDao.listByBook('x'), isEmpty);
       expect(await db.playbackPositionsDao.getByUri('x'), isNull);

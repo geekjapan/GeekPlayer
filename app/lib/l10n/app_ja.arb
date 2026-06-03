@@ -705,5 +705,89 @@
   "settingsMangaZoomReset": "ページ移動時にズームをリセット",
   "@settingsMangaZoomReset": {
     "description": "Label for the manga zoom-reset-on-page-change switch."
+  },
+  "mediaLibrarySectionTitle": "メディアライブラリ",
+  "@mediaLibrarySectionTitle": {
+    "description": "Title heading for the local media library home section."
+  },
+  "mediaLibrarySectionEmpty": "メディアファイルがまだありません。「フォルダスキャン」からフォルダを追加してください。",
+  "@mediaLibrarySectionEmpty": {
+    "description": "Placeholder shown in the media library home section when no items have been scanned."
+  },
+  "mediaLibraryScanTooltip": "フォルダをスキャン",
+  "@mediaLibraryScanTooltip": {
+    "description": "Tooltip for the folder-scan icon button in the media library home section."
+  },
+  "mediaLibraryScanDialogTitle": "フォルダパスを入力",
+  "@mediaLibraryScanDialogTitle": {
+    "description": "Title of the folder-path input dialog."
+  },
+  "mediaLibraryScanDialogHint": "例: /Users/you/Movies",
+  "@mediaLibraryScanDialogHint": {
+    "description": "Hint text for the folder-path text field in the scan dialog."
+  },
+  "mediaLibraryScanDialogConfirm": "スキャン",
+  "@mediaLibraryScanDialogConfirm": {
+    "description": "Confirm button label in the folder-scan dialog."
+  },
+  "mediaLibraryScanResult": "{count} 件のファイルをインデックスしました",
+  "@mediaLibraryScanResult": {
+    "description": "SnackBar message shown after a folder scan completes. Interpolates the number of indexed files.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "42"
+      }
+    }
+  },
+  "mediaLibraryFavoritesLabel": "お気に入り",
+  "@mediaLibraryFavoritesLabel": {
+    "description": "Label for the favorites badge or section in the media library."
+  },
+  "mediaLibraryPlaylistsLabel": "プレイリスト",
+  "@mediaLibraryPlaylistsLabel": {
+    "description": "Label for the playlists entry in the media library."
+  },
+  "mediaLibraryAddFavorite": "お気に入りに追加",
+  "@mediaLibraryAddFavorite": {
+    "description": "Tooltip / menu label to add an item to favorites."
+  },
+  "mediaLibraryRemoveFavorite": "お気に入りから削除",
+  "@mediaLibraryRemoveFavorite": {
+    "description": "Tooltip / menu label to remove an item from favorites."
+  },
+  "mediaLibraryCreatePlaylist": "プレイリストを作成",
+  "@mediaLibraryCreatePlaylist": {
+    "description": "Label for the create-playlist button."
+  },
+  "mediaLibraryDeletePlaylistConfirmTitle": "プレイリストを削除しますか?",
+  "@mediaLibraryDeletePlaylistConfirmTitle": {
+    "description": "Title of the confirmation dialog for deleting a playlist."
+  },
+  "mediaLibraryDeletePlaylistConfirmBody": "プレイリスト内のすべての項目が削除されます。メディアファイル本体は削除されません。",
+  "@mediaLibraryDeletePlaylistConfirmBody": {
+    "description": "Body of the playlist-delete confirmation dialog."
+  },
+  "updateAvailableBannerTitle": "アップデートあり",
+  "@updateAvailableBannerTitle": {
+    "description": "Title of the update available banner in the Settings About section."
+  },
+  "updateAvailableBannerBody": "新しいバージョン {version} が利用可能です。",
+  "@updateAvailableBannerBody": {
+    "description": "Body text of the update available banner, interpolating the latest version string.",
+    "placeholders": {
+      "version": {
+        "type": "String",
+        "example": "0.2.0"
+      }
+    }
+  },
+  "updateAvailableDownload": "ダウンロード",
+  "@updateAvailableDownload": {
+    "description": "Action button label on the update banner that opens the GitHub release page."
+  },
+  "updateAvailableDismiss": "後で",
+  "@updateAvailableDismiss": {
+    "description": "Action button label on the update banner that dismisses it for the current session."
   }
 }

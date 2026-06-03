@@ -4,6 +4,7 @@ import '../about/presentation/about_app_bar_action.dart';
 import '../audio/presentation/audio_home_section.dart';
 import '../book/presentation/book_home_section.dart';
 import '../manga/presentation/manga_home_section.dart';
+import '../media_library/presentation/media_library_home_section.dart';
 import '../novel/presentation/novel_home_section.dart';
 import '../novel_kakuyomu/presentation/kakuyomu_home_sections.dart';
 import '../settings/presentation/recent_items_pruner.dart';
@@ -36,6 +37,8 @@ List<HomeSection> homeSections(Ref ref) {
     ...ref.watch(bookHomeSectionsProvider),
     // v0.2 — local manga viewer (order 600 per ADR-0004).
     ...ref.watch(mangaHomeSectionsProvider),
+    // v0.2 — local media library (order 700 per ADR-0004).
+    ...ref.watch(mediaLibraryHomeSectionsProvider),
   ];
   all.sort((HomeSection a, HomeSection b) => a.order.compareTo(b.order));
   return List<HomeSection>.unmodifiable(all);

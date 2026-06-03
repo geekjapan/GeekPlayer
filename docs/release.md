@@ -19,6 +19,9 @@ flutter build windows --release --dart-define=GIT_SHA="$GIT_SHA"
 # Android (APK / App Bundle)
 flutter build apk --release --dart-define=GIT_SHA="$GIT_SHA"
 flutter build appbundle --release --dart-define=GIT_SHA="$GIT_SHA"
+
+# Linux (requires libmpv-dev, ninja-build, libgtk-3-dev)
+flutter build linux --release --dart-define=GIT_SHA="$GIT_SHA"
 ```
 
 `--dart-define=GIT_SHA=...` を忘れると About 画面のコミット欄が `(dev build)` と

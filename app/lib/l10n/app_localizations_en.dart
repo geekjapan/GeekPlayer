@@ -536,4 +536,64 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsMangaZoomReset => 'Reset zoom on page change';
+
+  @override
+  String get mediaLibrarySectionTitle => 'Media Library';
+
+  @override
+  String get mediaLibrarySectionEmpty =>
+      'No media files yet. Tap the scan button to index a folder.';
+
+  @override
+  String get mediaLibraryScanTooltip => 'Scan folder';
+
+  @override
+  String get mediaLibraryScanDialogTitle => 'Enter folder path';
+
+  @override
+  String get mediaLibraryScanDialogHint => 'e.g. /Users/you/Movies';
+
+  @override
+  String get mediaLibraryScanDialogConfirm => 'Scan';
+
+  @override
+  String mediaLibraryScanResult(int count) {
+    return 'Indexed $count files';
+  }
+
+  @override
+  String get mediaLibraryFavoritesLabel => 'Favorites';
+
+  @override
+  String get mediaLibraryPlaylistsLabel => 'Playlists';
+
+  @override
+  String get mediaLibraryAddFavorite => 'Add to favorites';
+
+  @override
+  String get mediaLibraryRemoveFavorite => 'Remove from favorites';
+
+  @override
+  String get mediaLibraryCreatePlaylist => 'Create playlist';
+
+  @override
+  String get mediaLibraryDeletePlaylistConfirmTitle => 'Delete playlist?';
+
+  @override
+  String get mediaLibraryDeletePlaylistConfirmBody =>
+      'All items in the playlist will be removed. The media files themselves will not be deleted.';
+
+  @override
+  String get updateAvailableBannerTitle => 'Update available';
+
+  @override
+  String updateAvailableBannerBody(String version) {
+    return 'Version $version is available.';
+  }
+
+  @override
+  String get updateAvailableDownload => 'Download';
+
+  @override
+  String get updateAvailableDismiss => 'Later';
 }
