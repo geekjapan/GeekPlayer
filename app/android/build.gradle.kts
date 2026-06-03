@@ -20,19 +20,28 @@ subprojects {
 }
 
 // Some plugins (e.g. onnxruntime) declare an older Android compileSdk
-// (android-33) than the androidx libraries they depend on require (>= 34),
-// which fails `checkDebugAarMetadata`. Force such plugin modules up to the
-// app's SDK level. Reflection avoids needing the AGP classpath here.
+// (android-33) than the androidx libraries they depend on require, which
+// fails `checkDebugAarMetadata`. Force such plugin modules up to the app's
+// own compile SDK (derived from `flutter.compileSdkVersion`, not hard-coded)
+// so they stay in lockstep when Flutter bumps the default. Reflection avoids
+// needing the AGP classpath in this root build script.
+fun Any.compileSdkApi(): Int? =
+    (runCatching { javaClass.getMethod("getCompileSdkVersion").invoke(this) as? String }
+        .getOrNull())
+        ?.removePrefix("android-")
+        ?.toIntOrNull()
+
 subprojects {
     afterEvaluate {
         val android = extensions.findByName("android") ?: return@afterEvaluate
-        val targetApi = 35
-        runCatching {
-            val current =
-                android.javaClass.getMethod("getCompileSdkVersion").invoke(android)
-                    as? String
-            val currentApi = current?.removePrefix("android-")?.toIntOrNull() ?: 0
-            if (currentApi in 1 until targetApi) {
+        // :app is evaluated first (evaluationDependsOn above), so its compile
+        // SDK is readable here; fall back to 36 if it cannot be resolved.
+        val targetApi =
+            rootProject.project(":app").extensions.findByName("android")?.compileSdkApi()
+                ?: 36
+        val currentApi = android.compileSdkApi() ?: 0
+        if (currentApi in 1 until targetApi) {
+            runCatching {
                 android.javaClass
                     .getMethod("compileSdkVersion", Int::class.javaPrimitiveType)
                     .invoke(android, targetApi)
