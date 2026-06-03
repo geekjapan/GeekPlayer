@@ -515,4 +515,50 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get settingsMangaZoomReset => 'ページ移動時にズームをリセット';
+
+  @override
+  String get mediaLibrarySectionTitle => 'メディアライブラリ';
+
+  @override
+  String get mediaLibrarySectionEmpty =>
+      'メディアファイルがまだありません。「フォルダスキャン」からフォルダを追加してください。';
+
+  @override
+  String get mediaLibraryScanTooltip => 'フォルダをスキャン';
+
+  @override
+  String get mediaLibraryScanDialogTitle => 'フォルダパスを入力';
+
+  @override
+  String get mediaLibraryScanDialogHint => '例: /Users/you/Movies';
+
+  @override
+  String get mediaLibraryScanDialogConfirm => 'スキャン';
+
+  @override
+  String mediaLibraryScanResult(int count) {
+    return '$count 件のファイルをインデックスしました';
+  }
+
+  @override
+  String get mediaLibraryFavoritesLabel => 'お気に入り';
+
+  @override
+  String get mediaLibraryPlaylistsLabel => 'プレイリスト';
+
+  @override
+  String get mediaLibraryAddFavorite => 'お気に入りに追加';
+
+  @override
+  String get mediaLibraryRemoveFavorite => 'お気に入りから削除';
+
+  @override
+  String get mediaLibraryCreatePlaylist => 'プレイリストを作成';
+
+  @override
+  String get mediaLibraryDeletePlaylistConfirmTitle => 'プレイリストを削除しますか?';
+
+  @override
+  String get mediaLibraryDeletePlaylistConfirmBody =>
+      'プレイリスト内のすべての項目が削除されます。メディアファイル本体は削除されません。';
 }

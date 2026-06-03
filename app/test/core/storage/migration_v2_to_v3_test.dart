@@ -96,7 +96,7 @@ void main() {
       // user_version updated to 5 (AppDatabase schemaVersion is now 5;
       // v4->v5 migration adds manga_metadata + manga_bookmarks).
       final ResultSet versionRow = raw.select('PRAGMA user_version');
-      expect(versionRow.first.values.first, 5);
+      expect(versionRow.first.values.first, 6);
     });
   });
 
@@ -148,20 +148,20 @@ void main() {
 
         // user_version updated to 5 (skip through all migrations to current).
         final ResultSet versionRow = raw.select('PRAGMA user_version');
-        expect(versionRow.first.values.first, 5);
+        expect(versionRow.first.values.first, 6);
       },
     );
   });
 
   group('fresh install (onCreate)', () {
-    test('schemaVersion is 5 and app_settings is empty', () async {
+    test('schemaVersion is 6 and app_settings is empty', () async {
       final AppDatabase db = AppDatabase.forTesting(
         DatabaseConnection(NativeDatabase.memory()),
       );
       addTearDown(db.close);
 
       // schemaVersion is now 5 (add-manga-zip-viewer bumped from 4).
-      expect(db.schemaVersion, 5);
+      expect(db.schemaVersion, 6);
       // Touching DAOs triggers onCreate.
       expect(await db.appSettingsDao.getAll(), isEmpty);
       expect(await db.playbackPositionsDao.getByUri('x'), isNull);
