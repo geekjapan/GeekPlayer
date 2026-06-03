@@ -67,9 +67,10 @@ v0.2 の change は次の順に apply した。順序には実装上の依存が
 - ✅ **Linux 対応** — `expand-ci-and-platforms` で `app/linux/` CMake scaffolding + CI build-linux smoke を実装済み（`add-platform-linux` 相当）。
 - ✅ **CI 拡張**（macOS/Windows/Linux runner, build smoke test）— `expand-ci-and-platforms` で実装済み（`setup-ci-macos-windows` 相当）。
 - ✅ **`add-auto-update`**（バナー版）— GitHub Releases チェック + Settings About の更新バナーを実装済み。
+- ✅ **`expand-auto-update-delivery`** — バナー版から OS 別の実ダウンロード（dio）+ `file://` での in-app install/handoff を実装済み（Android は file-provider 宣言が残課題、HANDOFF §7 参照）。
+- ✅ **`add-ml-runtime-abstraction`** — v1.0 AI 高画質化の seam（`core/ml/`：MlBackend / ImageUpscaler / MlRuntime / PassthroughUpscaler + Riverpod）を実装済み。
 - ⏳ **`add-platform-ios` / iPadOS** — **[ADR-0006](adr/0006-ios-media-engine-distribution-policy.md) は accepted**。
   libmpv/media_kit の LGPL 動的リンクと非ストア配布の整合に従って着手する。v0.2 最後の主要プラットフォーム。
-- ⏳ **`expand-auto-update-delivery`** — バナー版から OS 別の実ダウンロード + in-app install/handoff へ深化。
 
 ### v0.2 proposal readiness checklist
 

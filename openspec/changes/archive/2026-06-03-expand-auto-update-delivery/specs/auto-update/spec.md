@@ -68,6 +68,18 @@ then `launchUrl` opens the `releaseUrl` in an external browser.
 
 `UpdateDownloader` SHALL be an abstract interface overridable via Riverpod so tests can inject a fake implementation.
 
+#### Scenario: fake downloader is injected
+
+Given a fake `UpdateDownloader` configured to report progress and return a file,
+when it is injected via `ProviderScope(overrides: [...])`,
+then the banner observes the fake's progress and completion instead of performing a real network download.
+
 ### Requirement: UpdateInstaller is injectable for testing
 
 `UpdateInstaller` SHALL be an abstract interface overridable via Riverpod so tests can inject a fake implementation.
+
+#### Scenario: fake installer is injected
+
+Given a fake `UpdateInstaller`,
+when it is injected via `ProviderScope(overrides: [...])` and the user taps the install/open button,
+then the fake's `open` method is invoked with the downloaded file instead of launching the OS handler.
