@@ -52,6 +52,7 @@ When following `openspec instructions` output, the JSON's `context` and `rules` 
 
 ## Conventions
 
+- **Branch per feature (always)**: before starting any feature/change implementation, create a dedicated feature branch off the default branch (e.g., `feature/<kebab-name>`). Never commit feature work directly to `main`. One branch per OpenSpec change (or per coherent group of sequenced changes); merge back via PR.
 - Change names are kebab-case (e.g., `add-user-auth`), derived from a short description of the work.
 - Task checkboxes in `tasks.md` are toggled `- [ ]` → `- [x]` immediately on completion, one at a time.
 - `openspec/config.yaml` is the right place to record project-wide context (tech stack, domain, commit style) once decided — it propagates into every artifact's generation context.

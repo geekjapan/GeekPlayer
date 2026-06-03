@@ -40,7 +40,9 @@ Before reporting completion, run relevant tests, lint/typecheck commands if avai
 
 ## Commit & Pull Request Guidelines
 
-Git history currently contains only `Initial commit`, so no project-specific commit convention has emerged. Until one is adopted, use short imperative subjects such as `Add OpenSpec contributor guide`.
+Always create a dedicated feature branch before starting feature/change work (e.g., `feature/<kebab-name>`); never commit feature work directly to `main`. Use one branch per OpenSpec change (or per coherent group of sequenced changes) and merge back via PR.
+
+Use short imperative subjects such as `Add OpenSpec contributor guide`.
 
 Pull requests should include the related OpenSpec change when applicable, a concise summary, validation commands and results, and screenshots only for UI-visible changes.
 
