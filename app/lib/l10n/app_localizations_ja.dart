@@ -589,4 +589,13 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get updateNoCompatibleAsset => '対応アセットが見つかりません';
+
+  @override
+  String get mangaUpscaleAction => '高画質化';
+
+  @override
+  String get mangaUpscaleInProgress => '高画質化処理中…';
+
+  @override
+  String get mangaUpscaleError => '高画質化に失敗しました';
 }

@@ -610,4 +610,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get updateNoCompatibleAsset => 'No compatible asset found';
+
+  @override
+  String get mangaUpscaleAction => 'Upscale';
+
+  @override
+  String get mangaUpscaleInProgress => 'Upscaling…';
+
+  @override
+  String get mangaUpscaleError => 'Upscaling failed';
 }
