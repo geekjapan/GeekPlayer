@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/manga/archive_inspector.dart';
+import '../../../core/ml/providers.dart';
+import '../../../core/ml/upscale_request.dart';
 import '../../../l10n/app_localizations.dart';
 import '../data/manga_providers.dart';
 import '../domain/manga_archive.dart';
@@ -80,6 +82,8 @@ class _MangaViewerScreenState extends ConsumerState<MangaViewerScreen> {
   final TransformationController _transformController =
       TransformationController();
   bool _controlsVisible = true;
+  bool _upscaling = false;
+  Uint8List? _upscaledBytes;
 
   @override
   void initState() {
@@ -122,12 +126,87 @@ class _MangaViewerScreenState extends ConsumerState<MangaViewerScreen> {
       widget.archive.pageCount - 1,
     );
     ref.read(mangaPageIndexProvider(widget.archive.uri).notifier).goTo(next);
-    // Reset zoom when page changes.
+    // Reset zoom and upscaled cache when page changes.
     _transformController.value = Matrix4.identity();
+    setState(() => _upscaledBytes = null);
   }
 
   void _toggleControls() =>
       setState(() => _controlsVisible = !_controlsVisible);
+
+  Future<void> _upscaleCurrentPage() async {
+    if (_upscaling) return;
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
+    final int idx = ref.read(mangaPageIndexProvider(widget.archive.uri));
+    if (idx >= widget.archive.pages.length) return;
+    setState(() {
+      _upscaling = true;
+      _upscaledBytes = null;
+    });
+    try {
+      const ArchiveInspector inspector = ArchiveInspector();
+      final String entryName = widget.archive.pages[idx].entryName;
+      final Uint8List raw = await inspector.readPageBytes(
+        widget.archive.path,
+        MangaArchiveEntry(name: entryName, uncompressedSize: 0),
+      );
+      // Decode to get actual dimensions before upscaling.
+      final (int w, int h) = _decodeDimensions(raw);
+      final UpscaleRequest sized = UpscaleRequest(
+        bytes: raw,
+        srcWidth: w,
+        srcHeight: h,
+        scaleFactor: 2,
+      );
+      final result = await ref.read(imageUpscalerProvider).upscale(sized);
+      if (mounted) {
+        setState(() {
+          _upscaledBytes = result.bytes;
+          _upscaling = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() => _upscaling = false);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.mangaUpscaleError)));
+      }
+    }
+  }
+
+  (int, int) _decodeDimensions(Uint8List bytes) {
+    // Best-effort width/height from PNG/JPEG headers without full decode.
+    // Falls back to (1, 1) — CpuImageUpscaler reads actual dimensions itself.
+    if (bytes.length > 24 &&
+        bytes[0] == 0x89 &&
+        bytes[1] == 0x50 &&
+        bytes[2] == 0x4E &&
+        bytes[3] == 0x47) {
+      // PNG: width at bytes 16-19, height at 20-23 (big-endian).
+      final int w =
+          (bytes[16] << 24) | (bytes[17] << 16) | (bytes[18] << 8) | bytes[19];
+      final int h =
+          (bytes[20] << 24) | (bytes[21] << 16) | (bytes[22] << 8) | bytes[23];
+      if (w > 0 && h > 0) return (w, h);
+    }
+    if (bytes.length > 4 && bytes[0] == 0xFF && bytes[1] == 0xD8) {
+      // JPEG: scan for SOF0/SOF2 markers.
+      int i = 2;
+      while (i + 8 < bytes.length) {
+        if (bytes[i] != 0xFF) break;
+        final int marker = bytes[i + 1];
+        final int segLen = (bytes[i + 2] << 8) | bytes[i + 3];
+        if (marker == 0xC0 || marker == 0xC2) {
+          final int h = (bytes[i + 5] << 8) | bytes[i + 6];
+          final int w = (bytes[i + 7] << 8) | bytes[i + 8];
+          if (w > 0 && h > 0) return (w, h);
+        }
+        i += 2 + segLen;
+      }
+    }
+    return (1, 1);
+  }
 
   Future<void> _showBookmarkDialog() async {
     final AppLocalizations l10n = AppLocalizations.of(context)!;
@@ -272,6 +351,11 @@ class _MangaViewerScreenState extends ConsumerState<MangaViewerScreen> {
                     tooltip: l10n.mangaBookmarkList,
                     onPressed: _showBookmarkList,
                   ),
+                  IconButton(
+                    icon: const Icon(Icons.auto_fix_high),
+                    tooltip: l10n.mangaUpscaleAction,
+                    onPressed: _upscaling ? null : _upscaleCurrentPage,
+                  ),
                 ],
               )
             : null,
@@ -284,7 +368,18 @@ class _MangaViewerScreenState extends ConsumerState<MangaViewerScreen> {
                   transformationController: _transformController,
                   minScale: 0.5,
                   maxScale: 8.0,
-                  child: spread == MangaSpreadMode.spread
+                  child: _upscaledBytes != null
+                      ? Image.memory(
+                          _upscaledBytes!,
+                          fit: BoxFit.contain,
+                          errorBuilder:
+                              (BuildContext ctx2, Object err, StackTrace? st) =>
+                                  const Icon(
+                                    Icons.broken_image,
+                                    color: Colors.white54,
+                                  ),
+                        )
+                      : spread == MangaSpreadMode.spread
                       ? _SpreadView(
                           archive: widget.archive,
                           anchorIndex: currentIdx,
@@ -296,6 +391,23 @@ class _MangaViewerScreenState extends ConsumerState<MangaViewerScreen> {
                         ),
                 ),
               ),
+              if (_upscaling)
+                Container(
+                  color: Colors.black54,
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        const CircularProgressIndicator(color: Colors.white),
+                        const SizedBox(height: 16),
+                        Text(
+                          l10n.mangaUpscaleInProgress,
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               // Navigation tap zones.
               if (_controlsVisible) ...<Widget>[
                 Positioned(

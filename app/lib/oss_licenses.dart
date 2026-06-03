@@ -223,7 +223,8 @@ const dependencies = <Package>[
   _url_launcher,
   _pdfrx,
   _flutter_html,
-  _archive
+  _archive,
+  _image
 ];
 
 /// Direct `dev_dependencies`.
@@ -8910,7 +8911,7 @@ const _geekplayer = Package(
     version: '0.1.0+1',
     isMarkdown: false,
     isSdk: false,
-    dependencies: [PackageRef('cupertino_icons'), PackageRef('flutter_riverpod'), PackageRef('riverpod_annotation'), PackageRef('media_kit'), PackageRef('media_kit_libs_video'), PackageRef('media_kit_video'), PackageRef('just_audio'), PackageRef('audio_service'), PackageRef('audio_metadata_reader'), PackageRef('drift'), PackageRef('drift_flutter'), PackageRef('dio'), PackageRef('html'), PackageRef('webfeed_revised'), PackageRef('intl'), PackageRef('logger'), PackageRef('path'), PackageRef('path_provider'), PackageRef('file_picker'), PackageRef('package_info_plus'), PackageRef('xml'), PackageRef('collection'), PackageRef('html_unescape'), PackageRef('url_launcher'), PackageRef('pdfrx'), PackageRef('flutter_html'), PackageRef('archive')],
+    dependencies: [PackageRef('cupertino_icons'), PackageRef('flutter_riverpod'), PackageRef('riverpod_annotation'), PackageRef('media_kit'), PackageRef('media_kit_libs_video'), PackageRef('media_kit_video'), PackageRef('just_audio'), PackageRef('audio_service'), PackageRef('audio_metadata_reader'), PackageRef('drift'), PackageRef('drift_flutter'), PackageRef('dio'), PackageRef('html'), PackageRef('webfeed_revised'), PackageRef('intl'), PackageRef('logger'), PackageRef('path'), PackageRef('path_provider'), PackageRef('file_picker'), PackageRef('package_info_plus'), PackageRef('xml'), PackageRef('collection'), PackageRef('html_unescape'), PackageRef('url_launcher'), PackageRef('pdfrx'), PackageRef('flutter_html'), PackageRef('archive'), PackageRef('image')],
     devDependencies: [PackageRef('flutter_lints'), PackageRef('mocktail'), PackageRef('build_runner'), PackageRef('drift_dev'), PackageRef('riverpod_generator'), PackageRef('fake_async'), PackageRef('sqlite3'), PackageRef('flutter_oss_licenses')],
   );
 

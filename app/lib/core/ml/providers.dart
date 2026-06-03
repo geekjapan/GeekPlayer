@@ -1,8 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import 'cpu_image_upscaler.dart';
 import 'image_upscaler.dart';
 import 'ml_runtime.dart';
-import 'passthrough_upscaler.dart';
 
 part 'providers.g.dart';
 
@@ -15,8 +15,8 @@ MlRuntime mlRuntime(Ref ref) => const MlRuntime();
 
 /// Provides the active [ImageUpscaler] implementation.
 ///
-/// Ships [PassthroughUpscaler] by default. Concrete backend
+/// Ships [CpuImageUpscaler] by default. Concrete backend
 /// implementations (CoreML, NNAPI, etc.) override this provider once
 /// available.
 @Riverpod(keepAlive: true)
-ImageUpscaler imageUpscaler(Ref ref) => const PassthroughUpscaler();
+ImageUpscaler imageUpscaler(Ref ref) => const CpuImageUpscaler();

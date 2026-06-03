@@ -239,5 +239,8 @@
   },
   "updateDownloadFailed": "Download failed",
   "updateInstall": "Install / Open",
-  "updateNoCompatibleAsset": "No compatible asset found"
+  "updateNoCompatibleAsset": "No compatible asset found",
+  "mangaUpscaleAction": "Upscale",
+  "mangaUpscaleInProgress": "Upscaling…",
+  "mangaUpscaleError": "Upscaling failed"
 }
