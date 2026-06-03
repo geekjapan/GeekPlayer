@@ -1147,6 +1147,30 @@ abstract class AppLocalizations {
   /// In ja, this message translates to:
   /// **'後で'**
   String get updateAvailableDismiss;
+
+  /// Progress label shown while the update asset is being downloaded. Interpolates the integer percent complete.
+  ///
+  /// In ja, this message translates to:
+  /// **'ダウンロード中… {percent}%'**
+  String updateDownloading(int percent);
+
+  /// SnackBar message shown when the update download fails.
+  ///
+  /// In ja, this message translates to:
+  /// **'ダウンロードに失敗しました'**
+  String get updateDownloadFailed;
+
+  /// Button label shown after the update file has been downloaded, to hand it off to the OS.
+  ///
+  /// In ja, this message translates to:
+  /// **'インストール / 開く'**
+  String get updateInstall;
+
+  /// SnackBar message shown when no release asset matches the running platform.
+  ///
+  /// In ja, this message translates to:
+  /// **'対応アセットが見つかりません'**
+  String get updateNoCompatibleAsset;
 }
 
 class _AppLocalizationsDelegate

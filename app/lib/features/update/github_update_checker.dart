@@ -10,6 +10,7 @@ import 'dart:io';
 import 'package:logger/logger.dart';
 
 import '../../core/errors/app_error.dart';
+import 'release_asset.dart';
 import 'update_checker.dart';
 
 /// Queries `https://api.github.com/repos/geekjapan/GeekPlayer/releases/latest`
@@ -89,7 +90,12 @@ final class GithubUpdateChecker implements UpdateChecker {
     }
 
     if (_isNewer(latest, currentVersion)) {
-      return UpdateAvailable(latestVersion: latest, releaseUrl: htmlUrl);
+      final List<ReleaseAsset> assets = _parseAssets(json);
+      return UpdateAvailable(
+        latestVersion: latest,
+        releaseUrl: htmlUrl,
+        assets: assets,
+      );
     }
     return const UpToDate();
   }
@@ -116,5 +122,22 @@ final class GithubUpdateChecker implements UpdateChecker {
       if (c[i] < r[i]) return false;
     }
     return false;
+  }
+
+  /// Parses the `"assets"` array from a GitHub Releases API JSON payload.
+  /// Returns an empty list on any shape mismatch.
+  static List<ReleaseAsset> _parseAssets(Map<String, dynamic> json) {
+    final Object? rawAssets = json['assets'];
+    if (rawAssets is! List) return const [];
+    final List<ReleaseAsset> result = [];
+    for (final Object? item in rawAssets) {
+      if (item is! Map<String, dynamic>) continue;
+      final String? name = item['name'] as String?;
+      final String? url = item['browser_download_url'] as String?;
+      final int? size = item['size'] as int?;
+      if (name == null || url == null || size == null) continue;
+      result.add(ReleaseAsset(name: name, downloadUrl: url, sizeBytes: size));
+    }
+    return result;
   }
 }

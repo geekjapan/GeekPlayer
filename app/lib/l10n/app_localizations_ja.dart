@@ -575,4 +575,18 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get updateAvailableDismiss => '後で';
+
+  @override
+  String updateDownloading(int percent) {
+    return 'ダウンロード中… $percent%';
+  }
+
+  @override
+  String get updateDownloadFailed => 'ダウンロードに失敗しました';
+
+  @override
+  String get updateInstall => 'インストール / 開く';
+
+  @override
+  String get updateNoCompatibleAsset => '対応アセットが見つかりません';
 }

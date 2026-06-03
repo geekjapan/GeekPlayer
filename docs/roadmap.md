@@ -44,9 +44,14 @@ GeekPlayer は段階的に対象プラットフォームとメディアの幅を
 - **英語 UI**
 - **CI 拡張**: macOS / Windows runner 追加、各 OS の build smoke test
 
-### v0.2 sequencing（apply 推奨順）
+> **状態 (2026-06-03)**: v0.2 の主要スコープは実装完了。下記 4 件の sequencing に加え、
+> `add-media-library`（ライブラリ機能）/ `expand-ci-and-platforms`（CI macOS/Linux + Linux scaffolding）/
+> `add-auto-update`（バナー版）を archive 済み。**残る v0.2 候補は `add-platform-ios`**（ADR-0006 accepted）
+> と `expand-auto-update-delivery`（OS 別 in-app install）。詳細は `docs/HANDOFF.md` §6・§9。
 
-v0.2 の change は次の順に apply する。順序には実装上の依存があり、入れ替えると手戻りが出る。
+### v0.2 sequencing（apply 推奨順 — すべて完了済み・履歴）
+
+v0.2 の change は次の順に apply した。順序には実装上の依存があり、入れ替えると手戻りが出る。
 
 1. **`prepare-v0-2-foundation`**（本整備）— ドキュメント整合性回復、ADR-0006、sequencing 確定。コード変更なし。
 2. **`add-english-localization`** — `en` ロケールと ARB key parity test を先に入れる。これより後の
@@ -56,16 +61,16 @@ v0.2 の change は次の順に apply する。順序には実装上の依存が
 4. **`add-manga-zip-viewer`** — 漫画 ZIP/CBZ。drift schema **v5**（pdf-epub の v4 が入った後）。
    apply 順を入れ替える場合は schema 番号を latest+1 に rebase し `docs/CONVENTIONS.md` を更新すること。
 
-その先の候補の placement:
+その先の候補の placement（✅ = 完了済み）:
 
-- **ライブラリ機能**（video/audio library, 視聴履歴, プレイリスト）— 上記リーダーの後。フォルダスキャンは
-  reader のメタデータ/recent モデルが固まってから着手する。
-- **`add-platform-linux`** — リーダー実装が依存パッケージの Linux 対応を確認した後に着手すると手戻りが少ない。
-- **`add-platform-ios` / iPadOS** — **[ADR-0006](adr/0006-ios-media-engine-distribution-policy.md) の決定が前提条件**。
-  libmpv/media_kit の LGPL 動的リンクと非ストア配布の整合がとれてから。
-- **`add-auto-update`** — 配布物が安定し、対象 OS が出揃ってから（GitHub Releases ベース、OS 別実装）。
-- **CI 拡張**（macOS runner 追加, build smoke test）— 新しい OS ターゲット（Linux/iOS）を追加する change と並走させる。
-- **`setup-ci-macos-windows`** 相当の追加は、各 reader/platform change が必要とするビルド検証に合わせて随時。
+- ✅ **ライブラリ機能**（video/audio library, 視聴履歴, お気に入り, プレイリスト）— `add-media-library`（drift v6）として実装済み。
+- ✅ **Linux 対応** — `expand-ci-and-platforms` で `app/linux/` CMake scaffolding + CI build-linux smoke を実装済み（`add-platform-linux` 相当）。
+- ✅ **CI 拡張**（macOS/Windows/Linux runner, build smoke test）— `expand-ci-and-platforms` で実装済み（`setup-ci-macos-windows` 相当）。
+- ✅ **`add-auto-update`**（バナー版）— GitHub Releases チェック + Settings About の更新バナーを実装済み。
+- ✅ **`expand-auto-update-delivery`** — バナー版から OS 別の実ダウンロード（dio）+ `file://` での in-app install/handoff を実装済み（Android は file-provider 宣言が残課題、HANDOFF §7 参照）。
+- ✅ **`add-ml-runtime-abstraction`** — v1.0 AI 高画質化の seam（`core/ml/`：MlBackend / ImageUpscaler / MlRuntime / PassthroughUpscaler + Riverpod）を実装済み。
+- ⏳ **`add-platform-ios` / iPadOS** — **[ADR-0006](adr/0006-ios-media-engine-distribution-policy.md) は accepted**。
+  libmpv/media_kit の LGPL 動的リンクと非ストア配布の整合に従って着手する。v0.2 最後の主要プラットフォーム。
 
 ### v0.2 proposal readiness checklist
 
