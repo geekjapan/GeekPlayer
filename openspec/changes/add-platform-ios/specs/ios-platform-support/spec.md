@@ -8,13 +8,13 @@ Establishes the committed `app/ios/` configuration and CocoaPods scaffolding req
 
 ### Requirement: app/ios/ configuration is present and complete
 
-The `app/ios/` directory MUST contain a valid Flutter iOS scaffolding (`Runner.xcodeproj/`, `Runner/Info.plist`, `Flutter/`, `Podfile`) such that `flutter build ios --release --no-codesign` succeeds from `app/` on a macOS host with Xcode installed.
+The `app/ios/` directory MUST contain a valid Flutter iOS scaffolding (`Runner.xcodeproj/`, `Runner/Info.plist`, `Flutter/`, `Podfile`) such that `flutter build ios --release --no-codesign` succeeds from `app/` on a macOS host with Xcode and the iOS platform runtime installed, when CocoaPods resolution is forced via `flutter config --no-enable-swift-package-manager`.
 
 #### Scenario: flutter build ios succeeds with scaffolding present
 
-- **GIVEN** `app/ios/Podfile`, `app/ios/Runner/Info.plist`, and `app/ios/Runner.xcodeproj/` are committed
-- **WHEN** `flutter build ios --release --no-codesign` is executed from `app/` on a macOS host with Xcode
-- **THEN** the build completes without errors and produces a `.app` bundle under `app/build/ios/`
+- **GIVEN** `app/ios/Podfile`, `app/ios/Runner/Info.plist`, and `app/ios/Runner.xcodeproj/` are committed, and SPM is disabled
+- **WHEN** `flutter build ios --release --no-codesign` is executed from `app/` on a macOS host with Xcode and the iOS platform runtime installed
+- **THEN** the libmpv CocoaPods resolve and the build completes without errors, producing a `.app` bundle under `app/build/ios/`
 
 ### Requirement: Bundle identifier is dev.geekjapan.geekplayer
 
@@ -36,15 +36,15 @@ The `CFBundleDisplayName` key in `app/ios/Runner/Info.plist` MUST be `GeekPlayer
 - **WHEN** the `CFBundleDisplayName` value is read
 - **THEN** it is exactly `GeekPlayer`
 
-### Requirement: Deployment target is iOS 13.0 or higher
+### Requirement: Deployment target is iOS 14.0 or higher
 
-The `IPHONEOS_DEPLOYMENT_TARGET` in `app/ios/Runner.xcodeproj/project.pbxproj` MUST be `13.0` or higher for all build configurations, matching media_kit's minimum iOS requirement.
+The `IPHONEOS_DEPLOYMENT_TARGET` in `app/ios/Runner.xcodeproj/project.pbxproj` MUST be `14.0` or higher for all build configurations. media_kit's own minimum is iOS 13.0, but the `file_picker` plugin requires iOS 14.0, so the effective floor is 14.0.
 
 #### Scenario: Deployment target is declared
 
 - **GIVEN** the `app/ios/Runner.xcodeproj/project.pbxproj` file
 - **WHEN** all `IPHONEOS_DEPLOYMENT_TARGET` values are read
-- **THEN** each value is `13.0` or higher
+- **THEN** each value is `14.0` or higher
 
 ### Requirement: iPhone and iPad are both supported
 
@@ -56,15 +56,15 @@ The `TARGETED_DEVICE_FAMILY` in `app/ios/Runner.xcodeproj/project.pbxproj` MUST 
 - **WHEN** all `TARGETED_DEVICE_FAMILY` values for the Runner target are read
 - **THEN** each value is `"1,2"`
 
-### Requirement: Podfile declares iOS 13.0 platform
+### Requirement: Podfile declares iOS 14.0 platform
 
-`app/ios/Podfile` MUST declare `platform :ios, '13.0'` (or higher) so CocoaPods enforces the minimum deployment target for all pods.
+`app/ios/Podfile` MUST declare `platform :ios, '14.0'` (or higher) so CocoaPods enforces the minimum deployment target for all pods.
 
 #### Scenario: Podfile platform declaration is correct
 
 - **GIVEN** `app/ios/Podfile`
 - **WHEN** the `platform` declaration is read
-- **THEN** the iOS version is `13.0` or higher
+- **THEN** the iOS version is `14.0` or higher
 
 ### Requirement: Info.plist includes document access usage descriptions
 
@@ -75,6 +75,16 @@ The `TARGETED_DEVICE_FAMILY` in `app/ios/Runner.xcodeproj/project.pbxproj` MUST 
 - **GIVEN** `app/ios/Runner/Info.plist`
 - **WHEN** the plist is parsed
 - **THEN** `NSDocumentsFolderUsageDescription` is a non-empty string, `UIFileSharingEnabled` is true, and `LSSupportsOpeningDocumentsInPlace` is true
+
+### Requirement: iOS plugin resolution uses CocoaPods, not Swift Package Manager
+
+Because `media_kit_video` and `media_kit_libs_ios_video` do not support Swift Package Manager, iOS builds MUST resolve plugins via CocoaPods. When the toolchain has SPM enabled, builds MUST first run `flutter config --no-enable-swift-package-manager` so CocoaPods (which ships the prebuilt libmpv XCFramework) is used.
+
+#### Scenario: CocoaPods resolves the libmpv pods
+
+- **GIVEN** SPM is disabled on the build toolchain
+- **WHEN** `flutter build ios` runs `pod install`
+- **THEN** `media_kit_libs_ios_video` resolves and the prebuilt libmpv XCFramework is fetched without an SPM resolution error
 
 ### Requirement: ADR-0006 compliance is documented in design
 

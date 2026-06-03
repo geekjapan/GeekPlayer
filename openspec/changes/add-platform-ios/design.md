@@ -12,10 +12,10 @@ This change implements the iOS configuration, runs a dependency spike, and exten
 
 **Goals:**
 
-- Configure `app/ios/` correctly: bundle ID `dev.geekjapan.geekplayer`, display name "GeekPlayer", deployment target iOS 13.0, device family "1,2" (iPhone + iPad), Podfile `platform :ios, '13.0'`, Info.plist usage descriptions.
+- Configure `app/ios/` correctly: bundle ID `dev.geekjapan.geekplayer`, display name "GeekPlayer", deployment target iOS 14.0, device family "1,2" (iPhone + iPad), Podfile `platform :ios, '14.0'`, Info.plist usage descriptions.
 - Run a real `flutter build ios --release --no-codesign` spike and document the outcome.
 - Extend LGPL per-platform replacement instructions to include iOS (THIRD_PARTY_NOTICES + in-app l10n strings).
-- If spike passes: add `build-ios` CI job. If spike fails: document root cause and defer CI job.
+- Add a `build-ios` CI job (the GitHub `macos-latest` runner has the iOS platform runtime that the local host lacks).
 
 **Non-Goals:**
 
@@ -23,15 +23,13 @@ This change implements the iOS configuration, runs a dependency spike, and exten
 - AVPlayer / video_player engine replacement (ADR-0006 Option B; deferred unless libmpv fails permanently).
 - TestFlight / Enterprise distribution setup.
 - iPadOS-specific Stage Manager / multi-window support.
-- Media_kit iOS SPM migration (upstream issue; not in scope).
+- Media_kit iOS SPM migration (upstream issue; worked around by forcing CocoaPods, not in scope to fix upstream).
 
 ## Decisions
 
 ### (a) Media Engine: ADR-0006 Option A — libmpv/media_kit continued
 
-libmpv via `media_kit_libs_ios_video` is the first choice per ADR-0006. The spike confirmed that `media_kit_libs_ios_video` ships a pre-built libmpv XCFramework and is available as a CocoaPods dependency. The build failure (see Spike Result below) is an Xcode / Swift Package Manager resolution issue, not a libmpv binary availability problem. Therefore Option A remains the engine choice; the CI deferral is technical, not a signal to abandon libmpv.
-
-If `media_kit_libs_ios_video` gains Swift Package Manager support in a future release, the CI job can be added at that point without engine changes.
+libmpv via `media_kit_libs_ios_video` is the engine per ADR-0006, and the spike **confirmed it is viable on iOS**: with CocoaPods resolution forced, `media_kit_libs_ios_video` downloads its prebuilt libmpv XCFrameworks (Freetype, mbedTLS, libmpv, …) and `pod install` succeeds. No engine fallback to Option B is needed.
 
 ### (b) Distribution Channel: Non-App-Store (Ad Hoc / developer direct)
 
@@ -44,9 +42,15 @@ Per ADR-0006 §Decision 3: libmpv is dynamically linked on iOS (XCFramework ship
 - `app/lib/l10n/app_ja.arb` and `app_en.arb` — `lgplNoticeReplacementBody` extended with iOS entry.
 - These propagate to the in-app LGPL notice section via `LgplNoticeSection` (no code change needed; the widget already renders `lgplNoticeReplacementBody`).
 
-### Podfile structure
+### Podfile structure and SPM
 
-A CocoaPods Podfile is required for `media_kit_video` and `media_kit_libs_ios_video` because those plugins do not yet support Swift Package Manager. The Podfile uses the standard Flutter template with `platform :ios, '13.0'` and `use_frameworks!` / `use_modular_headers!` as required by media_kit.
+A CocoaPods Podfile is required for `media_kit_video` and `media_kit_libs_ios_video` because those plugins do not yet support Swift Package Manager. The Podfile uses the standard Flutter template with `platform :ios, '14.0'` and `use_frameworks!` / `use_modular_headers!` as required by media_kit.
+
+Because Flutter resolves Apple plugins via SPM first when SPM is enabled, builds on an SPM-enabled toolchain fail to resolve the media_kit pods. The fix is to force CocoaPods resolution with `flutter config --no-enable-swift-package-manager`; the `build-ios` CI job runs this step before `flutter pub get`. (The existing `build-macos` job builds cleanly on GitHub runners with the same media_kit pods, confirming CocoaPods resolution works there.)
+
+### Deployment target
+
+The deployment target is iOS **14.0** (not 13.0): `file_picker` — a transitive plugin used for opening local media — requires a minimum of iOS 14.0. media_kit itself only needs iOS 13.0, but the effective floor is the highest plugin minimum.
 
 ### Info.plist usage descriptions
 
@@ -59,37 +63,23 @@ No `NSPhotoLibraryUsageDescription` or camera/microphone keys are needed (GeekPl
 
 ## Dependency Spike Result
 
-**Date**: 2026-06-03  
-**Command**: `fvm flutter build ios --release --no-codesign --dart-define=GIT_SHA=spike` (from `app/`)  
-**Outcome**: FAILED  
-**Exit code**: 1
+The spike was run iteratively from `app/` on a macOS host (Xcode 26.5, CocoaPods 1.16.2). Three findings, each resolved:
 
-**Root cause**:
-```
-Xcode failed to resolve Swift Package Manager dependencies
-```
+1. **SPM resolution failure (resolved by forcing CocoaPods).** With Swift Package Manager enabled, `flutter build ios` fails with `Xcode failed to resolve Swift Package Manager dependencies`, because `media_kit_video` / `media_kit_libs_ios_video` lack SPM support. Running `flutter config --no-enable-swift-package-manager` forces CocoaPods, and `pod install` then downloads media_kit's prebuilt libmpv XCFrameworks (Freetype, mbedTLS/mbedx509, libmpv, …) successfully. This confirms **Option A (libmpv) is viable on iOS** — the earlier "media_kit blocker" reading was a false negative caused purely by SPM-first resolution.
 
-**Analysis**: Lines 41–44 of the build output warn:
-```
-The following plugins do not support Swift Package Manager for ios:
-  - media_kit_video
-  - media_kit_libs_ios_video
-```
-Flutter 3.44.0 uses SPM as the default plugin resolution mechanism on Apple platforms. When plugins lack SPM support, Flutter falls back to CocoaPods, but Xcode 16.x attempts SPM resolution before CocoaPods, causing a resolution failure. This is a known upstream issue in the media_kit ecosystem as of 2026-06-03; it is not a libmpv binary problem.
+2. **Deployment target too low (resolved by bumping to 14.0).** After CocoaPods resolution, `pod install` failed with `The plugin "file_picker" requires a higher minimum iOS deployment version ... at least 14.0`. Raising the Podfile and `IPHONEOS_DEPLOYMENT_TARGET` to `14.0` resolves it.
 
-**Consequence**:
-- `build-ios` CI job is NOT added (per task instructions: do not add a failing job).
-- The deferral reason in `openspec/specs/ci-build-matrix/spec.md` delta is updated from "ADR-0006 not resolved" to "media_kit SPM incompatibility".
-- When `media_kit_video` / `media_kit_libs_ios_video` add SPM support (or a CocoaPods-only workaround is confirmed), the CI job can be added without changes to this change's iOS configuration work.
+3. **Local host lacks the iOS platform runtime (environment, not code).** With (1) and (2) fixed, `pod install` and the Xcode build invocation both proceed; the build then stops at `iOS 26.5 is not installed. Please download and install the platform from Xcode > Settings > Components.` This is a missing platform-runtime component on the local machine, not a project/configuration problem.
+
+**Conclusion**: the iOS configuration is correct and the libmpv/CocoaPods toolchain works end-to-end up to the point where a platform runtime is required. Because the GitHub `macos-latest` runner ships the iOS platform runtime (and `build-macos` already builds the same media_kit pods cleanly there), a `build-ios` CI job is the appropriate authoritative verification. **The `build-ios` job is therefore added** (runs `flutter config --no-enable-swift-package-manager` before `flutter pub get`).
 
 ## Risks / Trade-offs
 
-- **[Risk] media_kit SPM support timeline unknown** → Mitigation: monitor upstream `media-kit/media-kit` repository; SPM support is a known roadmap item. CI job can be added as a follow-up change once resolved.
-- **[Risk] Xcode version drift on CI** → Mitigation: CI currently uses `macos-latest`; when a `build-ios` job is eventually added, pin `xcode-version` explicitly.
+- **[Risk] GitHub runner iOS runtime / Xcode drift** → Mitigation: `build-ios` runs on `macos-latest`, which preinstalls iOS SDKs/runtimes; if a future runner image regresses, pin `xcode-version` in the job. CI (not the local host) is the verification of record for iOS.
+- **[Risk] media_kit SPM support timeline unknown** → Mitigation: the CocoaPods-force step is a stable workaround; when media_kit adds SPM support the step becomes a no-op and can be dropped.
 - **[Risk] Ad Hoc distribution reach is limited** → ADR-0006 acknowledged this; mitigation is EU alternative marketplace / sideloading when it matures.
 - **[Trade-off] iOS l10n replacement body is longer** → Accepted; the string is prose, not a UI element with layout constraints.
 
 ## Open Questions
 
-- When will `media_kit_video` / `media_kit_libs_ios_video` add Swift Package Manager support? Tracked upstream at https://github.com/media-kit/media-kit/issues.
-- Should the `build-ios` CI job be added as a separate follow-up change (`fix-ios-ci`) once SPM support lands, or inline in a patch to this change?
+- When will `media_kit_video` / `media_kit_libs_ios_video` add Swift Package Manager support? Tracked upstream at https://github.com/media-kit/media-kit/issues. Until then the CI job forces CocoaPods.

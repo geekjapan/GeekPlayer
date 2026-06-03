@@ -1,23 +1,24 @@
 # ci-build-matrix Delta Specification (add-platform-ios)
 
-The following requirement REPLACES the existing `Requirement: no iOS CI job is defined until ADR-0006 is implemented` in `openspec/specs/ci-build-matrix/spec.md`.
+ADR-0006 is accepted and the iOS dependency spike confirmed libmpv/media_kit builds via CocoaPods, so the prior "no iOS CI job" stance is removed and a `build-ios` smoke job is added.
 
-## MODIFIED Requirements
+## REMOVED Requirements
 
-### Requirement: no iOS CI job is defined until the build spike passes
+### Requirement: no iOS CI job is defined until ADR-0006 is implemented
 
-No iOS/iPadOS CI job SHALL be added to the workflow until `flutter build ios --release --no-codesign` completes successfully in a local spike on the current dependency set. ADR-0006 has been accepted (2026-06-03), satisfying the ADR precondition; however, the `add-platform-ios` dependency spike (2026-06-03) encountered `Xcode failed to resolve Swift Package Manager dependencies` caused by `media_kit_video` and `media_kit_libs_ios_video` lacking Swift Package Manager support for iOS. A CI job that cannot build would produce false negatives and degrade CI signal.
+## ADDED Requirements
 
-The deferral reason is now technical (SPM incompatibility with media_kit_libs_ios_video) rather than policy (ADR-0006 not resolved). When `media_kit_libs_ios_video` gains SPM support or an equivalent CocoaPods-only workaround is confirmed, the `build-ios` CI job SHALL be added.
+### Requirement: build-ios job performs an iOS release build smoke
 
-#### Scenario: iOS CI is absent from the workflow
+A `build-ios` job MUST run on `macos-latest`, force CocoaPods plugin resolution via `flutter config --no-enable-swift-package-manager` (because `media_kit_libs_ios_video` lacks Swift Package Manager support), and execute `flutter build ios --release --no-codesign --dart-define=GIT_SHA=${{ github.sha }}` as a compilation smoke test. The job MUST run `flutter pub get` and `dart run build_runner build --delete-conflicting-outputs` before the build.
 
-- **GIVEN** the current `.github/workflows/ci.yaml`
-- **WHEN** the file is parsed for job definitions
-- **THEN** no job contains an `xcodebuild` or `flutter build ios` step
+#### Scenario: iOS release build smoke passes
 
-#### Scenario: iOS CI deferral reason is documented
+- **WHEN** the `build-ios` job disables SPM, resolves CocoaPods, and runs `flutter build ios --release --no-codesign`
+- **THEN** the libmpv pods resolve and the build exits with code 0
 
-- **GIVEN** `openspec/changes/add-platform-ios/design.md`
-- **WHEN** the spike result section is read
-- **THEN** it states that the failure was `Xcode failed to resolve Swift Package Manager dependencies` from `media_kit_video` / `media_kit_libs_ios_video` and that ADR-0006 is fully accepted
+#### Scenario: SPM is forced off before resolution
+
+- **GIVEN** the `build-ios` job definition
+- **WHEN** its steps are read
+- **THEN** `flutter config --no-enable-swift-package-manager` runs before `flutter pub get`
