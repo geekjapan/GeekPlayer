@@ -111,6 +111,7 @@ const allDependencies = <Package>[
   _native_toolchain_c,
   _node_preamble,
   _objective_c,
+  _onnxruntime,
   _package_config,
   _package_info_plus,
   _package_info_plus_platform_interface,
@@ -224,7 +225,8 @@ const dependencies = <Package>[
   _pdfrx,
   _flutter_html,
   _archive,
-  _image
+  _image,
+  _onnxruntime
 ];
 
 /// Direct `dev_dependencies`.
@@ -5474,6 +5476,40 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.''',
     devDependencies: [PackageRef('args'), PackageRef('path'), PackageRef('test'), PackageRef('yaml')],
   );
 
+/// onnxruntime 1.4.1
+const _onnxruntime = Package(
+    name: 'onnxruntime',
+    description: 'Flutter plugin for OnnxRuntime provides an easy, flexible, and fast Dart API to integrate Onnx models in flutter apps across mobile and desktop platforms.',
+    homepage: 'https://github.com/gtbluesky/onnxruntime_flutter',
+    authors: [],
+    version: '1.4.1',
+    license: '''MIT License
+
+Copyright (c) 2023 gtbluesky
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.''',
+    isMarkdown: false,
+    isSdk: false,
+    dependencies: [PackageRef('ffi')],
+    devDependencies: [PackageRef('flutter_lints')],
+  );
+
 /// package_config 2.2.0
 const _package_config = Package(
     name: 'package_config',
@@ -8911,7 +8947,7 @@ const _geekplayer = Package(
     version: '0.1.0+1',
     isMarkdown: false,
     isSdk: false,
-    dependencies: [PackageRef('cupertino_icons'), PackageRef('flutter_riverpod'), PackageRef('riverpod_annotation'), PackageRef('media_kit'), PackageRef('media_kit_libs_video'), PackageRef('media_kit_video'), PackageRef('just_audio'), PackageRef('audio_service'), PackageRef('audio_metadata_reader'), PackageRef('drift'), PackageRef('drift_flutter'), PackageRef('dio'), PackageRef('html'), PackageRef('webfeed_revised'), PackageRef('intl'), PackageRef('logger'), PackageRef('path'), PackageRef('path_provider'), PackageRef('file_picker'), PackageRef('package_info_plus'), PackageRef('xml'), PackageRef('collection'), PackageRef('html_unescape'), PackageRef('url_launcher'), PackageRef('pdfrx'), PackageRef('flutter_html'), PackageRef('archive'), PackageRef('image')],
+    dependencies: [PackageRef('cupertino_icons'), PackageRef('flutter_riverpod'), PackageRef('riverpod_annotation'), PackageRef('media_kit'), PackageRef('media_kit_libs_video'), PackageRef('media_kit_video'), PackageRef('just_audio'), PackageRef('audio_service'), PackageRef('audio_metadata_reader'), PackageRef('drift'), PackageRef('drift_flutter'), PackageRef('dio'), PackageRef('html'), PackageRef('webfeed_revised'), PackageRef('intl'), PackageRef('logger'), PackageRef('path'), PackageRef('path_provider'), PackageRef('file_picker'), PackageRef('package_info_plus'), PackageRef('xml'), PackageRef('collection'), PackageRef('html_unescape'), PackageRef('url_launcher'), PackageRef('pdfrx'), PackageRef('flutter_html'), PackageRef('archive'), PackageRef('image'), PackageRef('onnxruntime')],
     devDependencies: [PackageRef('flutter_lints'), PackageRef('mocktail'), PackageRef('build_runner'), PackageRef('drift_dev'), PackageRef('riverpod_generator'), PackageRef('fake_async'), PackageRef('sqlite3'), PackageRef('flutter_oss_licenses')],
   );
 

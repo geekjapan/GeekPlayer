@@ -63,6 +63,7 @@ dependencies:
   flutter_html: ^3.0.0
   archive: ^4.0.9
   image: ^4.5.0
+  onnxruntime: ^1.4.1
 
 dev_dependencies:
   flutter_test:
