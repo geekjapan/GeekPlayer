@@ -215,5 +215,17 @@
   "mediaLibraryRemoveFavorite": "Remove from favorites",
   "mediaLibraryCreatePlaylist": "Create playlist",
   "mediaLibraryDeletePlaylistConfirmTitle": "Delete playlist?",
-  "mediaLibraryDeletePlaylistConfirmBody": "All items in the playlist will be removed. The media files themselves will not be deleted."
+  "mediaLibraryDeletePlaylistConfirmBody": "All items in the playlist will be removed. The media files themselves will not be deleted.",
+  "updateAvailableBannerTitle": "Update available",
+  "updateAvailableBannerBody": "Version {version} is available.",
+  "@updateAvailableBannerBody": {
+    "placeholders": {
+      "version": {
+        "type": "String",
+        "example": "0.2.0"
+      }
+    }
+  },
+  "updateAvailableDownload": "Download",
+  "updateAvailableDismiss": "Later"
 }

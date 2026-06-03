@@ -561,4 +561,18 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get mediaLibraryDeletePlaylistConfirmBody =>
       'プレイリスト内のすべての項目が削除されます。メディアファイル本体は削除されません。';
+
+  @override
+  String get updateAvailableBannerTitle => 'アップデートあり';
+
+  @override
+  String updateAvailableBannerBody(String version) {
+    return '新しいバージョン $version が利用可能です。';
+  }
+
+  @override
+  String get updateAvailableDownload => 'ダウンロード';
+
+  @override
+  String get updateAvailableDismiss => '後で';
 }

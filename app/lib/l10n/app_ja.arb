@@ -767,5 +767,27 @@
   "mediaLibraryDeletePlaylistConfirmBody": "プレイリスト内のすべての項目が削除されます。メディアファイル本体は削除されません。",
   "@mediaLibraryDeletePlaylistConfirmBody": {
     "description": "Body of the playlist-delete confirmation dialog."
+  },
+  "updateAvailableBannerTitle": "アップデートあり",
+  "@updateAvailableBannerTitle": {
+    "description": "Title of the update available banner in the Settings About section."
+  },
+  "updateAvailableBannerBody": "新しいバージョン {version} が利用可能です。",
+  "@updateAvailableBannerBody": {
+    "description": "Body text of the update available banner, interpolating the latest version string.",
+    "placeholders": {
+      "version": {
+        "type": "String",
+        "example": "0.2.0"
+      }
+    }
+  },
+  "updateAvailableDownload": "ダウンロード",
+  "@updateAvailableDownload": {
+    "description": "Action button label on the update banner that opens the GitHub release page."
+  },
+  "updateAvailableDismiss": "後で",
+  "@updateAvailableDismiss": {
+    "description": "Action button label on the update banner that dismisses it for the current session."
   }
 }

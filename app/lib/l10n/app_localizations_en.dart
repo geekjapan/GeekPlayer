@@ -582,4 +582,18 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get mediaLibraryDeletePlaylistConfirmBody =>
       'All items in the playlist will be removed. The media files themselves will not be deleted.';
+
+  @override
+  String get updateAvailableBannerTitle => 'Update available';
+
+  @override
+  String updateAvailableBannerBody(String version) {
+    return 'Version $version is available.';
+  }
+
+  @override
+  String get updateAvailableDownload => 'Download';
+
+  @override
+  String get updateAvailableDismiss => 'Later';
 }

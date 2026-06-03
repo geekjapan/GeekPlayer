@@ -1123,6 +1123,30 @@ abstract class AppLocalizations {
   /// In ja, this message translates to:
   /// **'プレイリスト内のすべての項目が削除されます。メディアファイル本体は削除されません。'**
   String get mediaLibraryDeletePlaylistConfirmBody;
+
+  /// Title of the update available banner in the Settings About section.
+  ///
+  /// In ja, this message translates to:
+  /// **'アップデートあり'**
+  String get updateAvailableBannerTitle;
+
+  /// Body text of the update available banner, interpolating the latest version string.
+  ///
+  /// In ja, this message translates to:
+  /// **'新しいバージョン {version} が利用可能です。'**
+  String updateAvailableBannerBody(String version);
+
+  /// Action button label on the update banner that opens the GitHub release page.
+  ///
+  /// In ja, this message translates to:
+  /// **'ダウンロード'**
+  String get updateAvailableDownload;
+
+  /// Action button label on the update banner that dismisses it for the current session.
+  ///
+  /// In ja, this message translates to:
+  /// **'後で'**
+  String get updateAvailableDismiss;
 }
 
 class _AppLocalizationsDelegate

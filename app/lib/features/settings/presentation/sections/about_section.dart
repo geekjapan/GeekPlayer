@@ -6,6 +6,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../about/presentation/about_screen.dart';
 import '../../../about/presentation/license_detail_screen.dart';
 import '../../../about/presentation/license_screen.dart';
+import '../../../update/update_banner.dart';
 import '../settings_screen.dart';
 
 /// About section — version row (live from `package_info_plus`) plus
@@ -37,6 +38,7 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
       id: 'about',
       title: 'About',
       children: <Widget>[
+        const UpdateBanner(),
         FutureBuilder<PackageInfo>(
           future: _info,
           builder: (BuildContext ctx, AsyncSnapshot<PackageInfo> snap) {
