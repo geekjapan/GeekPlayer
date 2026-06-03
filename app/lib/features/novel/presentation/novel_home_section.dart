@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/novel/models/site.dart';
 import '../../../core/novel/models/work.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../library/home_section.dart';
 import '../../novel_narou/presentation/narou_home_section.dart';
 import '../data/consent_repository.dart';
@@ -48,6 +49,7 @@ class _NovelHomeSectionBody extends ConsumerWidget {
       listLibraryUseCaseProvider,
     );
     final ConsentRepository consent = ref.watch(consentRepositoryProvider);
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -60,14 +62,14 @@ class _NovelHomeSectionBody extends ConsumerWidget {
               children: <Widget>[
                 Expanded(
                   child: Text(
-                    'オンライン小説 Library',
+                    l10n.novelHomeSectionTitle,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                 ),
                 IconButton(
                   key: const Key('open-novel-settings'),
                   icon: const Icon(Icons.settings),
-                  tooltip: 'オンライン小説設定',
+                  tooltip: l10n.novelHomeSectionSettingsTooltip,
                   onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute<void>(
                       builder: (_) => const NovelSettingsScreen(),
@@ -142,7 +144,7 @@ class _SiteFilterChips extends ConsumerWidget {
         children: <Widget>[
           ChoiceChip(
             key: const Key('filter-all'),
-            label: const Text('すべて'),
+            label: Text(AppLocalizations.of(context)!.siteFilterAll),
             selected: current == null,
             onSelected: (_) =>
                 ref.read(siteFilterStateProvider.notifier).clear(),
@@ -169,17 +171,17 @@ class _EmptyPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.all(24),
+    return Padding(
+      padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text('Library に小説はまだありません。'),
-          SizedBox(height: 8),
+          Text(AppLocalizations.of(context)!.novelLibraryEmpty),
+          const SizedBox(height: 8),
           // The search screen is contributed by site-specific changes
           // (add-narou-novel-reader / add-kakuyomu-novel-reader). Disabled
           // for now per spec scenario "Empty Library shows placeholder".
-          OutlinedButton(
+          const OutlinedButton(
             key: Key('open-search-disabled'),
             onPressed: null,
             child: Text('検索画面を開く (後続 change で有効化)'),
@@ -245,9 +247,11 @@ class _SiteGroup extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               if (!granted)
-                const Chip(
-                  key: Key('consent-disabled-banner'),
-                  label: Text('同意が無効化されています — 設定で再同意'),
+                Chip(
+                  key: const Key('consent-disabled-banner'),
+                  label: Text(
+                    AppLocalizations.of(context)!.novelConsentDisabledBanner,
+                  ),
                   visualDensity: VisualDensity.compact,
                 ),
             ],

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/novel/models/site.dart';
 import '../../../core/novel/policy_version.dart';
+import '../../../l10n/app_localizations.dart';
 import '../data/consent_repository.dart';
 
 /// Modal first-launch consent dialog.
@@ -46,12 +47,13 @@ class _ConsentDialogState extends ConsumerState<ConsentDialog> {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     // Block back-button dismiss to honour "dismissible only via
     // explicit action" (spec scenario "First launch shows the dialog").
     return PopScope<Object?>(
       canPop: false,
       child: AlertDialog(
-        title: const Text('オンライン小説サイトへの同意'),
+        title: Text(l10n.consentDialogTitle),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -66,19 +68,11 @@ class _ConsentDialogState extends ConsumerState<ConsentDialog> {
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
-                    'ポリシーが更新されました',
+                    l10n.consentPolicyUpdatedBanner,
                     style: TextStyle(color: theme.colorScheme.onErrorContainer),
                   ),
                 ),
-              const Text(
-                '本アプリは以下のサイトと通信して小説を取得します。'
-                'ADR-0001 / ADR-0003 に従い、能動キャッシュ (利用者が'
-                '「ライブラリに追加」を選択した作品のみ) を行い、各サイトの'
-                'レート制限 (カクヨムは 1 req / 2 s) と robots.txt を尊重'
-                'します。\n\n'
-                'カクヨム本文は HTML をパースして取得します。サイト構造'
-                'の変更で取得が失敗することがあります。',
-              ),
+              Text(l10n.consentDialogBody),
               const SizedBox(height: 12),
               for (final Site s in Site.values)
                 CheckboxListTile(
@@ -103,12 +97,12 @@ class _ConsentDialogState extends ConsumerState<ConsentDialog> {
           TextButton(
             key: const Key('consent-deny-all'),
             onPressed: _saving ? null : _denyAll,
-            child: const Text('すべて拒否'),
+            child: Text(l10n.consentDenyAll),
           ),
           FilledButton(
             key: const Key('consent-confirm'),
             onPressed: _saving ? null : _confirm,
-            child: const Text('決定'),
+            child: Text(l10n.consentConfirm),
           ),
         ],
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/app_settings.dart';
 import '../app_settings_notifier.dart';
 import '../settings_screen.dart';
@@ -23,6 +24,7 @@ class PlaybackSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     final double current = ref.watch(
       appSettingsProvider.select(
         (AsyncValue<AppSettings> s) => s.value?.defaultPlaybackSpeed ?? 1.0,
@@ -31,11 +33,11 @@ class PlaybackSection extends ConsumerWidget {
 
     return SettingsSection(
       id: 'playback',
-      title: '再生',
+      title: l10n.settingsSectionPlayback,
       children: <Widget>[
         ListTile(
           key: const Key('default-playback-speed'),
-          title: const Text('デフォルト再生速度'),
+          title: Text(l10n.settingsDefaultPlaybackSpeed),
           subtitle: Wrap(
             spacing: 8,
             children: <Widget>[

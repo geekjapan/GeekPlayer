@@ -51,6 +51,8 @@ drift schema version の単調増加を守ること:
 | v1 | `add-local-video-playback`（`playback_positions`, `recent_items`） |
 | v2 | `add-online-novel-library`（`novel_works`, `novel_episodes`, `novel_bookmarks`, `site_consents`） |
 | v3 | `add-app-settings`（`app_settings`） |
+| v4 | `add-pdf-epub-reader`（`book_metadata`, `book_bookmarks`） |
+| v5 | `add-manga-zip-viewer`（`manga_metadata`, `manga_bookmarks`） |
 
 各 change は **自分が bump するバージョンの `onUpgrade` migration を必ず書く**こと
 （pre-release でも CI で in-memory DB の migration テストを走らせるため、

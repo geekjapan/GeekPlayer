@@ -8,6 +8,7 @@ import 'package:geekplayer/core/storage/database.dart';
 import 'package:geekplayer/core/storage/providers.dart';
 import 'package:geekplayer/features/novel/data/consent_repository.dart';
 import 'package:geekplayer/features/novel_kakuyomu/presentation/kakuyomu_consent_dialog.dart';
+import 'package:geekplayer/l10n/app_localizations.dart';
 
 void main() {
   testWidgets('declining hides Kakuyomu (revokes consent)', (
@@ -27,6 +28,9 @@ void main() {
           }),
         ],
         child: MaterialApp(
+          locale: const Locale('ja'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Builder(
             builder: (BuildContext context) => Scaffold(
               body: ElevatedButton(
@@ -69,6 +73,9 @@ void main() {
           }),
         ],
         child: MaterialApp(
+          locale: const Locale('ja'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Builder(
             builder: (BuildContext context) => Scaffold(
               body: ElevatedButton(

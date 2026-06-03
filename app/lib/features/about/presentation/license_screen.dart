@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../data/oss_license_repository.dart';
 import '../domain/license_entry.dart';
 import 'license_detail_screen.dart';
@@ -17,10 +18,11 @@ class LicenseListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     final OssLicenseRepository repo = ref.watch(ossLicenseRepositoryProvider);
     final List<LicenseEntry> entries = repo.fetchEntries();
     return Scaffold(
-      appBar: AppBar(title: const Text('OSS ライセンス')),
+      appBar: AppBar(title: Text(l10n.ossLicensesScreenTitle)),
       body: ListView.builder(
         key: const Key('license-list'),
         itemCount: entries.length + 2,
@@ -61,6 +63,7 @@ class _ApacheNoticeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     return Card(
       key: const Key('apache-notice-section'),
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -76,16 +79,14 @@ class _ApacheNoticeCard extends StatelessWidget {
             const SizedBox(height: 8),
             const SelectableText('Copyright 2026 GeekPlayer Contributors'),
             const SizedBox(height: 4),
-            const SelectableText(
-              'GeekPlayer 本体は Apache License 2.0 で配布されています。',
-            ),
+            SelectableText(l10n.ossLicensesApacheNoticeBody),
             const SizedBox(height: 8),
             InkWell(
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute<void>(
-                    builder: (_) => const LicenseDetailScreen(
-                      title: 'GeekPlayer — ライセンス全文',
+                    builder: (_) => LicenseDetailScreen(
+                      title: l10n.aboutLicenseScreenTitle,
                       assetPath: 'assets/legal/LICENSE',
                     ),
                   ),
@@ -102,7 +103,7 @@ class _ApacheNoticeCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      'ライセンス全文',
+                      l10n.aboutLinkLicense,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.primary,
                         decoration: TextDecoration.underline,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/app_settings.dart';
 import '../../domain/novel_writing_mode.dart';
 import '../app_settings_notifier.dart';
@@ -32,6 +33,7 @@ class NovelSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     final AppSettings s = ref.watch(
       appSettingsProvider.select(
         (AsyncValue<AppSettings> a) => a.value ?? AppSettings.defaults(),
@@ -44,18 +46,22 @@ class NovelSection extends ConsumerWidget {
 
     return SettingsSection(
       id: 'novel',
-      title: '小説',
+      title: l10n.settingsSectionNovel,
       children: <Widget>[
         ListTile(
           key: const Key('novel-writing-mode'),
-          title: const Text('書字方向'),
+          title: Text(l10n.settingsNovelWritingMode),
           subtitle: Wrap(
             spacing: 8,
             children: <Widget>[
               for (final NovelWritingMode m in NovelWritingMode.values)
                 ChoiceChip(
                   key: Key('writing-mode-${m.name}'),
-                  label: Text(m == NovelWritingMode.vertical ? '縦書き' : '横書き'),
+                  label: Text(
+                    m == NovelWritingMode.vertical
+                        ? l10n.settingsNovelWritingModeVertical
+                        : l10n.settingsNovelWritingModeHorizontal,
+                  ),
                   selected: s.novelWritingMode == m,
                   onSelected: (bool sel) {
                     if (!sel) return;
@@ -67,7 +73,9 @@ class NovelSection extends ConsumerWidget {
         ),
         ListTile(
           key: const Key('novel-font-size'),
-          title: Text('文字サイズ: ${s.novelFontSizeSp.toStringAsFixed(0)} sp'),
+          title: Text(
+            l10n.settingsNovelFontSize(s.novelFontSizeSp.toStringAsFixed(0)),
+          ),
           subtitle: Slider(
             key: const Key('novel-font-size-slider'),
             min: 12.0,
@@ -81,7 +89,9 @@ class NovelSection extends ConsumerWidget {
         ),
         ListTile(
           key: const Key('novel-line-height'),
-          title: Text('行間: ${s.novelLineHeight.toStringAsFixed(1)}'),
+          title: Text(
+            l10n.settingsNovelLineHeight(s.novelLineHeight.toStringAsFixed(1)),
+          ),
           subtitle: Slider(
             key: const Key('novel-line-height-slider'),
             min: 1.0,
@@ -95,7 +105,7 @@ class NovelSection extends ConsumerWidget {
         ),
         ListTile(
           key: const Key('novel-font-family'),
-          title: const Text('フォント'),
+          title: Text(l10n.settingsNovelFont),
           subtitle: DropdownButton<String>(
             key: const Key('novel-font-family-dropdown'),
             value: s.novelFontFamily,
@@ -112,7 +122,7 @@ class NovelSection extends ConsumerWidget {
         ),
         _BackgroundPicker(
           id: 'novel-bg-light',
-          title: '背景色 (ライト)',
+          title: l10n.settingsNovelBgLight,
           presets: lightPresets,
           current: s.novelBackgroundLight,
           onPick: (int argb) => mutate(
@@ -121,7 +131,7 @@ class NovelSection extends ConsumerWidget {
         ),
         _BackgroundPicker(
           id: 'novel-bg-dark',
-          title: '背景色 (ダーク)',
+          title: l10n.settingsNovelBgDark,
           presets: darkPresets,
           current: s.novelBackgroundDark,
           onPick: (int argb) => mutate(

@@ -61,6 +61,7 @@ const allDependencies = <Package>[
   _file_picker,
   _fixnum,
   _flutter_cache_manager,
+  _flutter_html,
   _flutter_lints,
   _flutter_oss_licenses,
   _flutter_plugin_android_lifecycle,
@@ -90,6 +91,7 @@ const allDependencies = <Package>[
   _leak_tracker_flutter_testing,
   _leak_tracker_testing,
   _lints,
+  _list_counter,
   _logger,
   _logging,
   _matcher,
@@ -119,6 +121,10 @@ const allDependencies = <Package>[
   _path_provider_linux,
   _path_provider_platform_interface,
   _path_provider_windows,
+  _pdfium_dart,
+  _pdfium_flutter,
+  _pdfrx,
+  _pdfrx_engine,
   _petitparser,
   _platform,
   _plugin_platform_interface,
@@ -214,7 +220,10 @@ const dependencies = <Package>[
   _xml,
   _collection,
   _html_unescape,
-  _url_launcher
+  _url_launcher,
+  _pdfrx,
+  _flutter_html,
+  _archive
 ];
 
 /// Direct `dev_dependencies`.
@@ -3023,6 +3032,40 @@ SOFTWARE.''',
     devDependencies: [PackageRef('build_runner'), PackageRef('flutter_lints'), PackageRef('mockito')],
   );
 
+/// flutter_html 3.0.0
+const _flutter_html = Package(
+    name: 'flutter_html',
+    description: 'A Flutter widget for rendering static HTML and CSS as Flutter widgets.',
+    homepage: 'https://github.com/Sub6Resources/flutter_html',
+    authors: [],
+    version: '3.0.0',
+    license: '''MIT License
+
+Copyright (c) 2019-2025 The flutter_html developers
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.''',
+    isMarkdown: false,
+    isSdk: false,
+    dependencies: [PackageRef('html'), PackageRef('csslib'), PackageRef('collection'), PackageRef('list_counter')],
+    devDependencies: [PackageRef('flutter_lints'), PackageRef('meta')],
+  );
+
 /// flutter_lints 6.0.0
 const _flutter_lints = Package(
     name: 'flutter_lints',
@@ -4314,6 +4357,40 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.''',
     isSdk: false,
     dependencies: [],
     devDependencies: [PackageRef('http'), PackageRef('path'), PackageRef('yaml')],
+  );
+
+/// list_counter 1.0.2
+const _list_counter = Package(
+    name: 'list_counter',
+    description: 'A utility for counting in a variety of languages and styles. Made for lists.',
+    homepage: 'https://github.com/Sub6Resources/ordered_list',
+    authors: [],
+    version: '1.0.2',
+    license: '''MIT License
+
+Copyright (c) 2022 The list_counter developers
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.''',
+    isMarkdown: false,
+    isSdk: false,
+    dependencies: [],
+    devDependencies: [PackageRef('test')],
   );
 
 /// logger 2.7.0
@@ -5784,6 +5861,102 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.''',
     isSdk: false,
     dependencies: [PackageRef('ffi'), PackageRef('path'), PackageRef('path_provider_platform_interface')],
     devDependencies: [],
+  );
+
+/// pdfium_dart 0.1.3
+const _pdfium_dart = Package(
+    name: 'pdfium_dart',
+    description: "Dart FFI bindings for PDFium library. Provides low-level access to PDFium's C API from Dart.",
+    homepage: 'https://github.com/espresso3389/pdfrx',
+    repository: 'https://github.com/espresso3389/pdfrx/tree/master/packages/pdfium_dart',
+    authors: [],
+    version: '0.1.3',
+    license: '''The MIT License (MIT)
+===============
+
+Copyright (c) 2025 @espresso3389 (Takashi Kawasaki)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.''',
+    isMarkdown: false,
+    isSdk: false,
+    dependencies: [PackageRef('archive'), PackageRef('ffi'), PackageRef('http'), PackageRef('path')],
+    devDependencies: [PackageRef('lints'), PackageRef('test')],
+  );
+
+/// pdfium_flutter 0.1.9
+const _pdfium_flutter = Package(
+    name: 'pdfium_flutter',
+    description: 'Flutter FFI plugin for loading PDFium native libraries. Bundles PDFium binaries for Android, iOS, Windows, macOS, and Linux.',
+    homepage: 'https://github.com/espresso3389/pdfrx',
+    repository: 'https://github.com/espresso3389/pdfrx/tree/master/packages/pdfium_flutter',
+    authors: [],
+    version: '0.1.9',
+    license: '''The MIT License (MIT)
+===============
+
+Copyright (c) 2025 @espresso3389 (Takashi Kawasaki)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.''',
+    isMarkdown: false,
+    isSdk: false,
+    dependencies: [PackageRef('pdfium_dart'), PackageRef('ffi'), PackageRef('path')],
+    devDependencies: [PackageRef('flutter_lints')],
+  );
+
+/// pdfrx 2.2.24
+const _pdfrx = Package(
+    name: 'pdfrx',
+    description: 'pdfrx is a rich and fast PDF viewer and manipulation plugin built on the top of PDFium. Supports viewing, editing, combining PDFs on Android, iOS, Windows, macOS, Linux, and Web.',
+    homepage: 'https://github.com/espresso3389/pdfrx',
+    repository: 'https://github.com/espresso3389/pdfrx/tree/master/packages/pdfrx',
+    authors: [],
+    version: '2.2.24',
+    license: '''The MIT License (MIT)
+===============
+
+Copyright (c) 2018 @espresso3389 (Takashi Kawasaki)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.''',
+    isMarkdown: false,
+    isSdk: false,
+    dependencies: [PackageRef('pdfrx_engine'), PackageRef('pdfium_flutter'), PackageRef('collection'), PackageRef('crypto'), PackageRef('ffi'), PackageRef('http'), PackageRef('path'), PackageRef('path_provider'), PackageRef('rxdart'), PackageRef('synchronized'), PackageRef('url_launcher'), PackageRef('vector_math'), PackageRef('web'), PackageRef('yaml')],
+    devDependencies: [PackageRef('flutter_lints'), PackageRef('archive')],
+  );
+
+/// pdfrx_engine 0.3.9
+const _pdfrx_engine = Package(
+    name: 'pdfrx_engine',
+    description: 'pdfrx_engine is a PDF rendering and manipulation API built on top of PDFium, designed to be used with the pdfrx plugin. Supports viewing, editing, and combining PDF documents.',
+    homepage: 'https://github.com/espresso3389/pdfrx',
+    repository: 'https://github.com/espresso3389/pdfrx/tree/master/packages/pdfrx_engine',
+    authors: [],
+    version: '0.3.9',
+    license: '''The MIT License (MIT)
+===============
+
+Copyright (c) 2018 @espresso3389 (Takashi Kawasaki)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.''',
+    isMarkdown: false,
+    isSdk: false,
+    dependencies: [PackageRef('pdfium_dart'), PackageRef('collection'), PackageRef('crypto'), PackageRef('ffi'), PackageRef('http'), PackageRef('path'), PackageRef('rxdart'), PackageRef('synchronized'), PackageRef('vector_math'), PackageRef('archive'), PackageRef('image')],
+    devDependencies: [PackageRef('lints'), PackageRef('test')],
   );
 
 /// petitparser 7.0.2
@@ -8737,7 +8910,7 @@ const _geekplayer = Package(
     version: '0.1.0+1',
     isMarkdown: false,
     isSdk: false,
-    dependencies: [PackageRef('cupertino_icons'), PackageRef('flutter_riverpod'), PackageRef('riverpod_annotation'), PackageRef('media_kit'), PackageRef('media_kit_libs_video'), PackageRef('media_kit_video'), PackageRef('just_audio'), PackageRef('audio_service'), PackageRef('audio_metadata_reader'), PackageRef('drift'), PackageRef('drift_flutter'), PackageRef('dio'), PackageRef('html'), PackageRef('webfeed_revised'), PackageRef('intl'), PackageRef('logger'), PackageRef('path'), PackageRef('path_provider'), PackageRef('file_picker'), PackageRef('package_info_plus'), PackageRef('xml'), PackageRef('collection'), PackageRef('html_unescape'), PackageRef('url_launcher')],
+    dependencies: [PackageRef('cupertino_icons'), PackageRef('flutter_riverpod'), PackageRef('riverpod_annotation'), PackageRef('media_kit'), PackageRef('media_kit_libs_video'), PackageRef('media_kit_video'), PackageRef('just_audio'), PackageRef('audio_service'), PackageRef('audio_metadata_reader'), PackageRef('drift'), PackageRef('drift_flutter'), PackageRef('dio'), PackageRef('html'), PackageRef('webfeed_revised'), PackageRef('intl'), PackageRef('logger'), PackageRef('path'), PackageRef('path_provider'), PackageRef('file_picker'), PackageRef('package_info_plus'), PackageRef('xml'), PackageRef('collection'), PackageRef('html_unescape'), PackageRef('url_launcher'), PackageRef('pdfrx'), PackageRef('flutter_html'), PackageRef('archive')],
     devDependencies: [PackageRef('flutter_lints'), PackageRef('mocktail'), PackageRef('build_runner'), PackageRef('drift_dev'), PackageRef('riverpod_generator'), PackageRef('fake_async'), PackageRef('sqlite3'), PackageRef('flutter_oss_licenses')],
   );
 

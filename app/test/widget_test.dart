@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:geekplayer/core/storage/database.dart';
 import 'package:geekplayer/core/storage/providers.dart';
 import 'package:geekplayer/features/library/home_screen.dart';
+import 'package:geekplayer/l10n/app_localizations.dart';
 
 void main() {
   testWidgets('HomeScreen renders the video section with open button + '
@@ -24,7 +25,12 @@ void main() {
             return db;
           }),
         ],
-        child: const MaterialApp(home: HomeScreen()),
+        child: const MaterialApp(
+          locale: Locale('ja'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: HomeScreen(),
+        ),
       ),
     );
     // Allow the recent-videos future to settle.

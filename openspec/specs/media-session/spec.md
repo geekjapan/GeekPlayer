@@ -142,3 +142,39 @@ When a `PageSession` is disposed (e.g., the reader screen is closed), the curren
 - **WHEN** the user navigates away from the reader screen
 - **THEN** an upsert is issued against `novel_bookmarks` with `(site=Site.kakuyomu, externalId, episodeIndex=3, scrollFraction=0.42, updatedAt=<now>)` before the screen is destroyed
 
+### Requirement: PageSession supports local book progress
+
+The system SHALL use `PageSession` for local book reading progress. PDF progress MUST be representable as a page index plus optional viewport state, and EPUB progress MUST be representable as a chapter or locator plus scroll fraction.
+
+#### Scenario: Book session exposes progress
+
+- **WHEN** a local book reader updates its current location
+- **THEN** its `PageSession` exposes the updated `PagePosition` for persistence and resume
+
+### Requirement: PageSession remains format-agnostic
+
+The shared `PageSession` API SHALL NOT expose PDF-only or EPUB-only types. Format-specific locator details MUST be carried by book-domain value objects or serialized fields outside the shared media API.
+
+#### Scenario: Shared media switch remains exhaustive
+
+- **WHEN** the Dart analyzer evaluates switches over `MediaSession`
+- **THEN** adding book reader support does not require a new `MediaSession` subtype beyond the existing page-oriented abstraction
+
+### Requirement: PageSession supports manga page progress
+
+The system SHALL use `PageSession` for manga reading progress. Manga progress MUST be representable as a current page index or spread anchor plus scroll/viewport state stored outside the shared `MediaSession` subtype.
+
+#### Scenario: Manga session exposes page progress
+
+- **WHEN** a manga viewer changes the current page
+- **THEN** its `PageSession` emits an updated `PagePosition` for persistence and resume
+
+### Requirement: Manga support does not add a MediaSession subtype
+
+The system SHALL NOT add a new `MangaSession` subtype to the `MediaSession` sealed hierarchy. Manga reading MUST use the existing page-oriented abstraction.
+
+#### Scenario: MediaSession switches remain stable
+
+- **WHEN** the Dart analyzer evaluates switches over `MediaSession`
+- **THEN** manga support does not require a new exhaustive-switch branch beyond the existing page-oriented branch
+

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/storage/database.dart';
 import '../../../../core/storage/providers.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/app_settings.dart';
 import '../app_settings_notifier.dart';
 import '../settings_screen.dart';
@@ -65,6 +66,7 @@ class _CacheSectionState extends ConsumerState<CacheSection> {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     final int? capMb = ref.watch(
       appSettingsProvider.select(
         (AsyncValue<AppSettings> s) => s.value?.novelCacheCapMb,
@@ -73,16 +75,16 @@ class _CacheSectionState extends ConsumerState<CacheSection> {
 
     return SettingsSection(
       id: 'cache',
-      title: 'キャッシュ',
+      title: l10n.settingsSectionCache,
       children: <Widget>[
         FutureBuilder<int>(
           key: const Key('cache-size'),
           future: _sizeBytes,
           builder: (BuildContext ctx, AsyncSnapshot<int> snap) {
             if (!snap.hasData) {
-              return const ListTile(
-                title: Text('キャッシュサイズ'),
-                subtitle: LinearProgressIndicator(),
+              return ListTile(
+                title: Text(l10n.settingsCacheSizeLabel),
+                subtitle: const LinearProgressIndicator(),
               );
             }
             final double mb = snap.data! / (1024.0 * 1024.0);
@@ -90,7 +92,7 @@ class _CacheSectionState extends ConsumerState<CacheSection> {
             return Column(
               children: <Widget>[
                 ListTile(
-                  title: const Text('キャッシュサイズ'),
+                  title: Text(l10n.settingsCacheSizeLabel),
                   trailing: Text('${mb.toStringAsFixed(1)} MB'),
                 ),
                 if (over)
@@ -103,11 +105,11 @@ class _CacheSectionState extends ConsumerState<CacheSection> {
                     ),
                     child: Row(
                       children: <Widget>[
-                        const Expanded(child: Text('キャッシュが上限を超えています')),
+                        Expanded(child: Text(l10n.settingsCacheOverBanner)),
                         TextButton(
                           key: const Key('cache-delete-oldest'),
                           onPressed: () => _deleteOldestUntilUnderCap(),
-                          child: const Text('古い順に削除'),
+                          child: Text(l10n.settingsCacheDeleteOldest),
                         ),
                       ],
                     ),
@@ -118,13 +120,13 @@ class _CacheSectionState extends ConsumerState<CacheSection> {
         ),
         ListTile(
           key: const Key('cache-cap-mb'),
-          title: const Text('キャッシュ上限 (MB)'),
+          title: Text(l10n.settingsCacheCapMb),
           subtitle: Wrap(
             spacing: 8,
             children: <Widget>[
               ChoiceChip(
                 key: const Key('cache-cap-unlimited'),
-                label: const Text('無制限'),
+                label: Text(l10n.settingsCacheCapUnlimited),
                 selected: capMb == null,
                 onSelected: (_) => ref
                     .read(appSettingsProvider.notifier)
@@ -152,21 +154,25 @@ class _CacheSectionState extends ConsumerState<CacheSection> {
         for (final String site in const <String>['narou', 'noc', 'kakuyomu'])
           ListTile(
             key: Key('cache-clear-$site'),
-            title: Text('${_siteLabel(site)} のキャッシュをクリア'),
+            title: Text(l10n.settingsCacheClearSite(_siteLabel(l10n, site))),
             trailing: const Icon(Icons.delete_outline),
             onTap: () => _confirmAndClear(
               context,
-              title: '${_siteLabel(site)} のキャッシュを削除しますか?',
+              l10n: l10n,
+              title: l10n.settingsCacheClearSiteConfirmTitle(
+                _siteLabel(l10n, site),
+              ),
               run: () => _clearSite(site),
             ),
           ),
         ListTile(
           key: const Key('cache-clear-all'),
-          title: const Text('すべてクリア'),
+          title: Text(l10n.settingsCacheClearAll),
           trailing: const Icon(Icons.delete_sweep),
           onTap: () => _confirmAndClear(
             context,
-            title: 'すべての本文キャッシュを削除しますか?',
+            l10n: l10n,
+            title: l10n.settingsCacheClearAllConfirmTitle,
             run: _clearAll,
           ),
         ),
@@ -176,6 +182,7 @@ class _CacheSectionState extends ConsumerState<CacheSection> {
 
   Future<void> _confirmAndClear(
     BuildContext context, {
+    required AppLocalizations l10n,
     required String title,
     required Future<void> Function() run,
   }) async {
@@ -183,15 +190,15 @@ class _CacheSectionState extends ConsumerState<CacheSection> {
       context: context,
       builder: (BuildContext ctx) => AlertDialog(
         title: Text(title),
-        content: const Text('この操作は取り消せません。'),
+        content: Text(l10n.settingsClearHistoryIrreversible),
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('キャンセル'),
+            child: Text(l10n.actionCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('削除する'),
+            child: Text(l10n.actionDelete),
           ),
         ],
       ),
@@ -228,7 +235,7 @@ class _CacheSectionState extends ConsumerState<CacheSection> {
     _refresh();
   }
 
-  String _siteLabel(String code) => switch (code) {
+  String _siteLabel(AppLocalizations l10n, String code) => switch (code) {
     'narou' => '小説家になろう',
     'noc' => 'ノクターン系',
     'kakuyomu' => 'カクヨム',

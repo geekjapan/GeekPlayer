@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../../novel/presentation/novel_settings_screen.dart';
 import 'kakuyomu_consent_dialog.dart';
 
@@ -15,8 +16,9 @@ class KakuyomuConsentRequiredScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('カクヨム')),
+      appBar: AppBar(title: Text(l10n.kakuyomuConsentRequiredTitle)),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -24,12 +26,15 @@ class KakuyomuConsentRequiredScreen extends ConsumerWidget {
           children: <Widget>[
             const Icon(Icons.lock_outline, size: 64),
             const SizedBox(height: 16),
-            const Text('カクヨムへの同意が必要です。', textAlign: TextAlign.center),
+            Text(
+              l10n.kakuyomuConsentRequiredMessage,
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 12),
             FilledButton(
               key: const Key('kakuyomu-consent-required-show'),
               onPressed: () => KakuyomuConsentDialog.show(context),
-              child: const Text('同意ダイアログを表示'),
+              child: Text(l10n.kakuyomuConsentRequiredShowDialog),
             ),
             const SizedBox(height: 8),
             OutlinedButton(
@@ -39,7 +44,7 @@ class KakuyomuConsentRequiredScreen extends ConsumerWidget {
                   builder: (_) => const NovelSettingsScreen(),
                 ),
               ),
-              child: const Text('設定を開く'),
+              child: Text(l10n.kakuyomuConsentRequiredOpenSettings),
             ),
           ],
         ),

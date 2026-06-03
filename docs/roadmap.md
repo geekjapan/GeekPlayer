@@ -44,6 +44,44 @@ GeekPlayer は段階的に対象プラットフォームとメディアの幅を
 - **英語 UI**
 - **CI 拡張**: macOS / Windows runner 追加、各 OS の build smoke test
 
+### v0.2 sequencing（apply 推奨順）
+
+v0.2 の change は次の順に apply する。順序には実装上の依存があり、入れ替えると手戻りが出る。
+
+1. **`prepare-v0-2-foundation`**（本整備）— ドキュメント整合性回復、ADR-0006、sequencing 確定。コード変更なし。
+2. **`add-english-localization`** — `en` ロケールと ARB key parity test を先に入れる。これより後の
+   book/manga UI はすべて `AppLocalizations` 経由で文字列を足す前提になるため、**大きな新規 UI surface の前に**置く。
+3. **`add-pdf-epub-reader`** — 書籍リーダー。drift schema **v4** を所有し、`BookDocument` /
+   `PageSession` のリーダー抽象を確立する。manga はこの抽象と schema 順序に乗る。
+4. **`add-manga-zip-viewer`** — 漫画 ZIP/CBZ。drift schema **v5**（pdf-epub の v4 が入った後）。
+   apply 順を入れ替える場合は schema 番号を latest+1 に rebase し `docs/CONVENTIONS.md` を更新すること。
+
+その先の候補の placement:
+
+- **ライブラリ機能**（video/audio library, 視聴履歴, プレイリスト）— 上記リーダーの後。フォルダスキャンは
+  reader のメタデータ/recent モデルが固まってから着手する。
+- **`add-platform-linux`** — リーダー実装が依存パッケージの Linux 対応を確認した後に着手すると手戻りが少ない。
+- **`add-platform-ios` / iPadOS** — **[ADR-0006](adr/0006-ios-media-engine-distribution-policy.md) の決定が前提条件**。
+  libmpv/media_kit の LGPL 動的リンクと非ストア配布の整合がとれてから。
+- **`add-auto-update`** — 配布物が安定し、対象 OS が出揃ってから（GitHub Releases ベース、OS 別実装）。
+- **CI 拡張**（macOS runner 追加, build smoke test）— 新しい OS ターゲット（Linux/iOS）を追加する change と並走させる。
+- **`setup-ci-macos-windows`** 相当の追加は、各 reader/platform change が必要とするビルド検証に合わせて随時。
+
+### v0.2 proposal readiness checklist
+
+新しい v0.2 proposal を起こす前に、以下を proposal/design で満たすこと。満たせない項目は
+「未決」「将来 change にルーティング」「ADR で決定」のいずれかを明記する。
+
+- [ ] **影響 capability** を列挙し、新規 / 変更 / 非該当を区別している
+- [ ] **ADR 前提** を確認している（特に iOS/iPadOS は ADR-0006 を参照しているか）
+- [ ] **対象プラットフォーム** を明示し、未対応 OS の follow-up 制約を書いている
+- [ ] **依存パッケージ / ライセンス影響** を評価している（新規依存は LGPL/GPL でないか、全対象 OS をサポートするか）
+- [ ] **drift schema versioning** を確認している（schema を触る場合 latest+1 を取り、migration テストと前段 change との順序を明記）
+- [ ] **localization**：新規ユーザー可視文字列はすべて `AppLocalizations` 経由（日英）で、生リテラルを置かない
+- [ ] **settings 伝播モデル**：`AppSettings` 値を追加/参照する場合、新規セッションのみ反映か、アクティブセッションへ即時反映かを明記
+- [ ] **R18 / consent**：R18 やサイト同意の挙動を変える場合、consent の所有先（`site_consents` か別永続化か）・policyVersion・取消時のキャッシュ方針を参照
+- [ ] **検証コマンド**：`dart format` / `flutter analyze --fatal-infos` / `flutter test` / `openspec validate --all --strict` / `git diff --check` を tasks に含めている
+
 ## v1.0
 
 **AI 高画質化** 機能を段階導入する。

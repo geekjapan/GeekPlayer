@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
+import 'app_localizations_en.dart';
 import 'app_localizations_ja.dart';
 
 // ignore_for_file: type=lint
@@ -92,7 +93,10 @@ abstract class AppLocalizations {
       ];
 
   /// A list of this localizations delegate's supported locales.
-  static const List<Locale> supportedLocales = <Locale>[Locale('ja')];
+  static const List<Locale> supportedLocales = <Locale>[
+    Locale('en'),
+    Locale('ja'),
+  ];
 
   /// Shown when a network call fails because the device is offline or the host is unreachable.
   ///
@@ -165,6 +169,876 @@ abstract class AppLocalizations {
   /// In ja, this message translates to:
   /// **'アプリを再起動してください'**
   String get errorBoundaryRestartPrompt;
+
+  /// Title of the Settings screen app bar.
+  ///
+  /// In ja, this message translates to:
+  /// **'設定'**
+  String get settingsTitle;
+
+  /// Shown in the Settings screen body when AppSettings fails to load.
+  ///
+  /// In ja, this message translates to:
+  /// **'設定の読み込みに失敗しました: {error}'**
+  String settingsLoadError(Object error);
+
+  /// Section title for the Display settings section.
+  ///
+  /// In ja, this message translates to:
+  /// **'表示'**
+  String get settingsSectionDisplay;
+
+  /// Section title for the Playback settings section.
+  ///
+  /// In ja, this message translates to:
+  /// **'再生'**
+  String get settingsSectionPlayback;
+
+  /// Section title for the Video settings section.
+  ///
+  /// In ja, this message translates to:
+  /// **'動画'**
+  String get settingsSectionVideo;
+
+  /// Section title for the Audio settings section.
+  ///
+  /// In ja, this message translates to:
+  /// **'音楽'**
+  String get settingsSectionAudio;
+
+  /// Section title for the Novel settings section.
+  ///
+  /// In ja, this message translates to:
+  /// **'小説'**
+  String get settingsSectionNovel;
+
+  /// Section title for the Library settings section.
+  ///
+  /// In ja, this message translates to:
+  /// **'ライブラリ'**
+  String get settingsSectionLibrary;
+
+  /// Section title for the Cache settings section.
+  ///
+  /// In ja, this message translates to:
+  /// **'キャッシュ'**
+  String get settingsSectionCache;
+
+  /// Section title for the Online Services settings section.
+  ///
+  /// In ja, this message translates to:
+  /// **'オンラインサービス'**
+  String get settingsSectionOnlineServices;
+
+  /// Section title for the R18 settings section.
+  ///
+  /// In ja, this message translates to:
+  /// **'R18'**
+  String get settingsSectionR18;
+
+  /// Hint text shown under settings tiles whose change takes effect only on next launch.
+  ///
+  /// In ja, this message translates to:
+  /// **'変更は次回起動から有効になります'**
+  String get settingsNextLaunchHelper;
+
+  /// Label for the system/auto theme mode option.
+  ///
+  /// In ja, this message translates to:
+  /// **'システム'**
+  String get settingsThemeSystem;
+
+  /// Label for the light theme mode option.
+  ///
+  /// In ja, this message translates to:
+  /// **'ライト'**
+  String get settingsThemeLight;
+
+  /// Label for the dark theme mode option.
+  ///
+  /// In ja, this message translates to:
+  /// **'ダーク'**
+  String get settingsThemeDark;
+
+  /// Label for the accent color setting (not yet implemented).
+  ///
+  /// In ja, this message translates to:
+  /// **'アクセントカラー'**
+  String get settingsAccentColorPlaceholder;
+
+  /// Chip label indicating the accent color setting is coming in v0.2.
+  ///
+  /// In ja, this message translates to:
+  /// **'v0.2 で対応'**
+  String get settingsAccentColorComingSoon;
+
+  /// Label for the default playback speed setting tile.
+  ///
+  /// In ja, this message translates to:
+  /// **'デフォルト再生速度'**
+  String get settingsDefaultPlaybackSpeed;
+
+  /// Label for the subtitles-by-default switch.
+  ///
+  /// In ja, this message translates to:
+  /// **'字幕を最初から表示する'**
+  String get settingsSubtitlesByDefault;
+
+  /// Label for the audio background playback switch.
+  ///
+  /// In ja, this message translates to:
+  /// **'バックグラウンド再生'**
+  String get settingsAudioBackgroundPlayback;
+
+  /// Label for the audio notification persistent switch.
+  ///
+  /// In ja, this message translates to:
+  /// **'通知を継続表示'**
+  String get settingsAudioNotificationPersistent;
+
+  /// Label for the novel writing mode (vertical/horizontal) setting tile.
+  ///
+  /// In ja, this message translates to:
+  /// **'書字方向'**
+  String get settingsNovelWritingMode;
+
+  /// Label for the vertical writing mode option.
+  ///
+  /// In ja, this message translates to:
+  /// **'縦書き'**
+  String get settingsNovelWritingModeVertical;
+
+  /// Label for the horizontal writing mode option.
+  ///
+  /// In ja, this message translates to:
+  /// **'横書き'**
+  String get settingsNovelWritingModeHorizontal;
+
+  /// Label for the novel font size tile, interpolating the current size.
+  ///
+  /// In ja, this message translates to:
+  /// **'文字サイズ: {size} sp'**
+  String settingsNovelFontSize(String size);
+
+  /// Label for the novel line height tile, interpolating the current value.
+  ///
+  /// In ja, this message translates to:
+  /// **'行間: {height}'**
+  String settingsNovelLineHeight(String height);
+
+  /// Label for the novel font family setting tile.
+  ///
+  /// In ja, this message translates to:
+  /// **'フォント'**
+  String get settingsNovelFont;
+
+  /// Label for the novel background color (light mode) setting tile.
+  ///
+  /// In ja, this message translates to:
+  /// **'背景色 (ライト)'**
+  String get settingsNovelBgLight;
+
+  /// Label for the novel background color (dark mode) setting tile.
+  ///
+  /// In ja, this message translates to:
+  /// **'背景色 (ダーク)'**
+  String get settingsNovelBgDark;
+
+  /// Label for the recent items cap setting tile.
+  ///
+  /// In ja, this message translates to:
+  /// **'\"最近開いた\" の上限'**
+  String get settingsRecentItemsCap;
+
+  /// Label for the clear-all-history settings tile.
+  ///
+  /// In ja, this message translates to:
+  /// **'履歴をすべてクリア'**
+  String get settingsClearHistory;
+
+  /// Title of the confirmation dialog for clearing all history.
+  ///
+  /// In ja, this message translates to:
+  /// **'履歴をすべて削除しますか?'**
+  String get settingsClearHistoryConfirmTitle;
+
+  /// Body text in destructive confirmation dialogs stating the action cannot be undone.
+  ///
+  /// In ja, this message translates to:
+  /// **'この操作は取り消せません。'**
+  String get settingsClearHistoryIrreversible;
+
+  /// Label for the cache size display tile.
+  ///
+  /// In ja, this message translates to:
+  /// **'キャッシュサイズ'**
+  String get settingsCacheSizeLabel;
+
+  /// Label for the cache cap in MB setting tile.
+  ///
+  /// In ja, this message translates to:
+  /// **'キャッシュ上限 (MB)'**
+  String get settingsCacheCapMb;
+
+  /// Label for the unlimited cache cap choice chip.
+  ///
+  /// In ja, this message translates to:
+  /// **'無制限'**
+  String get settingsCacheCapUnlimited;
+
+  /// Banner text shown when novel cache exceeds the configured cap.
+  ///
+  /// In ja, this message translates to:
+  /// **'キャッシュが上限を超えています'**
+  String get settingsCacheOverBanner;
+
+  /// Button label to delete oldest cache entries until under the cap.
+  ///
+  /// In ja, this message translates to:
+  /// **'古い順に削除'**
+  String get settingsCacheDeleteOldest;
+
+  /// Label for the per-site cache clear tile.
+  ///
+  /// In ja, this message translates to:
+  /// **'{site} のキャッシュをクリア'**
+  String settingsCacheClearSite(String site);
+
+  /// Title of the confirmation dialog for clearing a site's cache.
+  ///
+  /// In ja, this message translates to:
+  /// **'{site} のキャッシュを削除しますか?'**
+  String settingsCacheClearSiteConfirmTitle(String site);
+
+  /// Label for the clear-all-cache tile.
+  ///
+  /// In ja, this message translates to:
+  /// **'すべてクリア'**
+  String get settingsCacheClearAll;
+
+  /// Title of the confirmation dialog for clearing all novel body cache.
+  ///
+  /// In ja, this message translates to:
+  /// **'すべての本文キャッシュを削除しますか?'**
+  String get settingsCacheClearAllConfirmTitle;
+
+  /// ADR-0001 permanent disclosure text shown at the top of the Online Services section.
+  ///
+  /// In ja, this message translates to:
+  /// **'本アプリは個人利用目的でなろう / ノクターン系 / カクヨムから 本文を取得します。各サイトの利用規約に同意した範囲でのみ 利用してください。'**
+  String get settingsOnlineServicesDisclosure;
+
+  /// Button label to keep the cache when revoking site consent.
+  ///
+  /// In ja, this message translates to:
+  /// **'残す'**
+  String get settingsRevokeKeepCache;
+
+  /// Button label to delete the cache when revoking site consent.
+  ///
+  /// In ja, this message translates to:
+  /// **'削除する'**
+  String get settingsRevokeDeleteCache;
+
+  /// Body of the dialog asking whether to delete cache when revoking consent.
+  ///
+  /// In ja, this message translates to:
+  /// **'本文キャッシュ ({sizeMb} MB) も削除しますか?'**
+  String settingsRevokeCachePrompt(String sizeMb);
+
+  /// Label for the R18 age-gate status display tile.
+  ///
+  /// In ja, this message translates to:
+  /// **'年齢確認の状態'**
+  String get settingsR18Status;
+
+  /// R18 age-gate status when consent has been granted.
+  ///
+  /// In ja, this message translates to:
+  /// **'同意済み'**
+  String get settingsR18StatusGranted;
+
+  /// R18 age-gate status when consent has not been granted.
+  ///
+  /// In ja, this message translates to:
+  /// **'未同意'**
+  String get settingsR18StatusDenied;
+
+  /// Label for the R18 age-gate reset tile.
+  ///
+  /// In ja, this message translates to:
+  /// **'年齢確認をやり直す'**
+  String get settingsR18Reset;
+
+  /// Title of the confirmation dialog for resetting R18 age-gate consent.
+  ///
+  /// In ja, this message translates to:
+  /// **'年齢確認をやり直しますか?'**
+  String get settingsR18ResetConfirmTitle;
+
+  /// Body of the R18 age-gate reset confirmation dialog.
+  ///
+  /// In ja, this message translates to:
+  /// **'次回 R18 サイトを開く際に確認画面が表示されます。'**
+  String get settingsR18ResetConfirmBody;
+
+  /// Generic cancel button label used in confirmation dialogs.
+  ///
+  /// In ja, this message translates to:
+  /// **'キャンセル'**
+  String get actionCancel;
+
+  /// Generic destructive confirm button label used in confirmation dialogs.
+  ///
+  /// In ja, this message translates to:
+  /// **'削除する'**
+  String get actionDelete;
+
+  /// Button label used in the R18 reset confirmation dialog.
+  ///
+  /// In ja, this message translates to:
+  /// **'リセットする'**
+  String get actionReset;
+
+  /// Title of the About screen app bar.
+  ///
+  /// In ja, this message translates to:
+  /// **'アプリ情報'**
+  String get aboutTitle;
+
+  /// Label for the version row in the About / Settings About section.
+  ///
+  /// In ja, this message translates to:
+  /// **'バージョン'**
+  String get aboutVersion;
+
+  /// Label for the build number row in the About screen.
+  ///
+  /// In ja, this message translates to:
+  /// **'ビルド番号'**
+  String get aboutBuildNumber;
+
+  /// Label for the commit SHA row in the About screen.
+  ///
+  /// In ja, this message translates to:
+  /// **'コミット'**
+  String get aboutCommit;
+
+  /// Title text for the Apache-2.0 license notice card in the About screen.
+  ///
+  /// In ja, this message translates to:
+  /// **'Apache-2.0 ライセンス'**
+  String get aboutApacheLicenseTitle;
+
+  /// List tile label for the GitHub repository link.
+  ///
+  /// In ja, this message translates to:
+  /// **'GitHub リポジトリ'**
+  String get aboutLinkGithub;
+
+  /// List tile label for the roadmap link.
+  ///
+  /// In ja, this message translates to:
+  /// **'ロードマップ'**
+  String get aboutLinkRoadmap;
+
+  /// List tile label for the full license text link.
+  ///
+  /// In ja, this message translates to:
+  /// **'ライセンス全文'**
+  String get aboutLinkLicense;
+
+  /// List tile label for the OSS licenses screen entry.
+  ///
+  /// In ja, this message translates to:
+  /// **'OSS ライセンス'**
+  String get aboutOssLicenses;
+
+  /// SnackBar message shown when a URL cannot be launched.
+  ///
+  /// In ja, this message translates to:
+  /// **'リンクを開けませんでした'**
+  String get aboutLinkOpenError;
+
+  /// App bar title for the bundled full-license detail screen.
+  ///
+  /// In ja, this message translates to:
+  /// **'GeekPlayer — ライセンス全文'**
+  String get aboutLicenseScreenTitle;
+
+  /// Label for the license tile in the Settings About section.
+  ///
+  /// In ja, this message translates to:
+  /// **'ライセンス'**
+  String get aboutSettingsLicense;
+
+  /// Label for the OSS Notices tile in the Settings About section.
+  ///
+  /// In ja, this message translates to:
+  /// **'OSS Notices'**
+  String get aboutSettingsOssNotices;
+
+  /// App bar title for the OSS license list screen.
+  ///
+  /// In ja, this message translates to:
+  /// **'OSS ライセンス'**
+  String get ossLicensesScreenTitle;
+
+  /// Body text in the Apache-2.0 NOTICE card on the OSS licenses screen.
+  ///
+  /// In ja, this message translates to:
+  /// **'GeekPlayer 本体は Apache License 2.0 で配布されています。'**
+  String get ossLicensesApacheNoticeBody;
+
+  /// Card title for the LGPL notice section on the OSS licenses screen.
+  ///
+  /// In ja, this message translates to:
+  /// **'LGPL-2.1+ 通知 (libmpv)'**
+  String get lgplNoticeTitle;
+
+  /// First paragraph of the LGPL notice explaining how libmpv is used.
+  ///
+  /// In ja, this message translates to:
+  /// **'GeekPlayer は動画再生エンジンとして libmpv を採用しており、media_kit を介して 動的リンク で利用しています。libmpv は LGPL-2.1+ で配布されています。'**
+  String get lgplNoticeBody;
+
+  /// Second paragraph of the LGPL notice explaining user replacement rights.
+  ///
+  /// In ja, this message translates to:
+  /// **'利用者は LGPL-2.1+ の規定により、libmpv 部分のみを独立に修正・再構築 し、GeekPlayer 本体を再ビルドせずに 差し替える権利 を持ちます。差し替えた libmpv は LGPL の条件下で再配布できます。'**
+  String get lgplNoticeRights;
+
+  /// Sub-title for the replacement instructions in the LGPL notice.
+  ///
+  /// In ja, this message translates to:
+  /// **'差し替え手順 (概要)'**
+  String get lgplNoticeReplacementTitle;
+
+  /// Per-platform replacement instructions for libmpv.
+  ///
+  /// In ja, this message translates to:
+  /// **'・macOS: アプリバンドル内 Contents/Frameworks/ 配下の Mpv.framework / libmpv.dylib を差し替え\n・Windows: GeekPlayer.exe と同じディレクトリの mpv-2.dll を差し替え\n・Android: APK 内 lib/<abi>/libmpv.so を差し替えた上で APK を再署名'**
+  String get lgplNoticeReplacementBody;
+
+  /// Link label for the libmpv upstream source.
+  ///
+  /// In ja, this message translates to:
+  /// **'上流ソース (mpv-player/mpv)'**
+  String get lgplUpstreamLink;
+
+  /// Link label for THIRD_PARTY_NOTICES document.
+  ///
+  /// In ja, this message translates to:
+  /// **'詳細は THIRD_PARTY_NOTICES を参照'**
+  String get lgplThirdPartyLink;
+
+  /// Link label for the bundled LGPL-2.1 full text.
+  ///
+  /// In ja, this message translates to:
+  /// **'LGPL-2.1 全文'**
+  String get lgplFullTextLink;
+
+  /// App bar title for the LGPL-2.1 full-text license detail screen.
+  ///
+  /// In ja, this message translates to:
+  /// **'LGPL-2.1 全文'**
+  String get lgplLicenseScreenTitle;
+
+  /// Title of the first-launch multi-site consent dialog.
+  ///
+  /// In ja, this message translates to:
+  /// **'オンライン小説サイトへの同意'**
+  String get consentDialogTitle;
+
+  /// Body of the first-launch consent dialog explaining data access policy.
+  ///
+  /// In ja, this message translates to:
+  /// **'本アプリは以下のサイトと通信して小説を取得します。ADR-0001 / ADR-0003 に従い、能動キャッシュ (利用者が「ライブラリに追加」を選択した作品のみ) を行い、各サイトのレート制限 (カクヨムは 1 req / 2 s) と robots.txt を尊重します。\n\nカクヨム本文は HTML をパースして取得します。サイト構造の変更で取得が失敗することがあります。'**
+  String get consentDialogBody;
+
+  /// Banner shown in the consent dialog when re-prompted due to a policy update.
+  ///
+  /// In ja, this message translates to:
+  /// **'ポリシーが更新されました'**
+  String get consentPolicyUpdatedBanner;
+
+  /// Button label to deny consent for all sites in the consent dialog.
+  ///
+  /// In ja, this message translates to:
+  /// **'すべて拒否'**
+  String get consentDenyAll;
+
+  /// Button label to confirm the consent choices in the consent dialog.
+  ///
+  /// In ja, this message translates to:
+  /// **'決定'**
+  String get consentConfirm;
+
+  /// Title of the Kakuyomu-specific consent dialog.
+  ///
+  /// In ja, this message translates to:
+  /// **'カクヨムへの同意'**
+  String get kakuyomuConsentDialogTitle;
+
+  /// Introductory sentence in the Kakuyomu consent dialog.
+  ///
+  /// In ja, this message translates to:
+  /// **'本アプリは、利用者の同意のもとでカクヨム公式サイトと通信して小説情報および本文を取得します。下記の運用規範に沿って動作します:'**
+  String get kakuyomuConsentDialogIntro;
+
+  /// First bullet point in the Kakuyomu consent dialog.
+  ///
+  /// In ja, this message translates to:
+  /// **'個人利用に限定。大規模クロール / 受動的ミラーリングは行いません。'**
+  String get kakuyomuConsentBullet1;
+
+  /// Second bullet point in the Kakuyomu consent dialog.
+  ///
+  /// In ja, this message translates to:
+  /// **'能動キャッシュのみ。ユーザーが「Library に追加」した作品の本文だけを保存します。'**
+  String get kakuyomuConsentBullet2;
+
+  /// Third bullet point in the Kakuyomu consent dialog.
+  ///
+  /// In ja, this message translates to:
+  /// **'カクヨムへのアクセスは 1 リクエスト / 2 秒、並列度 1 に制限されます。'**
+  String get kakuyomuConsentBullet3;
+
+  /// Fourth bullet point in the Kakuyomu consent dialog.
+  ///
+  /// In ja, this message translates to:
+  /// **'robots.txt の Disallow を 24 時間キャッシュ付きで尊重します。'**
+  String get kakuyomuConsentBullet4;
+
+  /// Fifth bullet point in the Kakuyomu consent dialog.
+  ///
+  /// In ja, this message translates to:
+  /// **'User-Agent に GeekPlayer のバージョンと連絡先 URL を明示します。'**
+  String get kakuyomuConsentBullet5;
+
+  /// Sixth bullet point in the Kakuyomu consent dialog.
+  ///
+  /// In ja, this message translates to:
+  /// **'429 / 503 を受けたら指数バックオフ (最大 5 分) で再試行し、6 回で諦めます。'**
+  String get kakuyomuConsentBullet6;
+
+  /// Footer text in the Kakuyomu consent dialog.
+  ///
+  /// In ja, this message translates to:
+  /// **'詳細は ADR-0001 / README のカクヨム機能の注意事項を参照してください。将来、カクヨム公式 ToS が自動収集を明示禁止した場合は、本機能を即座に停止する方針です。'**
+  String get kakuyomuConsentFooter;
+
+  /// Button label to decline Kakuyomu consent.
+  ///
+  /// In ja, this message translates to:
+  /// **'同意しない'**
+  String get kakuyomuConsentDecline;
+
+  /// Button label to accept Kakuyomu consent.
+  ///
+  /// In ja, this message translates to:
+  /// **'同意する'**
+  String get kakuyomuConsentAccept;
+
+  /// App bar title for the KakuyomuConsentRequiredScreen.
+  ///
+  /// In ja, this message translates to:
+  /// **'カクヨム'**
+  String get kakuyomuConsentRequiredTitle;
+
+  /// Message on the KakuyomuConsentRequiredScreen.
+  ///
+  /// In ja, this message translates to:
+  /// **'カクヨムへの同意が必要です。'**
+  String get kakuyomuConsentRequiredMessage;
+
+  /// Button label to show the consent dialog from the consent required screen.
+  ///
+  /// In ja, this message translates to:
+  /// **'同意ダイアログを表示'**
+  String get kakuyomuConsentRequiredShowDialog;
+
+  /// Button label to open settings from the consent required screen.
+  ///
+  /// In ja, this message translates to:
+  /// **'設定を開く'**
+  String get kakuyomuConsentRequiredOpenSettings;
+
+  /// Title heading for the online novel library home section.
+  ///
+  /// In ja, this message translates to:
+  /// **'オンライン小説 Library'**
+  String get novelHomeSectionTitle;
+
+  /// Tooltip for the settings icon button in the novel home section.
+  ///
+  /// In ja, this message translates to:
+  /// **'オンライン小説設定'**
+  String get novelHomeSectionSettingsTooltip;
+
+  /// Placeholder text shown when the novel library is empty.
+  ///
+  /// In ja, this message translates to:
+  /// **'Library に小説はまだありません。'**
+  String get novelLibraryEmpty;
+
+  /// Chip label shown in the library grid when consent for a site is disabled.
+  ///
+  /// In ja, this message translates to:
+  /// **'同意が無効化されています — 設定で再同意'**
+  String get novelConsentDisabledBanner;
+
+  /// Label for the 'All sites' filter chip in the novel library.
+  ///
+  /// In ja, this message translates to:
+  /// **'すべて'**
+  String get siteFilterAll;
+
+  /// Title heading for the local book library home section.
+  ///
+  /// In ja, this message translates to:
+  /// **'ローカル書籍'**
+  String get bookHomeSectionTitle;
+
+  /// Placeholder shown in the book home section when no books have been imported.
+  ///
+  /// In ja, this message translates to:
+  /// **'書籍はまだありません。「追加」から PDF または EPUB を開いてください。'**
+  String get bookHomeSectionEmpty;
+
+  /// Tooltip for the add-book icon button in the book home section.
+  ///
+  /// In ja, this message translates to:
+  /// **'書籍を追加'**
+  String get bookHomeSectionAddTooltip;
+
+  /// App bar title for the book reader screen when no specific title is available.
+  ///
+  /// In ja, this message translates to:
+  /// **'書籍リーダー'**
+  String get bookReaderTitle;
+
+  /// Page indicator shown in the book reader. Interpolates current page and total pages.
+  ///
+  /// In ja, this message translates to:
+  /// **'{current} / {total} ページ'**
+  String bookReaderPageOf(int current, int total);
+
+  /// Chapter indicator shown in the EPUB reader.
+  ///
+  /// In ja, this message translates to:
+  /// **'{current} / {total} 章'**
+  String bookReaderChapterOf(int current, int total);
+
+  /// Tooltip / label for the add-bookmark button in the book reader.
+  ///
+  /// In ja, this message translates to:
+  /// **'ブックマーク追加'**
+  String get bookBookmarkAdd;
+
+  /// Title of the bookmark list sheet/screen.
+  ///
+  /// In ja, this message translates to:
+  /// **'ブックマーク一覧'**
+  String get bookBookmarkList;
+
+  /// Placeholder shown when the bookmark list is empty.
+  ///
+  /// In ja, this message translates to:
+  /// **'ブックマークはありません。'**
+  String get bookBookmarkEmpty;
+
+  /// Label for the delete button on a bookmark tile.
+  ///
+  /// In ja, this message translates to:
+  /// **'削除'**
+  String get bookBookmarkDelete;
+
+  /// Hint text for the bookmark label input field.
+  ///
+  /// In ja, this message translates to:
+  /// **'ブックマーク名'**
+  String get bookBookmarkLabelHint;
+
+  /// Title of the file picker dialog for selecting a book file.
+  ///
+  /// In ja, this message translates to:
+  /// **'書籍を選択'**
+  String get bookOpenPickerTitle;
+
+  /// Message shown when a book file is no longer reachable.
+  ///
+  /// In ja, this message translates to:
+  /// **'ファイルが見つかりません。移動・削除された可能性があります。'**
+  String get bookFileNotFoundMessage;
+
+  /// Button label to re-import a missing book file.
+  ///
+  /// In ja, this message translates to:
+  /// **'再インポート'**
+  String get bookFileNotFoundReimport;
+
+  /// Title of the confirmation dialog for deleting a book record.
+  ///
+  /// In ja, this message translates to:
+  /// **'書籍を削除しますか?'**
+  String get bookDeleteConfirmTitle;
+
+  /// Body of the book-delete confirmation dialog.
+  ///
+  /// In ja, this message translates to:
+  /// **'読書の記録とブックマークがすべて削除されます。ファイル本体は削除されません。'**
+  String get bookDeleteConfirmBody;
+
+  /// Title heading for the local manga library home section.
+  ///
+  /// In ja, this message translates to:
+  /// **'ローカルマンガ'**
+  String get mangaHomeSectionTitle;
+
+  /// Placeholder shown in the manga home section when no archives have been imported.
+  ///
+  /// In ja, this message translates to:
+  /// **'マンガはまだありません。「追加」から ZIP または CBZ を開いてください。'**
+  String get mangaHomeSectionEmpty;
+
+  /// Tooltip for the add-manga icon button in the manga home section.
+  ///
+  /// In ja, this message translates to:
+  /// **'マンガを追加'**
+  String get mangaHomeSectionAddTooltip;
+
+  /// App bar title for the manga viewer screen when no specific title is available.
+  ///
+  /// In ja, this message translates to:
+  /// **'マンガビューア'**
+  String get mangaViewerTitle;
+
+  /// Page indicator shown in the manga viewer. Interpolates current page and total pages.
+  ///
+  /// In ja, this message translates to:
+  /// **'{current} / {total} ページ'**
+  String mangaViewerPageOf(int current, int total);
+
+  /// Tooltip / label for the add-bookmark button in the manga viewer.
+  ///
+  /// In ja, this message translates to:
+  /// **'ブックマーク追加'**
+  String get mangaBookmarkAdd;
+
+  /// Title of the bookmark list sheet/screen in the manga viewer.
+  ///
+  /// In ja, this message translates to:
+  /// **'ブックマーク一覧'**
+  String get mangaBookmarkList;
+
+  /// Placeholder shown when the manga bookmark list is empty.
+  ///
+  /// In ja, this message translates to:
+  /// **'ブックマークはありません。'**
+  String get mangaBookmarkEmpty;
+
+  /// Label for the delete button on a manga bookmark tile.
+  ///
+  /// In ja, this message translates to:
+  /// **'削除'**
+  String get mangaBookmarkDelete;
+
+  /// Hint text for the manga bookmark label input field.
+  ///
+  /// In ja, this message translates to:
+  /// **'ブックマーク名'**
+  String get mangaBookmarkLabelHint;
+
+  /// Title of the file picker dialog for selecting a manga archive.
+  ///
+  /// In ja, this message translates to:
+  /// **'マンガを選択'**
+  String get mangaOpenPickerTitle;
+
+  /// Message shown when a manga archive is no longer reachable.
+  ///
+  /// In ja, this message translates to:
+  /// **'ファイルが見つかりません。移動・削除された可能性があります。'**
+  String get mangaFileNotFoundMessage;
+
+  /// Title of the confirmation dialog for deleting a manga record.
+  ///
+  /// In ja, this message translates to:
+  /// **'マンガを削除しますか?'**
+  String get mangaDeleteConfirmTitle;
+
+  /// Body of the manga-delete confirmation dialog.
+  ///
+  /// In ja, this message translates to:
+  /// **'読書の記録とブックマークがすべて削除されます。ファイル本体は削除されません。'**
+  String get mangaDeleteConfirmBody;
+
+  /// Shown when the manga archive cannot be parsed (corrupt ZIP/CBZ).
+  ///
+  /// In ja, this message translates to:
+  /// **'アーカイブを読み込めませんでした。ファイルが破損している可能性があります。'**
+  String get mangaErrorCorruptArchive;
+
+  /// Shown when the archive contains no supported image entries.
+  ///
+  /// In ja, this message translates to:
+  /// **'このアーカイブには対応する画像ページがありません。'**
+  String get mangaErrorNoPages;
+
+  /// Shown when the archive exceeds the configured size limit.
+  ///
+  /// In ja, this message translates to:
+  /// **'アーカイブのサイズが上限を超えています。'**
+  String get mangaErrorOversized;
+
+  /// Section title for the Manga settings section.
+  ///
+  /// In ja, this message translates to:
+  /// **'マンガ'**
+  String get settingsSectionManga;
+
+  /// Label for the manga reading direction setting tile.
+  ///
+  /// In ja, this message translates to:
+  /// **'読み方向'**
+  String get settingsMangaReadingDirection;
+
+  /// Label for the right-to-left manga reading direction option.
+  ///
+  /// In ja, this message translates to:
+  /// **'右から左 (日本語マンガ)'**
+  String get settingsMangaReadingDirectionRtl;
+
+  /// Label for the left-to-right manga reading direction option.
+  ///
+  /// In ja, this message translates to:
+  /// **'左から右 (洋書コミック)'**
+  String get settingsMangaReadingDirectionLtr;
+
+  /// Label for the manga spread mode setting tile.
+  ///
+  /// In ja, this message translates to:
+  /// **'見開き表示'**
+  String get settingsMangaSpreadMode;
+
+  /// Label for the single-page manga layout option.
+  ///
+  /// In ja, this message translates to:
+  /// **'1ページ'**
+  String get settingsMangaSpreadModeSingle;
+
+  /// Label for the two-page spread manga layout option.
+  ///
+  /// In ja, this message translates to:
+  /// **'見開き (2ページ)'**
+  String get settingsMangaSpreadModeSpread;
+
+  /// Label for the manga zoom-reset-on-page-change switch.
+  ///
+  /// In ja, this message translates to:
+  /// **'ページ移動時にズームをリセット'**
+  String get settingsMangaZoomReset;
 }
 
 class _AppLocalizationsDelegate
@@ -178,7 +1052,7 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['ja'].contains(locale.languageCode);
+      <String>['en', 'ja'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -187,6 +1061,8 @@ class _AppLocalizationsDelegate
 AppLocalizations lookupAppLocalizations(Locale locale) {
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
+    case 'en':
+      return AppLocalizationsEn();
     case 'ja':
       return AppLocalizationsJa();
   }

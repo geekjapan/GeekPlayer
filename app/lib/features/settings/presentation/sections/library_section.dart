@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/storage/providers.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/app_settings.dart';
 import '../app_settings_notifier.dart';
 import '../settings_screen.dart';
@@ -17,6 +18,7 @@ class LibrarySection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     final int current = ref.watch(
       appSettingsProvider.select(
         (AsyncValue<AppSettings> s) => s.value?.recentItemsCap ?? 50,
@@ -25,11 +27,11 @@ class LibrarySection extends ConsumerWidget {
 
     return SettingsSection(
       id: 'library',
-      title: 'ライブラリ',
+      title: l10n.settingsSectionLibrary,
       children: <Widget>[
         ListTile(
           key: const Key('recent-items-cap'),
-          title: const Text('"最近開いた" の上限'),
+          title: Text(l10n.settingsRecentItemsCap),
           subtitle: Wrap(
             spacing: 8,
             children: <Widget>[
@@ -52,31 +54,35 @@ class LibrarySection extends ConsumerWidget {
         ),
         ListTile(
           key: const Key('clear-history'),
-          title: const Text('履歴をすべてクリア'),
+          title: Text(l10n.settingsClearHistory),
           trailing: const Icon(Icons.delete_sweep_outlined),
-          onTap: () => _confirmClear(context, ref),
+          onTap: () => _confirmClear(context, ref, l10n),
         ),
       ],
     );
   }
 
-  Future<void> _confirmClear(BuildContext context, WidgetRef ref) async {
+  Future<void> _confirmClear(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+  ) async {
     final bool? ok = await showDialog<bool>(
       context: context,
       builder: (BuildContext ctx) => AlertDialog(
         key: const Key('clear-history-confirm'),
-        title: const Text('履歴をすべて削除しますか?'),
-        content: const Text('この操作は取り消せません。'),
+        title: Text(l10n.settingsClearHistoryConfirmTitle),
+        content: Text(l10n.settingsClearHistoryIrreversible),
         actions: <Widget>[
           TextButton(
             key: const Key('clear-history-cancel'),
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('キャンセル'),
+            child: Text(l10n.actionCancel),
           ),
           FilledButton(
             key: const Key('clear-history-confirm-button'),
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('削除する'),
+            child: Text(l10n.actionDelete),
           ),
         ],
       ),

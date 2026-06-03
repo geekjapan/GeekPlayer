@@ -2,10 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geekplayer/features/about/presentation/about_screen.dart';
+import 'package:geekplayer/l10n/app_localizations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 Widget _harness() {
-  return const ProviderScope(child: MaterialApp(home: AboutScreen()));
+  return const ProviderScope(
+    child: MaterialApp(
+      locale: Locale('ja'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: AboutScreen(),
+    ),
+  );
 }
 
 void main() {
