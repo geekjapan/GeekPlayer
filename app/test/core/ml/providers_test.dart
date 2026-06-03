@@ -16,7 +16,7 @@ class _FakeUpscaler implements ImageUpscaler {
       bytes: request.bytes,
       outWidth: 999,
       outHeight: 999,
-      backend: MlBackend.coreml,
+      backend: MlBackend.coremlEp,
     );
   }
 }
@@ -32,14 +32,14 @@ void main() {
     });
 
     test('overrideWithValue substitutes a custom MlRuntime', () {
-      final fakeRuntime = MlRuntime(resolver: () => TargetPlatform.iOS);
+      final fakeRuntime = MlRuntime(platform: () => TargetPlatform.iOS);
       final container = ProviderContainer(
         overrides: [mlRuntimeProvider.overrideWithValue(fakeRuntime)],
       );
       addTearDown(container.dispose);
 
       final runtime = container.read(mlRuntimeProvider);
-      expect(runtime.describe().backend, MlBackend.coreml);
+      expect(runtime.preferredBackend(), MlBackend.coremlEp);
     });
   });
 
@@ -69,7 +69,7 @@ void main() {
         ),
       );
       expect(result.outWidth, 999);
-      expect(result.backend, MlBackend.coreml);
+      expect(result.backend, MlBackend.coremlEp);
     });
   });
 }

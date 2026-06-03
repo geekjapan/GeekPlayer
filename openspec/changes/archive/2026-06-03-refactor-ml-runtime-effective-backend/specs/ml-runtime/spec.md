@@ -1,10 +1,8 @@
-# ml-runtime Specification
+# ml-runtime
 
-## Purpose
+Refactor the ML runtime to distinguish the platform-preferred backend from the effective (probed) backend, per ADR-0007.
 
-Establishes the cross-platform ML runtime abstraction (`app/lib/core/ml/`) for on-device AI upscaling: execution-provider-oriented backend enumeration, image upscale value objects, an `ImageUpscaler` interface, a platform-preferred backend plus an effective backend resolved by probing (per ADR-0007), a pure-Dart bicubic CPU floor, and Riverpod wiring. Concrete ONNX Runtime / GPU execution-provider backends and learned models are future changes that plug into this seam.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: ML backend enumeration
 
@@ -29,24 +27,6 @@ The system SHALL provide an immutable `MlCapabilities` value object carrying the
 - **WHEN** an `MlCapabilities` is constructed with `preferred: coremlEp` and `effective: bicubicCpu`
 - **THEN** both values are independently readable
 
-### Requirement: Upscale request and result value objects
-
-The system SHALL provide immutable `UpscaleRequest` (`bytes` Uint8List, `srcWidth` int, `srcHeight` int, `scaleFactor` int ≥ 1) and `UpscaleResult` (`bytes` Uint8List, `outWidth` int, `outHeight` int, `backend` MlBackend) value objects. Both MUST implement `==` and `hashCode`.
-
-#### Scenario: Result carries output dimensions and backend
-
-- **WHEN** an `UpscaleResult` is constructed with `outWidth`, `outHeight`, and a `backend`
-- **THEN** those values are readable and equality holds for identical field values
-
-### Requirement: ImageUpscaler interface
-
-The system SHALL define an `ImageUpscaler` abstract interface with a single async method `Future<UpscaleResult> upscale(UpscaleRequest request)`.
-
-#### Scenario: Concrete upscaler satisfies the interface
-
-- **WHEN** a concrete class implements `ImageUpscaler`
-- **THEN** it provides `Future<UpscaleResult> upscale(UpscaleRequest request)`
-
 ### Requirement: Platform-based preferred backend selection
 
 The system SHALL provide an `MlRuntime` that computes a platform-**preferred** `MlBackend`: iOS/macOS → `coremlEp`, Android → `nnapiEp`, Windows → `directmlEp`, Linux → `ortCpu`, all others → `bicubicCpu`. The preferred backend expresses intent only; the effective backend is resolved separately by probing.
@@ -69,6 +49,8 @@ The `MlRuntime` MUST make platform detection, execution-provider availability, m
 
 - **GIVEN** an `MlRuntime` constructed with a platform resolver, an execution-provider probe, a model-state resolver, and an experimental-flag resolver
 - **THEN** `probe()` resolves using only the injected inputs and does not touch `dart:io`
+
+## ADDED Requirements
 
 ### Requirement: Effective backend probe with fallback chain
 
@@ -117,31 +99,3 @@ With no injected overrides, `MlRuntime` MUST default to experimental disabled, m
 - **GIVEN** a default `MlRuntime()` with no overrides
 - **WHEN** `probe()` resolves
 - **THEN** `effective` is `bicubicCpu`
-
-### Requirement: Pure-Dart passthrough upscaler
-
-The system SHALL provide a `PassthroughUpscaler` that implements `ImageUpscaler` using only pure-Dart code (no native plugins, no FFI), returning the input bytes with `outWidth = srcWidth * scaleFactor`, `outHeight = srcHeight * scaleFactor`, and `backend = bicubicCpu`.
-
-#### Scenario: Passthrough scales dimensions and reports the CPU floor
-
-- **GIVEN** an `UpscaleRequest` with `srcWidth=100`, `srcHeight=50`, `scaleFactor=2`
-- **WHEN** `PassthroughUpscaler().upscale(request)` resolves
-- **THEN** the result has `outWidth=200`, `outHeight=100`, and `backend == MlBackend.bicubicCpu`
-
-### Requirement: Riverpod providers for the ML runtime
-
-The system SHALL expose Riverpod providers `mlRuntimeProvider` and `imageUpscalerProvider`, both `keepAlive: true`, wired via `@Riverpod` codegen, and overridable in tests.
-
-#### Scenario: imageUpscalerProvider is overridable
-
-- **WHEN** a test overrides `imageUpscalerProvider` with a fake `ImageUpscaler`
-- **THEN** a consumer reading the provider observes the fake instance
-
-### Requirement: No new native or ML dependencies
-
-The `ml-runtime` capability MUST NOT introduce native-bridge dependencies; the runtime, value objects, and bicubic CPU floor MUST compile with the existing dependency set.
-
-#### Scenario: pubspec has no native ML bridge for the runtime layer
-
-- **WHEN** `app/pubspec.yaml` is inspected for the ml-runtime layer
-- **THEN** no native ML bridge / FFI dependency is required by it

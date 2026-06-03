@@ -22,7 +22,7 @@ class CpuImageUpscaler implements ImageUpscaler {
       bytes: output,
       outWidth: request.srcWidth * request.scaleFactor,
       outHeight: request.srcHeight * request.scaleFactor,
-      backend: MlBackend.cpu,
+      backend: MlBackend.bicubicCpu,
     );
   }
 }

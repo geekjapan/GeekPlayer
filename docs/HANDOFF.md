@@ -250,7 +250,7 @@ v0.1 はリリース済み、**v0.2 の主要スコープ（§5 の 7 changes）
 ### 次の候補
 
 1. **v1.0 AI 高画質化（[ADR-0007](adr/0007-ai-upscaling-runtime-strategy.md) のシーケンス）** — ランタイム戦略は ADR-0007 で **accepted**（ONNX Runtime + Execution Provider 一本化、preferred/effective backend 分離、bicubic CPU を floor、**画像のみ・当面 Experimental 既定 OFF**、モデルは opt-in 初回 DL）。後続 change:
-   1. `refactor-ml-runtime-effective-backend` — `MlRuntime` を preferred/effective + 非同期 probe + フォールバックへ再構成（コードのみ・検証可能）。
+   1. ✅ `refactor-ml-runtime-effective-backend` — `MlRuntime` を preferred/effective + 非同期 `probe()` + フォールバック（preferred EP → ortCpu → bicubicCpu）へ再構成済み。`MlBackend` は EP 志向（coremlEp/nnapiEp/directmlEp/ortCpu/bicubicCpu）。実験フラグ OFF / モデル未取得時は bicubicCpu。
    2. `add-onnx-upscaler-runtime` — ORT 統合 + CPU EP の `OnnxImageUpscaler`（軽量モデルで CI 検証、要 ORT パッケージ全 OS ビルド spike）。
    3. `add-upscale-model-distribution` — `ModelRepository`（初回 DL/SHA 検証/キャッシュ）+ 設定 UI。
    4. `enable-gpu-execution-providers` — CoreML/NNAPI/DirectML EP の段階有効化。

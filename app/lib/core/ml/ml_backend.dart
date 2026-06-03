@@ -1,17 +1,17 @@
-/// Hardware accelerator backend used for ML inference.
+/// Execution-provider-oriented backend used for ML image upscaling (ADR-0007).
 enum MlBackend {
-  /// CoreML (iOS / macOS).
-  coreml,
+  /// ONNX Runtime CoreML execution provider (iOS / macOS).
+  coremlEp,
 
-  /// NNAPI (Android).
-  nnapi,
+  /// ONNX Runtime NNAPI execution provider (Android).
+  nnapiEp,
 
-  /// ONNX Runtime (Linux and cross-platform fallback).
-  onnxRuntime,
+  /// ONNX Runtime DirectML execution provider (Windows).
+  directmlEp,
 
-  /// TensorRT (Windows).
-  tensorRt,
+  /// ONNX Runtime CPU execution provider (cross-platform).
+  ortCpu,
 
-  /// Pure-CPU fallback — no hardware acceleration.
-  cpu,
+  /// Pure-Dart bicubic CPU upscaler — the universal floor, always available.
+  bicubicCpu,
 }
