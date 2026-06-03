@@ -1,12 +1,14 @@
-## Capability: auto-update
+# auto-update Specification
 
-Defines how GeekPlayer checks for newer releases and delivers an opt-in download prompt to the user.
+## Purpose
 
-## ADDED Requirements
+Defines how GeekPlayer checks GitHub Releases for a newer version and delivers an opt-in, dismissible update banner in the Settings About section. Check errors are suppressed from the UI, and the checker is injectable for deterministic testing.
 
-### Version Check
+## Requirements
 
-The app checks for newer releases by querying the GitHub Releases API and comparing the result against the running version.
+### Requirement: App checks GitHub Releases for a newer version
+
+The app SHALL query `https://api.github.com/repos/geekjapan/GeekPlayer/releases/latest` when the Settings screen loads, compare `tag_name` against the running version from `package_info_plus`, and return an `UpdateAvailable` or `UpToDate` result.
 
 #### Scenario: update available
 
@@ -20,15 +22,15 @@ Given the running version is `0.2.0` and GitHub Releases returns `tag_name: "v0.
 when `checkForUpdate("0.2.0")` is called,
 then it returns `UpToDate`.
 
-#### Scenario: malformed tag name
+#### Scenario: malformed tag name treated as up to date
 
 Given GitHub Releases returns `tag_name: "release/0.2.0"` (non-semver),
 when `checkForUpdate("0.1.0")` is called,
 then it returns `UpToDate` (silent no-op).
 
-### Update Delivery
+### Requirement: App shows an update banner in the Settings About section
 
-The app surfaces an update banner in the Settings About section when an update is available.
+When an update is available, the app MUST render an `UpdateBanner` in the Settings About section with the available version, a "Download" action, and a "Dismiss" action.
 
 #### Scenario: banner shown on update available
 
@@ -48,33 +50,33 @@ Given the update banner is visible,
 when the user taps "Download",
 then `url_launcher` opens the `releaseUrl` in an external browser.
 
-### Error Handling
+### Requirement: Update check errors are silently suppressed in the UI
 
-Network and HTTP errors are mapped to existing `AppError` variants and suppressed from the UI.
+Network and HTTP errors MUST be mapped to existing `AppError` variants, logged, and SHALL NOT show a banner.
 
-#### Scenario: network unreachable
+#### Scenario: network unreachable — no banner shown
 
 Given the device is offline or DNS fails,
 when `checkForUpdate` is called,
 then it throws `NetworkUnreachableError` and no banner is shown.
 
-#### Scenario: upstream server error
+#### Scenario: upstream server error — no banner shown
 
 Given GitHub Releases returns HTTP 500,
 when `checkForUpdate` is called,
 then it throws `UpstreamUnavailableError(statusCode: 500)` and no banner is shown.
 
-### Testability
+### Requirement: UpdateChecker is injectable for testing
 
-The checker is an abstract interface that can be overridden in tests.
+`UpdateChecker` SHALL be an abstract interface overridable via Riverpod so tests can inject deterministic fake implementations.
 
-#### Scenario: fake checker returns update available
+#### Scenario: fake checker configured with update available
 
 Given a `FakeUpdateChecker` configured to return `UpdateAvailable`,
 when it is injected via `ProviderScope(overrides: [...])`,
-then the `UpdateBanner` widget renders the banner.
+then the `UpdateBanner` widget renders.
 
-#### Scenario: fake checker returns up to date
+#### Scenario: fake checker configured as up to date
 
 Given a `FakeUpdateChecker` configured to return `UpToDate`,
 when it is injected via `ProviderScope(overrides: [...])`,
