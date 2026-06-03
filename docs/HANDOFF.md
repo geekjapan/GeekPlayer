@@ -83,7 +83,8 @@ GeekPlayer/
 │   │   ├── 0002-hybrid-media-engine.md
 │   │   ├── 0003-narou-content-fetch-policy.md
 │   │   ├── 0004-home-screen-section-registry.md
-│   │   └── 0006-ios-media-engine-distribution-policy.md  # accepted
+│   │   ├── 0006-ios-media-engine-distribution-policy.md  # accepted
+│   │   └── 0007-ai-upscaling-runtime-strategy.md         # accepted
 │   ├── roadmap.md                    # v0.1 / v0.2 / v1.0
 │   └── HANDOFF.md                    # このファイル
 ├── openspec/
@@ -248,8 +249,12 @@ v0.1 はリリース済み、**v0.2 の主要スコープ（§5 の 7 changes）
 
 ### 次の候補
 
-1. **v1.0 AI 高画質化の GPU/ネイティブバックエンド** — `core/ml/` の `ImageUpscaler` seam（`CpuImageUpscaler` が bicubic で実装済み・既定）に CoreML/NNAPI/ONNX/TensorRT の GPU バックエンドと Real-ESRGAN/waifu2x モデルを段階導入（roadmap §v1.0）。
-2. **動画 AI**（Anime4K リアルタイム / Real-ESRGAN オフライン / RIFE 補間）。
+1. **v1.0 AI 高画質化（[ADR-0007](adr/0007-ai-upscaling-runtime-strategy.md) のシーケンス）** — ランタイム戦略は ADR-0007 で **accepted**（ONNX Runtime + Execution Provider 一本化、preferred/effective backend 分離、bicubic CPU を floor、**画像のみ・当面 Experimental 既定 OFF**、モデルは opt-in 初回 DL）。後続 change:
+   1. `refactor-ml-runtime-effective-backend` — `MlRuntime` を preferred/effective + 非同期 probe + フォールバックへ再構成（コードのみ・検証可能）。
+   2. `add-onnx-upscaler-runtime` — ORT 統合 + CPU EP の `OnnxImageUpscaler`（軽量モデルで CI 検証、要 ORT パッケージ全 OS ビルド spike）。
+   3. `add-upscale-model-distribution` — `ModelRepository`（初回 DL/SHA 検証/キャッシュ）+ 設定 UI。
+   4. `enable-gpu-execution-providers` — CoreML/NNAPI/DirectML EP の段階有効化。
+2. **動画 AI**（Anime4K リアルタイム / Real-ESRGAN オフライン / RIFE 補間）— `ImageUpscaler` 対象外の別トラック・別 ADR。
 3. **iOS 配布の本番化** — 署名証明書/プロビジョニング整備（ビルド + CI smoke は `add-platform-ios` で完了）。
 4. **auto-update の Android file-provider 対応** — Android で `file://` install handoff に AndroidManifest の file-provider 宣言が必要（既知の残課題、§7 参照）。
 
