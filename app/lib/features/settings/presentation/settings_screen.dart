@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../domain/app_settings.dart';
 import 'app_settings_notifier.dart';
 import 'sections/about_section.dart';
@@ -44,15 +45,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     final AsyncValue<AppSettings> async = ref.watch(appSettingsProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('設定')),
+      appBar: AppBar(title: Text(l10n.settingsTitle)),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (Object e, StackTrace st) => Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
-            child: Text('設定の読み込みに失敗しました: $e'),
+            child: Text(l10n.settingsLoadError(e)),
           ),
         ),
         data: (_) => ListView(
@@ -121,11 +123,12 @@ class NextLaunchHelper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     final TextStyle? style = Theme.of(context).textTheme.bodySmall;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
       child: Text(
-        '変更は次回起動から有効になります',
+        l10n.settingsNextLaunchHelper,
         style: style?.copyWith(color: Theme.of(context).hintColor),
       ),
     );

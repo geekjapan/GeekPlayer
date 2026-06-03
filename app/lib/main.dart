@@ -68,7 +68,6 @@ class GeekPlayerApp extends ConsumerWidget {
       scaffoldMessengerKey: messengerKey,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      locale: const Locale('ja'),
       // Wrap the home in a ConsumerWidget that checks consent on first
       // frame and shows the dialog modally if no decision exists yet.
       // Spec `site-consent` "First-launch consent dialog".

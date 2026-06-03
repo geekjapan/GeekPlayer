@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../l10n/app_localizations.dart';
 import 'license_detail_screen.dart';
 
 /// LGPL notice section for libmpv. Rendered at the top of the
@@ -21,6 +22,7 @@ class LgplNoticeSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     final TextTheme t = Theme.of(context).textTheme;
     final Color accent = Theme.of(context).colorScheme.primary;
     return Card(
@@ -36,55 +38,39 @@ class LgplNoticeSection extends StatelessWidget {
               children: <Widget>[
                 Icon(Icons.gavel, color: accent),
                 const SizedBox(width: 8),
-                Text('LGPL-2.1+ 通知 (libmpv)', style: t.titleMedium),
+                Text(l10n.lgplNoticeTitle, style: t.titleMedium),
               ],
             ),
             const SizedBox(height: 8),
-            const SelectableText(
-              'GeekPlayer は動画再生エンジンとして libmpv を採用しており、'
-              'media_kit を介して 動的リンク で利用しています。'
-              'libmpv は LGPL-2.1+ で配布されています。',
-            ),
+            SelectableText(l10n.lgplNoticeBody),
             const SizedBox(height: 8),
-            const SelectableText(
-              '利用者は LGPL-2.1+ の規定により、'
-              'libmpv 部分のみを独立に修正・再構築 し、'
-              'GeekPlayer 本体を再ビルドせずに 差し替える権利 を持ちます。'
-              '差し替えた libmpv は LGPL の条件下で再配布できます。',
-            ),
+            SelectableText(l10n.lgplNoticeRights),
             const SizedBox(height: 12),
-            Text('差し替え手順 (概要)', style: t.titleSmall),
+            Text(l10n.lgplNoticeReplacementTitle, style: t.titleSmall),
             const SizedBox(height: 4),
-            const SelectableText(
-              '・macOS: アプリバンドル内 Contents/Frameworks/ 配下の '
-              'Mpv.framework / libmpv.dylib を差し替え\n'
-              '・Windows: GeekPlayer.exe と同じディレクトリの '
-              'mpv-2.dll を差し替え\n'
-              '・Android: APK 内 lib/<abi>/libmpv.so を差し替えた上で '
-              'APK を再署名',
-            ),
+            SelectableText(l10n.lgplNoticeReplacementBody),
             const SizedBox(height: 8),
             _InlineLink(
               key: const Key('lgpl-upstream-link'),
-              label: '上流ソース (mpv-player/mpv)',
+              label: l10n.lgplUpstreamLink,
               icon: Icons.open_in_new,
               onTap: () => _launch(context, _upstreamUrl),
             ),
             _InlineLink(
               key: const Key('lgpl-third-party-link'),
-              label: '詳細は THIRD_PARTY_NOTICES を参照',
+              label: l10n.lgplThirdPartyLink,
               icon: Icons.open_in_new,
               onTap: () => _launch(context, _thirdPartyNoticesUrl),
             ),
             _InlineLink(
               key: const Key('lgpl-full-text-link'),
-              label: 'LGPL-2.1 全文',
+              label: l10n.lgplFullTextLink,
               icon: Icons.chevron_right,
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute<void>(
-                    builder: (_) => const LicenseDetailScreen(
-                      title: 'LGPL-2.1 全文',
+                    builder: (_) => LicenseDetailScreen(
+                      title: l10n.lgplLicenseScreenTitle,
                       assetPath: 'assets/legal/LGPL-2.1.txt',
                     ),
                   ),
@@ -98,6 +84,7 @@ class LgplNoticeSection extends StatelessWidget {
   }
 
   static Future<void> _launch(BuildContext context, String url) async {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     final Uri uri = Uri.parse(url);
     try {
       final bool ok = await launchUrl(
@@ -107,13 +94,15 @@ class LgplNoticeSection extends StatelessWidget {
       if (!ok && context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('リンクを開けませんでした')));
+        ).showSnackBar(SnackBar(content: Text(l10n.aboutLinkOpenError)));
       }
     } on Object {
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('リンクを開けませんでした')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.aboutLinkOpenError),
+          ),
+        );
       }
     }
   }

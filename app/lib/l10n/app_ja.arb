@@ -59,5 +59,651 @@
   "errorBoundaryRestartPrompt": "アプリを再起動してください",
   "@errorBoundaryRestartPrompt": {
     "description": "Shown by the release-mode ErrorBoundary fallback when widget build fails."
+  },
+  "settingsTitle": "設定",
+  "@settingsTitle": {
+    "description": "Title of the Settings screen app bar."
+  },
+  "settingsLoadError": "設定の読み込みに失敗しました: {error}",
+  "@settingsLoadError": {
+    "description": "Shown in the Settings screen body when AppSettings fails to load.",
+    "placeholders": {
+      "error": {
+        "type": "Object",
+        "example": "DatabaseException"
+      }
+    }
+  },
+  "settingsSectionDisplay": "表示",
+  "@settingsSectionDisplay": {
+    "description": "Section title for the Display settings section."
+  },
+  "settingsSectionPlayback": "再生",
+  "@settingsSectionPlayback": {
+    "description": "Section title for the Playback settings section."
+  },
+  "settingsSectionVideo": "動画",
+  "@settingsSectionVideo": {
+    "description": "Section title for the Video settings section."
+  },
+  "settingsSectionAudio": "音楽",
+  "@settingsSectionAudio": {
+    "description": "Section title for the Audio settings section."
+  },
+  "settingsSectionNovel": "小説",
+  "@settingsSectionNovel": {
+    "description": "Section title for the Novel settings section."
+  },
+  "settingsSectionLibrary": "ライブラリ",
+  "@settingsSectionLibrary": {
+    "description": "Section title for the Library settings section."
+  },
+  "settingsSectionCache": "キャッシュ",
+  "@settingsSectionCache": {
+    "description": "Section title for the Cache settings section."
+  },
+  "settingsSectionOnlineServices": "オンラインサービス",
+  "@settingsSectionOnlineServices": {
+    "description": "Section title for the Online Services settings section."
+  },
+  "settingsSectionR18": "R18",
+  "@settingsSectionR18": {
+    "description": "Section title for the R18 settings section."
+  },
+  "settingsNextLaunchHelper": "変更は次回起動から有効になります",
+  "@settingsNextLaunchHelper": {
+    "description": "Hint text shown under settings tiles whose change takes effect only on next launch."
+  },
+  "settingsThemeSystem": "システム",
+  "@settingsThemeSystem": {
+    "description": "Label for the system/auto theme mode option."
+  },
+  "settingsThemeLight": "ライト",
+  "@settingsThemeLight": {
+    "description": "Label for the light theme mode option."
+  },
+  "settingsThemeDark": "ダーク",
+  "@settingsThemeDark": {
+    "description": "Label for the dark theme mode option."
+  },
+  "settingsAccentColorPlaceholder": "アクセントカラー",
+  "@settingsAccentColorPlaceholder": {
+    "description": "Label for the accent color setting (not yet implemented)."
+  },
+  "settingsAccentColorComingSoon": "v0.2 で対応",
+  "@settingsAccentColorComingSoon": {
+    "description": "Chip label indicating the accent color setting is coming in v0.2."
+  },
+  "settingsDefaultPlaybackSpeed": "デフォルト再生速度",
+  "@settingsDefaultPlaybackSpeed": {
+    "description": "Label for the default playback speed setting tile."
+  },
+  "settingsSubtitlesByDefault": "字幕を最初から表示する",
+  "@settingsSubtitlesByDefault": {
+    "description": "Label for the subtitles-by-default switch."
+  },
+  "settingsAudioBackgroundPlayback": "バックグラウンド再生",
+  "@settingsAudioBackgroundPlayback": {
+    "description": "Label for the audio background playback switch."
+  },
+  "settingsAudioNotificationPersistent": "通知を継続表示",
+  "@settingsAudioNotificationPersistent": {
+    "description": "Label for the audio notification persistent switch."
+  },
+  "settingsNovelWritingMode": "書字方向",
+  "@settingsNovelWritingMode": {
+    "description": "Label for the novel writing mode (vertical/horizontal) setting tile."
+  },
+  "settingsNovelWritingModeVertical": "縦書き",
+  "@settingsNovelWritingModeVertical": {
+    "description": "Label for the vertical writing mode option."
+  },
+  "settingsNovelWritingModeHorizontal": "横書き",
+  "@settingsNovelWritingModeHorizontal": {
+    "description": "Label for the horizontal writing mode option."
+  },
+  "settingsNovelFontSize": "文字サイズ: {size} sp",
+  "@settingsNovelFontSize": {
+    "description": "Label for the novel font size tile, interpolating the current size.",
+    "placeholders": {
+      "size": {
+        "type": "String",
+        "example": "16"
+      }
+    }
+  },
+  "settingsNovelLineHeight": "行間: {height}",
+  "@settingsNovelLineHeight": {
+    "description": "Label for the novel line height tile, interpolating the current value.",
+    "placeholders": {
+      "height": {
+        "type": "String",
+        "example": "1.5"
+      }
+    }
+  },
+  "settingsNovelFont": "フォント",
+  "@settingsNovelFont": {
+    "description": "Label for the novel font family setting tile."
+  },
+  "settingsNovelBgLight": "背景色 (ライト)",
+  "@settingsNovelBgLight": {
+    "description": "Label for the novel background color (light mode) setting tile."
+  },
+  "settingsNovelBgDark": "背景色 (ダーク)",
+  "@settingsNovelBgDark": {
+    "description": "Label for the novel background color (dark mode) setting tile."
+  },
+  "settingsRecentItemsCap": "\"最近開いた\" の上限",
+  "@settingsRecentItemsCap": {
+    "description": "Label for the recent items cap setting tile."
+  },
+  "settingsClearHistory": "履歴をすべてクリア",
+  "@settingsClearHistory": {
+    "description": "Label for the clear-all-history settings tile."
+  },
+  "settingsClearHistoryConfirmTitle": "履歴をすべて削除しますか?",
+  "@settingsClearHistoryConfirmTitle": {
+    "description": "Title of the confirmation dialog for clearing all history."
+  },
+  "settingsClearHistoryIrreversible": "この操作は取り消せません。",
+  "@settingsClearHistoryIrreversible": {
+    "description": "Body text in destructive confirmation dialogs stating the action cannot be undone."
+  },
+  "settingsCacheSizeLabel": "キャッシュサイズ",
+  "@settingsCacheSizeLabel": {
+    "description": "Label for the cache size display tile."
+  },
+  "settingsCacheCapMb": "キャッシュ上限 (MB)",
+  "@settingsCacheCapMb": {
+    "description": "Label for the cache cap in MB setting tile."
+  },
+  "settingsCacheCapUnlimited": "無制限",
+  "@settingsCacheCapUnlimited": {
+    "description": "Label for the unlimited cache cap choice chip."
+  },
+  "settingsCacheOverBanner": "キャッシュが上限を超えています",
+  "@settingsCacheOverBanner": {
+    "description": "Banner text shown when novel cache exceeds the configured cap."
+  },
+  "settingsCacheDeleteOldest": "古い順に削除",
+  "@settingsCacheDeleteOldest": {
+    "description": "Button label to delete oldest cache entries until under the cap."
+  },
+  "settingsCacheClearSite": "{site} のキャッシュをクリア",
+  "@settingsCacheClearSite": {
+    "description": "Label for the per-site cache clear tile.",
+    "placeholders": {
+      "site": {
+        "type": "String",
+        "example": "カクヨム"
+      }
+    }
+  },
+  "settingsCacheClearSiteConfirmTitle": "{site} のキャッシュを削除しますか?",
+  "@settingsCacheClearSiteConfirmTitle": {
+    "description": "Title of the confirmation dialog for clearing a site's cache.",
+    "placeholders": {
+      "site": {
+        "type": "String",
+        "example": "カクヨム"
+      }
+    }
+  },
+  "settingsCacheClearAll": "すべてクリア",
+  "@settingsCacheClearAll": {
+    "description": "Label for the clear-all-cache tile."
+  },
+  "settingsCacheClearAllConfirmTitle": "すべての本文キャッシュを削除しますか?",
+  "@settingsCacheClearAllConfirmTitle": {
+    "description": "Title of the confirmation dialog for clearing all novel body cache."
+  },
+  "settingsOnlineServicesDisclosure": "本アプリは個人利用目的でなろう / ノクターン系 / カクヨムから 本文を取得します。各サイトの利用規約に同意した範囲でのみ 利用してください。",
+  "@settingsOnlineServicesDisclosure": {
+    "description": "ADR-0001 permanent disclosure text shown at the top of the Online Services section."
+  },
+  "settingsRevokeKeepCache": "残す",
+  "@settingsRevokeKeepCache": {
+    "description": "Button label to keep the cache when revoking site consent."
+  },
+  "settingsRevokeDeleteCache": "削除する",
+  "@settingsRevokeDeleteCache": {
+    "description": "Button label to delete the cache when revoking site consent."
+  },
+  "settingsRevokeCachePrompt": "本文キャッシュ ({sizeMb} MB) も削除しますか?",
+  "@settingsRevokeCachePrompt": {
+    "description": "Body of the dialog asking whether to delete cache when revoking consent.",
+    "placeholders": {
+      "sizeMb": {
+        "type": "String",
+        "example": "1.2"
+      }
+    }
+  },
+  "settingsR18Status": "年齢確認の状態",
+  "@settingsR18Status": {
+    "description": "Label for the R18 age-gate status display tile."
+  },
+  "settingsR18StatusGranted": "同意済み",
+  "@settingsR18StatusGranted": {
+    "description": "R18 age-gate status when consent has been granted."
+  },
+  "settingsR18StatusDenied": "未同意",
+  "@settingsR18StatusDenied": {
+    "description": "R18 age-gate status when consent has not been granted."
+  },
+  "settingsR18Reset": "年齢確認をやり直す",
+  "@settingsR18Reset": {
+    "description": "Label for the R18 age-gate reset tile."
+  },
+  "settingsR18ResetConfirmTitle": "年齢確認をやり直しますか?",
+  "@settingsR18ResetConfirmTitle": {
+    "description": "Title of the confirmation dialog for resetting R18 age-gate consent."
+  },
+  "settingsR18ResetConfirmBody": "次回 R18 サイトを開く際に確認画面が表示されます。",
+  "@settingsR18ResetConfirmBody": {
+    "description": "Body of the R18 age-gate reset confirmation dialog."
+  },
+  "actionCancel": "キャンセル",
+  "@actionCancel": {
+    "description": "Generic cancel button label used in confirmation dialogs."
+  },
+  "actionDelete": "削除する",
+  "@actionDelete": {
+    "description": "Generic destructive confirm button label used in confirmation dialogs."
+  },
+  "actionReset": "リセットする",
+  "@actionReset": {
+    "description": "Button label used in the R18 reset confirmation dialog."
+  },
+  "aboutTitle": "アプリ情報",
+  "@aboutTitle": {
+    "description": "Title of the About screen app bar."
+  },
+  "aboutVersion": "バージョン",
+  "@aboutVersion": {
+    "description": "Label for the version row in the About / Settings About section."
+  },
+  "aboutBuildNumber": "ビルド番号",
+  "@aboutBuildNumber": {
+    "description": "Label for the build number row in the About screen."
+  },
+  "aboutCommit": "コミット",
+  "@aboutCommit": {
+    "description": "Label for the commit SHA row in the About screen."
+  },
+  "aboutApacheLicenseTitle": "Apache-2.0 ライセンス",
+  "@aboutApacheLicenseTitle": {
+    "description": "Title text for the Apache-2.0 license notice card in the About screen."
+  },
+  "aboutLinkGithub": "GitHub リポジトリ",
+  "@aboutLinkGithub": {
+    "description": "List tile label for the GitHub repository link."
+  },
+  "aboutLinkRoadmap": "ロードマップ",
+  "@aboutLinkRoadmap": {
+    "description": "List tile label for the roadmap link."
+  },
+  "aboutLinkLicense": "ライセンス全文",
+  "@aboutLinkLicense": {
+    "description": "List tile label for the full license text link."
+  },
+  "aboutOssLicenses": "OSS ライセンス",
+  "@aboutOssLicenses": {
+    "description": "List tile label for the OSS licenses screen entry."
+  },
+  "aboutLinkOpenError": "リンクを開けませんでした",
+  "@aboutLinkOpenError": {
+    "description": "SnackBar message shown when a URL cannot be launched."
+  },
+  "aboutLicenseScreenTitle": "GeekPlayer — ライセンス全文",
+  "@aboutLicenseScreenTitle": {
+    "description": "App bar title for the bundled full-license detail screen."
+  },
+  "aboutSettingsLicense": "ライセンス",
+  "@aboutSettingsLicense": {
+    "description": "Label for the license tile in the Settings About section."
+  },
+  "aboutSettingsOssNotices": "OSS Notices",
+  "@aboutSettingsOssNotices": {
+    "description": "Label for the OSS Notices tile in the Settings About section."
+  },
+  "ossLicensesScreenTitle": "OSS ライセンス",
+  "@ossLicensesScreenTitle": {
+    "description": "App bar title for the OSS license list screen."
+  },
+  "ossLicensesApacheNoticeBody": "GeekPlayer 本体は Apache License 2.0 で配布されています。",
+  "@ossLicensesApacheNoticeBody": {
+    "description": "Body text in the Apache-2.0 NOTICE card on the OSS licenses screen."
+  },
+  "lgplNoticeTitle": "LGPL-2.1+ 通知 (libmpv)",
+  "@lgplNoticeTitle": {
+    "description": "Card title for the LGPL notice section on the OSS licenses screen."
+  },
+  "lgplNoticeBody": "GeekPlayer は動画再生エンジンとして libmpv を採用しており、media_kit を介して 動的リンク で利用しています。libmpv は LGPL-2.1+ で配布されています。",
+  "@lgplNoticeBody": {
+    "description": "First paragraph of the LGPL notice explaining how libmpv is used."
+  },
+  "lgplNoticeRights": "利用者は LGPL-2.1+ の規定により、libmpv 部分のみを独立に修正・再構築 し、GeekPlayer 本体を再ビルドせずに 差し替える権利 を持ちます。差し替えた libmpv は LGPL の条件下で再配布できます。",
+  "@lgplNoticeRights": {
+    "description": "Second paragraph of the LGPL notice explaining user replacement rights."
+  },
+  "lgplNoticeReplacementTitle": "差し替え手順 (概要)",
+  "@lgplNoticeReplacementTitle": {
+    "description": "Sub-title for the replacement instructions in the LGPL notice."
+  },
+  "lgplNoticeReplacementBody": "・macOS: アプリバンドル内 Contents/Frameworks/ 配下の Mpv.framework / libmpv.dylib を差し替え\n・Windows: GeekPlayer.exe と同じディレクトリの mpv-2.dll を差し替え\n・Android: APK 内 lib/<abi>/libmpv.so を差し替えた上で APK を再署名",
+  "@lgplNoticeReplacementBody": {
+    "description": "Per-platform replacement instructions for libmpv."
+  },
+  "lgplUpstreamLink": "上流ソース (mpv-player/mpv)",
+  "@lgplUpstreamLink": {
+    "description": "Link label for the libmpv upstream source."
+  },
+  "lgplThirdPartyLink": "詳細は THIRD_PARTY_NOTICES を参照",
+  "@lgplThirdPartyLink": {
+    "description": "Link label for THIRD_PARTY_NOTICES document."
+  },
+  "lgplFullTextLink": "LGPL-2.1 全文",
+  "@lgplFullTextLink": {
+    "description": "Link label for the bundled LGPL-2.1 full text."
+  },
+  "lgplLicenseScreenTitle": "LGPL-2.1 全文",
+  "@lgplLicenseScreenTitle": {
+    "description": "App bar title for the LGPL-2.1 full-text license detail screen."
+  },
+  "consentDialogTitle": "オンライン小説サイトへの同意",
+  "@consentDialogTitle": {
+    "description": "Title of the first-launch multi-site consent dialog."
+  },
+  "consentDialogBody": "本アプリは以下のサイトと通信して小説を取得します。ADR-0001 / ADR-0003 に従い、能動キャッシュ (利用者が「ライブラリに追加」を選択した作品のみ) を行い、各サイトのレート制限 (カクヨムは 1 req / 2 s) と robots.txt を尊重します。\n\nカクヨム本文は HTML をパースして取得します。サイト構造の変更で取得が失敗することがあります。",
+  "@consentDialogBody": {
+    "description": "Body of the first-launch consent dialog explaining data access policy."
+  },
+  "consentPolicyUpdatedBanner": "ポリシーが更新されました",
+  "@consentPolicyUpdatedBanner": {
+    "description": "Banner shown in the consent dialog when re-prompted due to a policy update."
+  },
+  "consentDenyAll": "すべて拒否",
+  "@consentDenyAll": {
+    "description": "Button label to deny consent for all sites in the consent dialog."
+  },
+  "consentConfirm": "決定",
+  "@consentConfirm": {
+    "description": "Button label to confirm the consent choices in the consent dialog."
+  },
+  "kakuyomuConsentDialogTitle": "カクヨムへの同意",
+  "@kakuyomuConsentDialogTitle": {
+    "description": "Title of the Kakuyomu-specific consent dialog."
+  },
+  "kakuyomuConsentDialogIntro": "本アプリは、利用者の同意のもとでカクヨム公式サイトと通信して小説情報および本文を取得します。下記の運用規範に沿って動作します:",
+  "@kakuyomuConsentDialogIntro": {
+    "description": "Introductory sentence in the Kakuyomu consent dialog."
+  },
+  "kakuyomuConsentBullet1": "個人利用に限定。大規模クロール / 受動的ミラーリングは行いません。",
+  "@kakuyomuConsentBullet1": {
+    "description": "First bullet point in the Kakuyomu consent dialog."
+  },
+  "kakuyomuConsentBullet2": "能動キャッシュのみ。ユーザーが「Library に追加」した作品の本文だけを保存します。",
+  "@kakuyomuConsentBullet2": {
+    "description": "Second bullet point in the Kakuyomu consent dialog."
+  },
+  "kakuyomuConsentBullet3": "カクヨムへのアクセスは 1 リクエスト / 2 秒、並列度 1 に制限されます。",
+  "@kakuyomuConsentBullet3": {
+    "description": "Third bullet point in the Kakuyomu consent dialog."
+  },
+  "kakuyomuConsentBullet4": "robots.txt の Disallow を 24 時間キャッシュ付きで尊重します。",
+  "@kakuyomuConsentBullet4": {
+    "description": "Fourth bullet point in the Kakuyomu consent dialog."
+  },
+  "kakuyomuConsentBullet5": "User-Agent に GeekPlayer のバージョンと連絡先 URL を明示します。",
+  "@kakuyomuConsentBullet5": {
+    "description": "Fifth bullet point in the Kakuyomu consent dialog."
+  },
+  "kakuyomuConsentBullet6": "429 / 503 を受けたら指数バックオフ (最大 5 分) で再試行し、6 回で諦めます。",
+  "@kakuyomuConsentBullet6": {
+    "description": "Sixth bullet point in the Kakuyomu consent dialog."
+  },
+  "kakuyomuConsentFooter": "詳細は ADR-0001 / README のカクヨム機能の注意事項を参照してください。将来、カクヨム公式 ToS が自動収集を明示禁止した場合は、本機能を即座に停止する方針です。",
+  "@kakuyomuConsentFooter": {
+    "description": "Footer text in the Kakuyomu consent dialog."
+  },
+  "kakuyomuConsentDecline": "同意しない",
+  "@kakuyomuConsentDecline": {
+    "description": "Button label to decline Kakuyomu consent."
+  },
+  "kakuyomuConsentAccept": "同意する",
+  "@kakuyomuConsentAccept": {
+    "description": "Button label to accept Kakuyomu consent."
+  },
+  "kakuyomuConsentRequiredTitle": "カクヨム",
+  "@kakuyomuConsentRequiredTitle": {
+    "description": "App bar title for the KakuyomuConsentRequiredScreen."
+  },
+  "kakuyomuConsentRequiredMessage": "カクヨムへの同意が必要です。",
+  "@kakuyomuConsentRequiredMessage": {
+    "description": "Message on the KakuyomuConsentRequiredScreen."
+  },
+  "kakuyomuConsentRequiredShowDialog": "同意ダイアログを表示",
+  "@kakuyomuConsentRequiredShowDialog": {
+    "description": "Button label to show the consent dialog from the consent required screen."
+  },
+  "kakuyomuConsentRequiredOpenSettings": "設定を開く",
+  "@kakuyomuConsentRequiredOpenSettings": {
+    "description": "Button label to open settings from the consent required screen."
+  },
+  "novelHomeSectionTitle": "オンライン小説 Library",
+  "@novelHomeSectionTitle": {
+    "description": "Title heading for the online novel library home section."
+  },
+  "novelHomeSectionSettingsTooltip": "オンライン小説設定",
+  "@novelHomeSectionSettingsTooltip": {
+    "description": "Tooltip for the settings icon button in the novel home section."
+  },
+  "novelLibraryEmpty": "Library に小説はまだありません。",
+  "@novelLibraryEmpty": {
+    "description": "Placeholder text shown when the novel library is empty."
+  },
+  "novelConsentDisabledBanner": "同意が無効化されています — 設定で再同意",
+  "@novelConsentDisabledBanner": {
+    "description": "Chip label shown in the library grid when consent for a site is disabled."
+  },
+  "siteFilterAll": "すべて",
+  "@siteFilterAll": {
+    "description": "Label for the 'All sites' filter chip in the novel library."
+  },
+  "bookHomeSectionTitle": "ローカル書籍",
+  "@bookHomeSectionTitle": {
+    "description": "Title heading for the local book library home section."
+  },
+  "bookHomeSectionEmpty": "書籍はまだありません。「追加」から PDF または EPUB を開いてください。",
+  "@bookHomeSectionEmpty": {
+    "description": "Placeholder shown in the book home section when no books have been imported."
+  },
+  "bookHomeSectionAddTooltip": "書籍を追加",
+  "@bookHomeSectionAddTooltip": {
+    "description": "Tooltip for the add-book icon button in the book home section."
+  },
+  "bookReaderTitle": "書籍リーダー",
+  "@bookReaderTitle": {
+    "description": "App bar title for the book reader screen when no specific title is available."
+  },
+  "bookReaderPageOf": "{current} / {total} ページ",
+  "@bookReaderPageOf": {
+    "description": "Page indicator shown in the book reader. Interpolates current page and total pages.",
+    "placeholders": {
+      "current": {
+        "type": "int",
+        "example": "3"
+      },
+      "total": {
+        "type": "int",
+        "example": "120"
+      }
+    }
+  },
+  "bookReaderChapterOf": "{current} / {total} 章",
+  "@bookReaderChapterOf": {
+    "description": "Chapter indicator shown in the EPUB reader.",
+    "placeholders": {
+      "current": {
+        "type": "int",
+        "example": "2"
+      },
+      "total": {
+        "type": "int",
+        "example": "15"
+      }
+    }
+  },
+  "bookBookmarkAdd": "ブックマーク追加",
+  "@bookBookmarkAdd": {
+    "description": "Tooltip / label for the add-bookmark button in the book reader."
+  },
+  "bookBookmarkList": "ブックマーク一覧",
+  "@bookBookmarkList": {
+    "description": "Title of the bookmark list sheet/screen."
+  },
+  "bookBookmarkEmpty": "ブックマークはありません。",
+  "@bookBookmarkEmpty": {
+    "description": "Placeholder shown when the bookmark list is empty."
+  },
+  "bookBookmarkDelete": "削除",
+  "@bookBookmarkDelete": {
+    "description": "Label for the delete button on a bookmark tile."
+  },
+  "bookBookmarkLabelHint": "ブックマーク名",
+  "@bookBookmarkLabelHint": {
+    "description": "Hint text for the bookmark label input field."
+  },
+  "bookOpenPickerTitle": "書籍を選択",
+  "@bookOpenPickerTitle": {
+    "description": "Title of the file picker dialog for selecting a book file."
+  },
+  "bookFileNotFoundMessage": "ファイルが見つかりません。移動・削除された可能性があります。",
+  "@bookFileNotFoundMessage": {
+    "description": "Message shown when a book file is no longer reachable."
+  },
+  "bookFileNotFoundReimport": "再インポート",
+  "@bookFileNotFoundReimport": {
+    "description": "Button label to re-import a missing book file."
+  },
+  "bookDeleteConfirmTitle": "書籍を削除しますか?",
+  "@bookDeleteConfirmTitle": {
+    "description": "Title of the confirmation dialog for deleting a book record."
+  },
+  "bookDeleteConfirmBody": "読書の記録とブックマークがすべて削除されます。ファイル本体は削除されません。",
+  "@bookDeleteConfirmBody": {
+    "description": "Body of the book-delete confirmation dialog."
+  },
+  "mangaHomeSectionTitle": "ローカルマンガ",
+  "@mangaHomeSectionTitle": {
+    "description": "Title heading for the local manga library home section."
+  },
+  "mangaHomeSectionEmpty": "マンガはまだありません。「追加」から ZIP または CBZ を開いてください。",
+  "@mangaHomeSectionEmpty": {
+    "description": "Placeholder shown in the manga home section when no archives have been imported."
+  },
+  "mangaHomeSectionAddTooltip": "マンガを追加",
+  "@mangaHomeSectionAddTooltip": {
+    "description": "Tooltip for the add-manga icon button in the manga home section."
+  },
+  "mangaViewerTitle": "マンガビューア",
+  "@mangaViewerTitle": {
+    "description": "App bar title for the manga viewer screen when no specific title is available."
+  },
+  "mangaViewerPageOf": "{current} / {total} ページ",
+  "@mangaViewerPageOf": {
+    "description": "Page indicator shown in the manga viewer. Interpolates current page and total pages.",
+    "placeholders": {
+      "current": {
+        "type": "int",
+        "example": "3"
+      },
+      "total": {
+        "type": "int",
+        "example": "120"
+      }
+    }
+  },
+  "mangaBookmarkAdd": "ブックマーク追加",
+  "@mangaBookmarkAdd": {
+    "description": "Tooltip / label for the add-bookmark button in the manga viewer."
+  },
+  "mangaBookmarkList": "ブックマーク一覧",
+  "@mangaBookmarkList": {
+    "description": "Title of the bookmark list sheet/screen in the manga viewer."
+  },
+  "mangaBookmarkEmpty": "ブックマークはありません。",
+  "@mangaBookmarkEmpty": {
+    "description": "Placeholder shown when the manga bookmark list is empty."
+  },
+  "mangaBookmarkDelete": "削除",
+  "@mangaBookmarkDelete": {
+    "description": "Label for the delete button on a manga bookmark tile."
+  },
+  "mangaBookmarkLabelHint": "ブックマーク名",
+  "@mangaBookmarkLabelHint": {
+    "description": "Hint text for the manga bookmark label input field."
+  },
+  "mangaOpenPickerTitle": "マンガを選択",
+  "@mangaOpenPickerTitle": {
+    "description": "Title of the file picker dialog for selecting a manga archive."
+  },
+  "mangaFileNotFoundMessage": "ファイルが見つかりません。移動・削除された可能性があります。",
+  "@mangaFileNotFoundMessage": {
+    "description": "Message shown when a manga archive is no longer reachable."
+  },
+  "mangaDeleteConfirmTitle": "マンガを削除しますか?",
+  "@mangaDeleteConfirmTitle": {
+    "description": "Title of the confirmation dialog for deleting a manga record."
+  },
+  "mangaDeleteConfirmBody": "読書の記録とブックマークがすべて削除されます。ファイル本体は削除されません。",
+  "@mangaDeleteConfirmBody": {
+    "description": "Body of the manga-delete confirmation dialog."
+  },
+  "mangaErrorCorruptArchive": "アーカイブを読み込めませんでした。ファイルが破損している可能性があります。",
+  "@mangaErrorCorruptArchive": {
+    "description": "Shown when the manga archive cannot be parsed (corrupt ZIP/CBZ)."
+  },
+  "mangaErrorNoPages": "このアーカイブには対応する画像ページがありません。",
+  "@mangaErrorNoPages": {
+    "description": "Shown when the archive contains no supported image entries."
+  },
+  "mangaErrorOversized": "アーカイブのサイズが上限を超えています。",
+  "@mangaErrorOversized": {
+    "description": "Shown when the archive exceeds the configured size limit."
+  },
+  "settingsSectionManga": "マンガ",
+  "@settingsSectionManga": {
+    "description": "Section title for the Manga settings section."
+  },
+  "settingsMangaReadingDirection": "読み方向",
+  "@settingsMangaReadingDirection": {
+    "description": "Label for the manga reading direction setting tile."
+  },
+  "settingsMangaReadingDirectionRtl": "右から左 (日本語マンガ)",
+  "@settingsMangaReadingDirectionRtl": {
+    "description": "Label for the right-to-left manga reading direction option."
+  },
+  "settingsMangaReadingDirectionLtr": "左から右 (洋書コミック)",
+  "@settingsMangaReadingDirectionLtr": {
+    "description": "Label for the left-to-right manga reading direction option."
+  },
+  "settingsMangaSpreadMode": "見開き表示",
+  "@settingsMangaSpreadMode": {
+    "description": "Label for the manga spread mode setting tile."
+  },
+  "settingsMangaSpreadModeSingle": "1ページ",
+  "@settingsMangaSpreadModeSingle": {
+    "description": "Label for the single-page manga layout option."
+  },
+  "settingsMangaSpreadModeSpread": "見開き (2ページ)",
+  "@settingsMangaSpreadModeSpread": {
+    "description": "Label for the two-page spread manga layout option."
+  },
+  "settingsMangaZoomReset": "ページ移動時にズームをリセット",
+  "@settingsMangaZoomReset": {
+    "description": "Label for the manga zoom-reset-on-page-change switch."
   }
 }

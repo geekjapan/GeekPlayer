@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/novel/models/site.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../novel/data/consent_repository.dart';
 
 /// Kakuyomu-specific consent dialog.
@@ -39,35 +40,24 @@ class _KakuyomuConsentDialogState extends ConsumerState<KakuyomuConsentDialog> {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     return AlertDialog(
-      title: const Text('カクヨムへの同意'),
+      title: Text(l10n.kakuyomuConsentDialogTitle),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const Text(
-              '本アプリは、利用者の同意のもとでカクヨム公式サイトと通信して'
-              '小説情報および本文を取得します。下記の運用規範に沿って動作します:',
-            ),
+            Text(l10n.kakuyomuConsentDialogIntro),
             const SizedBox(height: 8),
-            const _Bullet(text: '個人利用に限定。大規模クロール / 受動的ミラーリングは行いません。'),
-            const _Bullet(text: '能動キャッシュのみ。ユーザーが「Library に追加」した作品の本文だけを保存します。'),
-            const _Bullet(text: 'カクヨムへのアクセスは 1 リクエスト / 2 秒、並列度 1 に制限されます。'),
-            const _Bullet(text: 'robots.txt の Disallow を 24 時間キャッシュ付きで尊重します。'),
-            const _Bullet(
-              text: 'User-Agent に GeekPlayer のバージョンと連絡先 URL を明示します。',
-            ),
-            const _Bullet(
-              text: '429 / 503 を受けたら指数バックオフ (最大 5 分) で再試行し、6 回で諦めます。',
-            ),
+            _Bullet(text: l10n.kakuyomuConsentBullet1),
+            _Bullet(text: l10n.kakuyomuConsentBullet2),
+            _Bullet(text: l10n.kakuyomuConsentBullet3),
+            _Bullet(text: l10n.kakuyomuConsentBullet4),
+            _Bullet(text: l10n.kakuyomuConsentBullet5),
+            _Bullet(text: l10n.kakuyomuConsentBullet6),
             const SizedBox(height: 12),
-            Text(
-              '詳細は ADR-0001 / README のカクヨム機能の注意事項を参照してください。'
-              '将来、カクヨム公式 ToS が自動収集を明示禁止した場合は、本機能を即座に'
-              '停止する方針です。',
-              style: theme.textTheme.bodySmall,
-            ),
+            Text(l10n.kakuyomuConsentFooter, style: theme.textTheme.bodySmall),
           ],
         ),
       ),
@@ -75,12 +65,12 @@ class _KakuyomuConsentDialogState extends ConsumerState<KakuyomuConsentDialog> {
         OutlinedButton(
           key: const Key('kakuyomu-consent-decline'),
           onPressed: _saving ? null : () => _resolve(false),
-          child: const Text('同意しない'),
+          child: Text(l10n.kakuyomuConsentDecline),
         ),
         FilledButton(
           key: const Key('kakuyomu-consent-accept'),
           onPressed: _saving ? null : () => _resolve(true),
-          child: const Text('同意する'),
+          child: Text(l10n.kakuyomuConsentAccept),
         ),
       ],
     );

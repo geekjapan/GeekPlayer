@@ -93,9 +93,10 @@ void main() {
       expect(episodes.first.title, 'Episode One');
       expect((await db.siteConsentsDao.getAll()).length, 1);
 
-      // user_version updated to 3.
+      // user_version updated to 5 (AppDatabase schemaVersion is now 5;
+      // v4->v5 migration adds manga_metadata + manga_bookmarks).
       final ResultSet versionRow = raw.select('PRAGMA user_version');
-      expect(versionRow.first.values.first, 3);
+      expect(versionRow.first.values.first, 5);
     });
   });
 
@@ -145,21 +146,22 @@ void main() {
         expect(recents.length, 1);
         expect(recents.first.uri, 'file:///audio.mp3');
 
-        // user_version updated to 3.
+        // user_version updated to 5 (skip through all migrations to current).
         final ResultSet versionRow = raw.select('PRAGMA user_version');
-        expect(versionRow.first.values.first, 3);
+        expect(versionRow.first.values.first, 5);
       },
     );
   });
 
   group('fresh install (onCreate)', () {
-    test('schemaVersion is 3 and app_settings is empty', () async {
+    test('schemaVersion is 5 and app_settings is empty', () async {
       final AppDatabase db = AppDatabase.forTesting(
         DatabaseConnection(NativeDatabase.memory()),
       );
       addTearDown(db.close);
 
-      expect(db.schemaVersion, 3);
+      // schemaVersion is now 5 (add-manga-zip-viewer bumped from 4).
+      expect(db.schemaVersion, 5);
       // Touching DAOs triggers onCreate.
       expect(await db.appSettingsDao.getAll(), isEmpty);
       expect(await db.playbackPositionsDao.getByUri('x'), isNull);

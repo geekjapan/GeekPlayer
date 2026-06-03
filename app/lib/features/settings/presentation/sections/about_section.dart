@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../about/presentation/about_screen.dart';
 import '../../../about/presentation/license_detail_screen.dart';
 import '../../../about/presentation/license_screen.dart';
@@ -31,6 +32,7 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     return SettingsSection(
       id: 'about',
       title: 'About',
@@ -40,7 +42,7 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
           builder: (BuildContext ctx, AsyncSnapshot<PackageInfo> snap) {
             return ListTile(
               key: const Key('about-version'),
-              title: const Text('バージョン'),
+              title: Text(l10n.aboutVersion),
               trailing: Text(
                 snap.hasData
                     ? '${snap.data!.version}+${snap.data!.buildNumber}'
@@ -54,12 +56,12 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
         ),
         ListTile(
           key: const Key('about-license'),
-          title: const Text('ライセンス'),
+          title: Text(l10n.aboutSettingsLicense),
           trailing: const Icon(Icons.chevron_right),
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute<void>(
-              builder: (_) => const LicenseDetailScreen(
-                title: 'GeekPlayer — ライセンス全文',
+              builder: (_) => LicenseDetailScreen(
+                title: l10n.aboutLicenseScreenTitle,
                 assetPath: 'assets/legal/LICENSE',
               ),
             ),
@@ -67,7 +69,7 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
         ),
         ListTile(
           key: const Key('about-oss-notices'),
-          title: const Text('OSS Notices'),
+          title: Text(l10n.aboutSettingsOssNotices),
           trailing: const Icon(Icons.chevron_right),
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute<void>(builder: (_) => const LicenseListScreen()),

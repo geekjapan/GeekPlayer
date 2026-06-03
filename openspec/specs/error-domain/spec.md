@@ -118,3 +118,40 @@ The system SHALL place `app/lib/core/errors/` as a leaf module that depends only
 - **WHEN** files under `app/lib/core/errors/` import from `package:flutter/widgets.dart`, `package:logger/logger.dart`, `package:flutter_riverpod/flutter_riverpod.dart`, or the generated `AppLocalizations`
 - **THEN** the project analyzes and tests cleanly
 
+### Requirement: Errors have English localized messages
+
+Every `AppError` variant that has Japanese localization SHALL also have English localization. Error localization MUST continue to fall back to the raw error message when no localization context is available.
+
+#### Scenario: Error localizes in English
+
+- **WHEN** `ErrorMessages.localize` is called for each declared `AppError` variant under `Locale('en')`
+- **THEN** every call returns a non-empty English string and no call throws
+
+### Requirement: Book reader maps failures to AppError
+
+The book reader SHALL surface file-not-found, unsupported-format, parse/render, and storage failures as `AppError` variants before crossing into presentation code.
+
+#### Scenario: Corrupt EPUB is surfaced as a parse error
+
+- **WHEN** the user opens a corrupt EPUB file
+- **THEN** the reader shows a localized parse/render error and no raw parser exception reaches the widget tree
+
+#### Scenario: Missing PDF is surfaced as file-not-found
+
+- **WHEN** the user opens a stored PDF entry whose file no longer exists
+- **THEN** the app surfaces `FileNotFoundError` with the missing URI
+
+### Requirement: Manga viewer maps failures to AppError
+
+The manga viewer SHALL surface missing files, unsupported archive formats, corrupt archives, unsafe archive entries, oversized archives, unsupported image formats, image decode failures, and storage failures as `AppError` variants before crossing into presentation code.
+
+#### Scenario: Corrupt archive is surfaced as localized error
+
+- **WHEN** the user opens a corrupt ZIP archive
+- **THEN** the viewer shows a localized archive error and no raw archive exception reaches the widget tree
+
+#### Scenario: Missing manga file is surfaced as file-not-found
+
+- **WHEN** the user opens a stored manga entry whose archive no longer exists
+- **THEN** the app surfaces `FileNotFoundError` with the missing URI
+

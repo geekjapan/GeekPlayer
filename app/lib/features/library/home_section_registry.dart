@@ -2,6 +2,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../about/presentation/about_app_bar_action.dart';
 import '../audio/presentation/audio_home_section.dart';
+import '../book/presentation/book_home_section.dart';
+import '../manga/presentation/manga_home_section.dart';
 import '../novel/presentation/novel_home_section.dart';
 import '../novel_kakuyomu/presentation/kakuyomu_home_sections.dart';
 import '../settings/presentation/recent_items_pruner.dart';
@@ -30,6 +32,10 @@ List<HomeSection> homeSections(Ref ref) {
     ...ref.watch(novelHomeSectionsProvider),
     // Wave 3 — narou/kakuyomu fold their tabs under the novel section.
     ...ref.watch(kakuyomuHomeSectionsProvider),
+    // v0.2 — local book reader (order 500 per ADR-0004).
+    ...ref.watch(bookHomeSectionsProvider),
+    // v0.2 — local manga viewer (order 600 per ADR-0004).
+    ...ref.watch(mangaHomeSectionsProvider),
   ];
   all.sort((HomeSection a, HomeSection b) => a.order.compareTo(b.order));
   return List<HomeSection>.unmodifiable(all);

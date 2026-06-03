@@ -8,11 +8,17 @@ import 'package:geekplayer/core/novel/policy_version.dart';
 import 'package:geekplayer/core/storage/database.dart';
 import 'package:geekplayer/core/storage/providers.dart';
 import 'package:geekplayer/features/novel/presentation/consent_dialog.dart';
+import 'package:geekplayer/l10n/app_localizations.dart';
 
 Widget _harness({required AppDatabase db, required Widget child}) {
   return ProviderScope(
     overrides: [appDatabaseProvider.overrideWithValue(db)],
-    child: MaterialApp(home: Scaffold(body: child)),
+    child: MaterialApp(
+      locale: const Locale('ja'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Scaffold(body: child),
+    ),
   );
 }
 

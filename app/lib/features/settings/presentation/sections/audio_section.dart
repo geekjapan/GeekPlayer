@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/app_settings.dart';
 import '../app_settings_notifier.dart';
 import '../settings_screen.dart';
@@ -16,6 +17,7 @@ class AudioSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     final bool bg = ref.watch(
       appSettingsProvider.select(
         (AsyncValue<AppSettings> s) => s.value?.audioBackgroundPlayback ?? true,
@@ -30,11 +32,11 @@ class AudioSection extends ConsumerWidget {
 
     return SettingsSection(
       id: 'audio',
-      title: '音楽',
+      title: l10n.settingsSectionAudio,
       children: <Widget>[
         SwitchListTile(
           key: const Key('audio-background-playback'),
-          title: const Text('バックグラウンド再生'),
+          title: Text(l10n.settingsAudioBackgroundPlayback),
           value: bg,
           onChanged: (bool v) {
             ref
@@ -46,7 +48,7 @@ class AudioSection extends ConsumerWidget {
         ),
         SwitchListTile(
           key: const Key('audio-notification-persistent'),
-          title: const Text('通知を継続表示'),
+          title: Text(l10n.settingsAudioNotificationPersistent),
           value: notif,
           onChanged: (bool v) {
             ref

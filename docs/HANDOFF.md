@@ -2,23 +2,29 @@
 
 このドキュメントは、ここまでの設計・足場作りを引き継ぐ後続の人 / 後続のエージェントが、
 **読まなくて済む対話履歴をスキップして** すぐに作業に入れることを目的にしています。
-最終更新: 2026-05-27（**v0.1 全 Wave 完了 — 全 8 changes archived、20 capabilities 確定、394 tests pass**）。
+最終更新: 2026-06-03（**v0.1 リリース済み (`v0.1.0` タグ) — 全 8 changes archived、20 capabilities 確定。現在は v0.2 着手フェーズ**）。
 
-## v0.1 完了状態 (2026-05-27)
+## 現在の権威ある状態 (2026-06-03)
 
-- **Wave 1 (sequential)**: video foundation — 40/45 tasks、34 tests
-- **Wave 2 (3 並列)**: audio + online-novel-library + error-ux — 41+49+57 tasks
-- **Wave 3 (3 並列)**: narou + kakuyomu + app-settings — 50+46+47 tasks
-- **Wave 4 (sequential)**: about-and-licenses — 32/32 tasks
-- **合計**: ~360 / 約 400 tasks 完了（残は manual on-device verification と archive 操作のみ）
-- **テスト**: 394 件全 pass、`flutter analyze` clean、`dart format` clean
-- **drift schema**: v3 (playback_positions, recent_items, novel_works, novel_episodes, novel_bookmarks, site_consents, app_settings)
-- **capabilities**: 20 capability が `openspec/specs/` に確定
-- **archives**: 8 changes が `openspec/changes/archive/` に保管
+このセクションが **唯一の権威あるベースライン** です。過去の "Wave / apply 未着手" 記述は
+すべて履歴であり、以下が現状を表します。
 
-> **実装を始める方へ**: 本ファイルは high-level entry point です。
-> 実装手順（waves / worktree / sub-agent prompt / conflict resolution / exit criteria）の
-> **executable な詳細**は [`docs/IMPLEMENTATION-PLAN.md`](IMPLEMENTATION-PLAN.md) を参照してください。
+- **リリース**: `v0.1.0` タグ済み（`git tag` で確認可能）。配布は GitHub Releases 手動アップロード（`docs/release.md`）。
+- **OpenSpec archive**: v0.1 の 8 changes はすべて `openspec/changes/archive/2026-05-27-*` に保管済み。
+  - video / audio / online-novel-library / error-ux-infra / narou / kakuyomu / app-settings / about-and-licenses
+- **capabilities**: 20 capability が `openspec/specs/` に確定（手動編集禁止、`/opsx:archive` 経由でのみ更新）。
+- **drift schema**: **v3**（playback_positions, recent_items, novel_works, novel_episodes, novel_bookmarks, site_consents, app_settings）。v0.2 の book リーダーが v4、manga ビューアが v5 を取る前提。
+- **CI**: `.github/workflows/ci.yaml` は ubuntu の analyze+test に加え、**Android debug APK ビルド** と **Windows release パッケージビルド** を含む。macOS runner はまだ無い（v0.2 の CI 拡張で追加予定）。
+- **アクティブな v0.2 changes（apply 順）**:
+  1. `prepare-v0-2-foundation`（本 change / 計画整備のみ）
+  2. `add-english-localization`
+  3. `add-pdf-epub-reader`（drift v4）
+  4. `add-manga-zip-viewer`（drift v5、pdf-epub の後）
+  - 推奨順序の根拠は [`docs/roadmap.md`](roadmap.md) の「v0.2 sequencing」セクション参照。
+
+> **v0.1 の Wave 実装手順について**: `docs/IMPLEMENTATION-PLAN.md` の wave/worktree/sub-agent
+> 手順は **v0.1 実装時の履歴** です。v0.1 は完了・archive 済みのため、これらは新規実装の
+> 出発点ではありません。v0.2 を始める場合は上記アクティブ changes と roadmap の sequencing に従ってください。
 
 ---
 
@@ -28,10 +34,10 @@
 |---|---|
 | 何を作っているの? | このファイル §1〜§3 |
 | 開発環境のセットアップは? | このファイル §4 |
-| 過去の設計判断と理由は? | [`docs/adr/`](adr/) (0001-0004) |
+| 過去の設計判断と理由は? | [`docs/adr/`](adr/) (0001-0004, 0006) |
 | プロジェクト全般のコーディング規約は? | [`docs/CONVENTIONS.md`](CONVENTIONS.md) |
-| **実装手順 (Wave / worktree / sub-agent)** | **[`docs/IMPLEMENTATION-PLAN.md`](IMPLEMENTATION-PLAN.md)** |
-| 全 8 change の概要と推奨順 | このファイル §5 |
+| v0.1 実装手順（履歴, Wave / worktree） | [`docs/IMPLEMENTATION-PLAN.md`](IMPLEMENTATION-PLAN.md) |
+| v0.2 のアクティブ change と apply 順 | このファイル §5 + [`docs/roadmap.md`](roadmap.md) |
 | 解決済み・未解決の設計論点 | [`docs/GRILL-REPORT.md`](GRILL-REPORT.md) |
 | ロードマップ (v0.2 / v1.0) | [`docs/roadmap.md`](roadmap.md) |
 | ドメイン用語集 | [`CONTEXT.md`](../CONTEXT.md) |
@@ -82,9 +88,9 @@ GeekPlayer/
 │   └── HANDOFF.md                    # このファイル
 ├── openspec/
 │   ├── config.yaml                   # context + rules 設定済み
-│   ├── changes/                      # 7 changes (詳細は §5)
-│   └── specs/                        # archive 先 (まだ空)
-├── .github/workflows/ci.yaml         # ubuntu-latest CI (green を確認済み)
+│   ├── changes/                      # 4 active v0.2 changes + archive/ (詳細は §5)
+│   └── specs/                        # 20 capability 確定済み
+├── .github/workflows/ci.yaml         # ubuntu analyze+test / Android debug / Windows release
 ├── CLAUDE.md / AGENTS.md             # 各 AI ハーネス向け project instructions
 ├── CONTEXT.md                        # ドメイン用語集
 ├── LICENSE                           # Apache-2.0
@@ -94,11 +100,8 @@ GeekPlayer/
 
 GitHub: **https://github.com/geekjapan/GeekPlayer** (PRIVATE)
 
-直近のコミット履歴（push 済み）:
-```
-78fb575 feat: scaffold Flutter monorepo for GeekPlayer
-61e4949 Initial commit
-```
+v0.1 は `v0.1.0` タグでリリース済み。最新のコミット履歴は `git log` で確認してください
+（本ハンドオフはコミット SHA を直書きせず、タグとアクティブ change を権威とします）。
 
 ## 4. 開発環境のセットアップ
 
@@ -141,58 +144,49 @@ openspec instructions apply --change "<name>" --json   # 実装中に参照
 | `/opsx:apply [name]` | tasks.md のチェックボックスを順に実装 |
 | `/opsx:archive [name]` | 完了 change を `openspec/changes/archive/` に移動 + `openspec/specs/` 更新 |
 
-## 5. 全 7 changes 一覧
+## 5. changes 一覧
 
-すべて proposal / design / specs / tasks の 4 artifact が揃った状態。**apply は未着手**。
+### v0.1 MVP（すべて archived・実装済み — 履歴）
 
-### v0.1 MVP コア（順に apply 推奨）
+`openspec/changes/archive/2026-05-27-*` に保管。これらは **完了済みで、新規実装の対象ではありません**。
+仕様は `openspec/specs/` の 20 capability に確定しています。
 
-| # | Change | Capabilities | Tasks |
+| Change | 主な Capabilities |
+|---|---|
+| `add-local-video-playback` | local-video-playback, media-session |
+| `add-local-audio-playback` | local-audio-playback, media-session (audio variant) |
+| `add-online-novel-library` | online-novel-library, site-consent, responsible-fetching, media-session |
+| `add-error-ux-infra` | error-domain, error-ux-widgets, retry-strategy |
+| `add-narou-novel-reader` | narou-novel-source, narou-novel-reader-ui, r18-age-gate |
+| `add-kakuyomu-novel-reader` | kakuyomu-novel-source, kakuyomu-novel-reader-ui, kakuyomu-resilience |
+| `add-app-settings` | app-settings, settings-persistence |
+| `add-about-and-licenses` | about-screen, oss-license-notices, lgpl-compliance |
+
+drift スキーマの確定済みマイグレーション順序:
+- v1 = `playback_positions` / `recent_items`（video）
+- v2 = `novel_*` / `site_consents`（novel-library）
+- v3 = `app_settings`（app-settings）
+
+### v0.2 アクティブ changes（apply 対象）
+
+proposal / design / specs / tasks の 4 artifact が揃っている。apply 順は roadmap の sequencing に従う。
+
+| # | Change | 役割 | drift |
 |---|---|---|---|
-| 1 | `add-local-video-playback` | local-video-playback, media-session | 41 |
-| 2 | `add-local-audio-playback` | local-audio-playback, media-session (audio variant) | 51 |
-| 3 | `add-online-novel-library` | online-novel-library, site-consent, responsible-fetching, media-session | 64 |
-| 4 | `add-narou-novel-reader` | narou-novel-source, narou-novel-reader-ui, r18-age-gate | 64 |
-| 5 | `add-kakuyomu-novel-reader` | kakuyomu-novel-source, kakuyomu-novel-reader-ui, kakuyomu-resilience | 65 |
+| 1 | `prepare-v0-2-foundation` | ドキュメント整合性・ADR-0006・v0.2 sequencing の整備（コードなし） | — |
+| 2 | `add-english-localization` | en ロケール基盤・ARB parity test。後続 UI の前提 | — |
+| 3 | `add-pdf-epub-reader` | PDF/EPUB リーダー。`BookDocument`/`PageSession` を確立 | v4 |
+| 4 | `add-manga-zip-viewer` | 漫画 ZIP/CBZ ビューア。pdf-epub の後に v5 を取る | v5 |
 
-### v0.1 配布前に必要な締めの作業
+## 6. v0.2 以降の未起案候補 changes
 
-| # | Change | Capabilities | Tasks |
-|---|---|---|---|
-| 6 | `add-app-settings` | app-settings, settings-persistence | 54 |
-| 7 | `add-about-and-licenses` | about-screen, oss-license-notices, lgpl-compliance | 37 |
+`docs/roadmap.md` 参照。アクティブ 4 件（§5）に続く候補:
 
-**合計タスク数: 376**
-
-### 推奨 apply 順序
-
-1. `add-local-video-playback` — `MediaSession` 抽象と drift スキーマ v1 の起点。後続が依存
-2. `add-local-audio-playback` — `MediaSession` の audio variant を追加。OS 統合実装
-3. `add-online-novel-library` — `NovelRepository` interface、`SiteConsent`、`RateLimiter`、drift v2
-4. `add-narou-novel-reader` — 公式 API 実装。R18 ゲート
-5. `add-kakuyomu-novel-reader` — RSS + HTML パース。ADR-0001 準拠の運用規範
-6. `add-app-settings` — 設定 UI と永続化（drift v3）
-7. `add-about-and-licenses` — LGPL 書面通知 + Apache NOTICE
-
-drift スキーマのマイグレーション順序前提:
-- v1 = `playback_positions` / `recent_items`（video change）
-- v2 = `novel_*` / `site_consents`（novel-library change）
-- v3 = `app_settings`（app-settings change）
-
-## 6. v0.2 以降の候補 changes（未起案）
-
-`docs/roadmap.md` 参照。次の候補:
-
-- `add-pdf-epub-reader` — 書籍リーダー
-- `add-manga-zip-viewer` — 漫画 CBZ/ZIP ビューア
-- `add-video-library` — フォルダスキャン + 視聴履歴
-- `add-audio-library` — 音楽ライブラリ + 永続プレイリスト
+- `add-video-library` / `add-audio-library` — フォルダスキャン + 視聴履歴 + プレイリスト
 - `add-platform-linux` — Linux ビルド
-- `add-platform-ios` — iOS/iPadOS ビルド + 署名（**libmpv LGPL 動的リンクを App Store に
-  載せられないため、配布方針の再評価が必要**）
+- `add-platform-ios` — iOS/iPadOS ビルド + 署名（**[ADR-0006](adr/0006-ios-media-engine-distribution-policy.md) の決定に従うこと**。libmpv LGPL 動的リンクと App Store 配布の整合が前提条件）
 - `add-auto-update` — GitHub Releases ベースの in-app update
-- `add-english-localization` — en ARB
-- `setup-ci-macos-windows` — CI ランナー追加
+- `setup-ci-macos-windows` — macOS runner 追加 + 各 OS build smoke test
 
 ### v1.0 AI 高画質化
 
@@ -240,34 +234,25 @@ drift スキーマのマイグレーション順序前提:
 
 ## 9. 次に何をすべきか（後続の人/エージェントへ）
 
-**実装フェーズに入る方は [`docs/IMPLEMENTATION-PLAN.md`](IMPLEMENTATION-PLAN.md) を読んでください。**
-そこに以下が executable な形で揃っています:
+v0.1 は完了・リリース済みです。**次は v0.2 のアクティブ changes（§5）を sequencing 順に apply** します。
 
-- Wave 1 (sequential, video foundation) の実行コマンドと exit criteria
-- Wave 2 (3 並列: audio / novel-library / error-ux) の worktree 作成・sub-agent spawn・merge 順序
-- Wave 3 (3 並列: narou / kakuyomu / app-settings) の同様
-- Wave 4 (about-and-licenses) の最終ステップ
-- サブエージェント用 prompt template
-- worktree ライフサイクル（作成/初期化/削除/落とし穴）
-- conflict 解決プレイブック（pubspec.yaml / media_session.dart / AndroidManifest 等）
-- CI 戦略（PR 単位、rebase + 再 CI フロー）
-- ロールバック手順（task 失敗 / wave merge 後の regression）
-- リスクレジスター（R-1 〜 R-7）
-- ポスト実装（v0.1.0 タグ付け、Release 手順）
+### v0.2 推奨経路
 
-### TL;DR（細かい話を省いた最短経路）
+1. `/opsx:apply prepare-v0-2-foundation` → archive（ドキュメント/ADR/spec のみ。本 change）
+2. `/opsx:apply add-english-localization` → archive（en 基盤を先に入れ、後続 UI のハードコード文字列負債を防ぐ）
+3. `/opsx:apply add-pdf-epub-reader` → archive（drift v4。`BookDocument`/`PageSession` を確立）
+4. `/opsx:apply add-manga-zip-viewer` → archive（drift v5。pdf-epub が v4 を取った後）
 
-1. Wave 1 を main 上で `/opsx:apply add-local-video-playback` → archive → push
-2. Wave 2: `git worktree add` × 3 → 各 worktree で `/opsx:apply <change>` → 順に merge
-3. Wave 3: 同上で 3 並列
-4. Wave 4: about-and-licenses を sequential
-5. 全 wave 完了で v0.1.0 タグ付け
+apply 順序の根拠と、その先の候補（library / platform / auto-update / CI）の placement は
+[`docs/roadmap.md`](roadmap.md) の **v0.2 sequencing** セクションを参照。新しい v0.2 proposal を
+起こす際は同じ roadmap の **v0.2 proposal readiness checklist** に通すこと。
 
-並列実装中は **[CONVENTIONS.md](CONVENTIONS.md)** を全エージェントが遵守すること
-（HomeScreen レジストリ / pubspec 冪等 / AndroidManifest append-only 等）。
+実装中は **[CONVENTIONS.md](CONVENTIONS.md)**（HomeScreen レジストリ / pubspec 冪等 /
+AndroidManifest append-only / drift versioning 等）を遵守する。設計上の疑問が出たら
+`design.md` の **Open Questions** を更新するか、新しい ADR を起こす。
 
-途中で設計上の疑問が出たら、`design.md` の **Open Questions** セクションを更新するか、
-新しい ADR を起こす。
+> v0.1 実装時の Wave/worktree/sub-agent 手順は [`docs/IMPLEMENTATION-PLAN.md`](IMPLEMENTATION-PLAN.md)
+> に履歴として残っています（v0.2 では参考情報）。
 
 ---
 

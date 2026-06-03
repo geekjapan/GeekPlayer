@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/app_settings.dart';
 import '../app_settings_notifier.dart';
 import '../settings_screen.dart';
@@ -12,6 +13,7 @@ class DisplaySection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     final ThemeMode mode = ref.watch(
       appSettingsProvider.select(
         (AsyncValue<AppSettings> s) => s.value?.themeMode ?? ThemeMode.system,
@@ -20,7 +22,7 @@ class DisplaySection extends ConsumerWidget {
 
     return SettingsSection(
       id: 'display',
-      title: '表示',
+      title: l10n.settingsSectionDisplay,
       children: <Widget>[
         RadioGroup<ThemeMode>(
           groupValue: mode,
@@ -35,18 +37,18 @@ class DisplaySection extends ConsumerWidget {
               for (final ThemeMode m in ThemeMode.values)
                 RadioListTile<ThemeMode>(
                   key: Key('theme-${m.name}'),
-                  title: Text(_label(m)),
+                  title: Text(_label(l10n, m)),
                   value: m,
                 ),
             ],
           ),
         ),
-        const ListTile(
-          key: Key('accent-color-placeholder'),
+        ListTile(
+          key: const Key('accent-color-placeholder'),
           enabled: false,
-          title: Text('アクセントカラー'),
+          title: Text(l10n.settingsAccentColorPlaceholder),
           trailing: Chip(
-            label: Text('v0.2 で対応'),
+            label: Text(l10n.settingsAccentColorComingSoon),
             visualDensity: VisualDensity.compact,
           ),
         ),
@@ -54,9 +56,9 @@ class DisplaySection extends ConsumerWidget {
     );
   }
 
-  String _label(ThemeMode m) => switch (m) {
-    ThemeMode.system => 'システム',
-    ThemeMode.light => 'ライト',
-    ThemeMode.dark => 'ダーク',
+  String _label(AppLocalizations l10n, ThemeMode m) => switch (m) {
+    ThemeMode.system => l10n.settingsThemeSystem,
+    ThemeMode.light => l10n.settingsThemeLight,
+    ThemeMode.dark => l10n.settingsThemeDark,
   };
 }

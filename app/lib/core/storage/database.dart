@@ -2,7 +2,13 @@ import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
 import 'migrations/v2_to_v3.dart';
+import 'migrations/v3_to_v4.dart';
+import 'migrations/v4_to_v5.dart';
 import 'tables/app_settings.dart';
+import 'tables/book_bookmarks.dart';
+import 'tables/book_metadata.dart';
+import 'tables/manga_bookmarks.dart';
+import 'tables/manga_metadata.dart';
 import 'tables/novel_bookmarks.dart';
 import 'tables/novel_episodes.dart';
 import 'tables/novel_works.dart';
@@ -19,9 +25,11 @@ const int kRecentItemsCap = 50;
 ///
 /// Schema lineage (see CONVENTIONS.md §5):
 ///   - v1 — `add-local-video-playback`: playback_positions + recent_items
-///   - v2 — `add-online-novel-library` (this change): novel_works,
-///          novel_episodes, novel_bookmarks, site_consents
+///   - v2 — `add-online-novel-library`: novel_works, novel_episodes,
+///          novel_bookmarks, site_consents
 ///   - v3 — `add-app-settings`: app_settings
+///   - v4 — `add-pdf-epub-reader`: book_metadata, book_bookmarks
+///   - v5 — `add-manga-zip-viewer`: manga_metadata, manga_bookmarks
 @DriftDatabase(
   tables: <Type>[
     PlaybackPositions,
@@ -31,6 +39,10 @@ const int kRecentItemsCap = 50;
     NovelBookmarks,
     SiteConsents,
     AppSettings,
+    BookMetadata,
+    BookBookmarks,
+    MangaMetadata,
+    MangaBookmarks,
   ],
   daos: <Type>[
     PlaybackPositionsDao,
@@ -40,6 +52,10 @@ const int kRecentItemsCap = 50;
     NovelBookmarksDao,
     SiteConsentsDao,
     AppSettingsDao,
+    BookMetadataDao,
+    BookBookmarksDao,
+    MangaMetadataDao,
+    MangaBookmarksDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -49,7 +65,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.connection);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -74,6 +90,18 @@ class AppDatabase extends _$AppDatabase {
       // logic and skip-migration coverage (v1 -> v3).
       if (from < 3) {
         await migrateV2ToV3(m, appSettings);
+      }
+      // v3 -> v4: introduce book_metadata + book_bookmarks. Additive only.
+      // See app/test/core/storage/migration_v3_to_v4_test.dart and
+      // app/lib/core/storage/migrations/v3_to_v4.dart.
+      if (from < 4) {
+        await migrateV3ToV4(m, bookMetadata, bookBookmarks);
+      }
+      // v4 -> v5: introduce manga_metadata + manga_bookmarks. Additive only.
+      // See app/test/core/storage/migration_v4_to_v5_test.dart and
+      // app/lib/core/storage/migrations/v4_to_v5.dart.
+      if (from < 5) {
+        await migrateV4ToV5(m, mangaMetadata, mangaBookmarks);
       }
     },
   );
@@ -485,6 +513,125 @@ class SiteConsentsDao extends DatabaseAccessor<AppDatabase>
   }
 }
 
+/// DAO for [BookMetadata]. Upsert, lookup, recency ordering, and deletion
+/// (with cascade to [BookBookmarks] via [BookBookmarksDao] inside a tx).
+///
+/// `kind = 'book'` is used in [RecentItems] to track recently opened books;
+/// [recordOpen] delegates to [RecentItemsDao.recordOpen].
+@DriftAccessor(tables: <Type>[BookMetadata, BookBookmarks])
+class BookMetadataDao extends DatabaseAccessor<AppDatabase>
+    with _$BookMetadataDaoMixin {
+  BookMetadataDao(super.db);
+
+  /// Insert or replace a book-metadata row.
+  Future<void> upsert({
+    required String uri,
+    required String path,
+    required String format,
+    required String title,
+    required String author,
+    required int fileSizeBytes,
+    required DateTime fileLastModified,
+    DateTime? lastOpenedAt,
+    required DateTime importedAt,
+  }) {
+    return into(bookMetadata).insertOnConflictUpdate(
+      BookMetadataCompanion.insert(
+        uri: uri,
+        path: path,
+        format: format,
+        title: title,
+        author: author,
+        fileSizeBytes: fileSizeBytes,
+        fileLastModified: fileLastModified,
+        lastOpenedAt: Value<DateTime?>(lastOpenedAt),
+        importedAt: importedAt,
+      ),
+    );
+  }
+
+  /// Stamp [lastOpenedAt] on the row identified by [uri].
+  Future<void> touchLastOpened(String uri, DateTime openedAt) async {
+    await (update(bookMetadata)
+          ..where(($BookMetadataTable t) => t.uri.equals(uri)))
+        .write(BookMetadataCompanion(lastOpenedAt: Value<DateTime?>(openedAt)));
+  }
+
+  /// Return the row for [uri], or `null` if absent.
+  Future<BookMetadataRow?> getByUri(String uri) {
+    return (select(
+      bookMetadata,
+    )..where(($BookMetadataTable t) => t.uri.equals(uri))).getSingleOrNull();
+  }
+
+  /// All books, newest-opened first (null last-opened sorted last).
+  Future<List<BookMetadataRow>> listAll() {
+    return (select(
+          bookMetadata,
+        )..orderBy(<OrderClauseGenerator<$BookMetadataTable>>[
+          ($BookMetadataTable t) =>
+              OrderingTerm(expression: t.lastOpenedAt, mode: OrderingMode.desc),
+        ]))
+        .get();
+  }
+
+  /// Delete a book and its bookmarks inside a single transaction.
+  Future<void> deleteBook(String uri) {
+    return db.transaction<void>(() async {
+      await (delete(
+        bookBookmarks,
+      )..where(($BookBookmarksTable t) => t.bookUri.equals(uri))).go();
+      await (delete(
+        bookMetadata,
+      )..where(($BookMetadataTable t) => t.uri.equals(uri))).go();
+    });
+  }
+}
+
+/// DAO for [BookBookmarks]. CRUD by book URI, ordered by creation time.
+@DriftAccessor(tables: <Type>[BookBookmarks])
+class BookBookmarksDao extends DatabaseAccessor<AppDatabase>
+    with _$BookBookmarksDaoMixin {
+  BookBookmarksDao(super.db);
+
+  /// Insert a new bookmark. Returns the generated [BookBookmarkRow.id].
+  Future<int> addBookmark({
+    required String bookUri,
+    required String label,
+    required int pageIndex,
+    required double scrollFraction,
+    required DateTime createdAt,
+  }) {
+    return into(bookBookmarks).insert(
+      BookBookmarksCompanion.insert(
+        bookUri: bookUri,
+        label: label,
+        pageIndex: pageIndex,
+        scrollFraction: Value<double>(scrollFraction),
+        createdAt: createdAt,
+      ),
+    );
+  }
+
+  /// All bookmarks for [bookUri], oldest-first.
+  Future<List<BookBookmarkRow>> listByBook(String bookUri) {
+    return (select(bookBookmarks)
+          ..where(($BookBookmarksTable t) => t.bookUri.equals(bookUri))
+          ..orderBy(<OrderClauseGenerator<$BookBookmarksTable>>[
+            ($BookBookmarksTable t) =>
+                OrderingTerm(expression: t.createdAt, mode: OrderingMode.asc),
+          ]))
+        .get();
+  }
+
+  /// Delete a single bookmark by [id]. Returns rows removed (0 or 1).
+  Future<int> deleteById(int id) {
+    return (delete(
+      bookBookmarks,
+    )..where(($BookBookmarksTable t) => t.id.equals(id))).go();
+  }
+}
+
 /// DAO for [AppSettings]. Thin CRUD wrapper used by
 /// `AppSettingsRepository` (the only intended caller per spec
 /// `settings-persistence` Requirement "`app_settings` drift table").
@@ -522,5 +669,125 @@ class AppSettingsDao extends DatabaseAccessor<AppDatabase>
       appSettings,
     )..where(($AppSettingsTable t) => t.key.equals(key))).getSingleOrNull();
     return row?.value;
+  }
+}
+
+/// DAO for [MangaMetadata]. Upsert, lookup, recency ordering, and deletion
+/// (with cascade to [MangaBookmarks] via transaction).
+///
+/// `kind = 'manga'` is used in [RecentItems] to track recently opened archives.
+@DriftAccessor(tables: <Type>[MangaMetadata, MangaBookmarks])
+class MangaMetadataDao extends DatabaseAccessor<AppDatabase>
+    with _$MangaMetadataDaoMixin {
+  MangaMetadataDao(super.db);
+
+  /// Insert or replace a manga-metadata row.
+  Future<void> upsert({
+    required String uri,
+    required String path,
+    required String format,
+    required String title,
+    required int fileSizeBytes,
+    required DateTime fileLastModified,
+    required int pageCount,
+    int? coverPageIndex,
+    DateTime? lastOpenedAt,
+    required DateTime importedAt,
+  }) {
+    return into(mangaMetadata).insertOnConflictUpdate(
+      MangaMetadataCompanion.insert(
+        uri: uri,
+        path: path,
+        format: format,
+        title: title,
+        fileSizeBytes: fileSizeBytes,
+        fileLastModified: fileLastModified,
+        pageCount: pageCount,
+        coverPageIndex: Value<int?>(coverPageIndex),
+        lastOpenedAt: Value<DateTime?>(lastOpenedAt),
+        importedAt: importedAt,
+      ),
+    );
+  }
+
+  /// Stamp [lastOpenedAt] on the row identified by [uri].
+  Future<void> touchLastOpened(String uri, DateTime openedAt) async {
+    await (update(
+      mangaMetadata,
+    )..where(($MangaMetadataTable t) => t.uri.equals(uri))).write(
+      MangaMetadataCompanion(lastOpenedAt: Value<DateTime?>(openedAt)),
+    );
+  }
+
+  /// Return the row for [uri], or `null` if absent.
+  Future<MangaMetadataRow?> getByUri(String uri) {
+    return (select(
+      mangaMetadata,
+    )..where(($MangaMetadataTable t) => t.uri.equals(uri))).getSingleOrNull();
+  }
+
+  /// All manga archives, newest-opened first (null last-opened sorted last).
+  Future<List<MangaMetadataRow>> listAll() {
+    return (select(
+          mangaMetadata,
+        )..orderBy(<OrderClauseGenerator<$MangaMetadataTable>>[
+          ($MangaMetadataTable t) =>
+              OrderingTerm(expression: t.lastOpenedAt, mode: OrderingMode.desc),
+        ]))
+        .get();
+  }
+
+  /// Delete a manga archive and its bookmarks inside a single transaction.
+  Future<void> deleteManga(String uri) {
+    return db.transaction<void>(() async {
+      await (delete(
+        mangaBookmarks,
+      )..where(($MangaBookmarksTable t) => t.mangaUri.equals(uri))).go();
+      await (delete(
+        mangaMetadata,
+      )..where(($MangaMetadataTable t) => t.uri.equals(uri))).go();
+    });
+  }
+}
+
+/// DAO for [MangaBookmarks]. CRUD by manga URI, ordered by creation time.
+@DriftAccessor(tables: <Type>[MangaBookmarks])
+class MangaBookmarksDao extends DatabaseAccessor<AppDatabase>
+    with _$MangaBookmarksDaoMixin {
+  MangaBookmarksDao(super.db);
+
+  /// Insert a new bookmark. Returns the generated [MangaBookmarkRow.id].
+  Future<int> addBookmark({
+    required String mangaUri,
+    required String label,
+    required int pageIndex,
+    required DateTime createdAt,
+  }) {
+    return into(mangaBookmarks).insert(
+      MangaBookmarksCompanion.insert(
+        mangaUri: mangaUri,
+        label: label,
+        pageIndex: pageIndex,
+        createdAt: createdAt,
+      ),
+    );
+  }
+
+  /// All bookmarks for [mangaUri], oldest-first.
+  Future<List<MangaBookmarkRow>> listByManga(String mangaUri) {
+    return (select(mangaBookmarks)
+          ..where(($MangaBookmarksTable t) => t.mangaUri.equals(mangaUri))
+          ..orderBy(<OrderClauseGenerator<$MangaBookmarksTable>>[
+            ($MangaBookmarksTable t) =>
+                OrderingTerm(expression: t.createdAt, mode: OrderingMode.asc),
+          ]))
+        .get();
+  }
+
+  /// Delete a single bookmark by [id]. Returns rows removed (0 or 1).
+  Future<int> deleteById(int id) {
+    return (delete(
+      mangaBookmarks,
+    )..where(($MangaBookmarksTable t) => t.id.equals(id))).go();
   }
 }

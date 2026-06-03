@@ -13,6 +13,7 @@ import 'package:geekplayer/core/storage/providers.dart';
 import 'package:geekplayer/features/novel/data/consent_repository.dart';
 import 'package:geekplayer/features/novel/data/library_repository.dart';
 import 'package:geekplayer/features/novel/presentation/novel_home_section.dart';
+import 'package:geekplayer/l10n/app_localizations.dart';
 
 const _narouWork = WorkId(site: Site.narou, externalId: 'n1');
 
@@ -35,6 +36,9 @@ Widget _hosted(AppDatabase db) {
   return ProviderScope(
     overrides: [appDatabaseProvider.overrideWithValue(db)],
     child: const MaterialApp(
+      locale: Locale('ja'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
         body: SingleChildScrollView(child: NovelHomeSectionView()),
       ),

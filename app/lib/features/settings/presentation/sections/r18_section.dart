@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/novel/models/site.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../novel/data/consent_repository.dart';
 import '../settings_screen.dart';
 
@@ -41,22 +42,23 @@ class _R18SectionState extends ConsumerState<R18Section> {
   }
 
   Future<void> _reset() async {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     final bool? ok = await showDialog<bool>(
       context: context,
       builder: (BuildContext ctx) => AlertDialog(
         key: const Key('r18-reset-confirm'),
-        title: const Text('年齢確認をやり直しますか?'),
-        content: const Text('次回 R18 サイトを開く際に確認画面が表示されます。'),
+        title: Text(l10n.settingsR18ResetConfirmTitle),
+        content: Text(l10n.settingsR18ResetConfirmBody),
         actions: <Widget>[
           TextButton(
             key: const Key('r18-reset-cancel'),
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('キャンセル'),
+            child: Text(l10n.actionCancel),
           ),
           FilledButton(
             key: const Key('r18-reset-confirm-button'),
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('リセットする'),
+            child: Text(l10n.actionReset),
           ),
         ],
       ),
@@ -68,26 +70,29 @@ class _R18SectionState extends ConsumerState<R18Section> {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     return SettingsSection(
       id: 'r18',
-      title: 'R18',
+      title: l10n.settingsSectionR18,
       children: <Widget>[
         FutureBuilder<bool>(
           future: _granted,
           builder: (BuildContext ctx, AsyncSnapshot<bool> snap) {
             final String label = snap.hasData
-                ? (snap.data! ? '同意済み' : '未同意')
+                ? (snap.data!
+                      ? l10n.settingsR18StatusGranted
+                      : l10n.settingsR18StatusDenied)
                 : '...';
             return ListTile(
               key: const Key('r18-status'),
-              title: const Text('年齢確認の状態'),
+              title: Text(l10n.settingsR18Status),
               trailing: Text(label),
             );
           },
         ),
         ListTile(
           key: const Key('r18-reset'),
-          title: const Text('年齢確認をやり直す'),
+          title: Text(l10n.settingsR18Reset),
           trailing: const Icon(Icons.restart_alt),
           onTap: _reset,
         ),

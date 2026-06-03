@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../data/app_info_provider.dart';
 import '../data/build_info.dart';
 import 'license_detail_screen.dart';
@@ -25,9 +26,10 @@ class AboutScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     final AsyncValue<PackageInfo> info = ref.watch(packageInfoProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('アプリ情報')),
+      appBar: AppBar(title: Text(l10n.aboutTitle)),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 8),
         children: <Widget>[
@@ -53,6 +55,7 @@ class AboutScreen extends ConsumerWidget {
   }
 
   static Future<void> _launch(BuildContext context, String url) async {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     final Uri uri = Uri.parse(url);
     try {
       final bool ok = await launchUrl(
@@ -62,22 +65,25 @@ class AboutScreen extends ConsumerWidget {
       if (!ok && context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('リンクを開けませんでした')));
+        ).showSnackBar(SnackBar(content: Text(l10n.aboutLinkOpenError)));
       }
     } on Object {
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('リンクを開けませんでした')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.aboutLinkOpenError),
+          ),
+        );
       }
     }
   }
 
   static void _openBundledLicense(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) => const LicenseDetailScreen(
-          title: 'GeekPlayer — ライセンス全文',
+        builder: (_) => LicenseDetailScreen(
+          title: l10n.aboutLicenseScreenTitle,
           assetPath: 'assets/legal/LICENSE',
         ),
       ),
@@ -101,9 +107,15 @@ class _Header extends StatelessWidget {
             height: 96,
             child: Center(child: CircularProgressIndicator()),
           ),
-          error: (Object e, StackTrace st) =>
-              _identity(t, name: 'GeekPlayer', version: '-', buildNumber: '-'),
+          error: (Object e, StackTrace st) => _identity(
+            context,
+            t,
+            name: 'GeekPlayer',
+            version: '-',
+            buildNumber: '-',
+          ),
           data: (PackageInfo p) => _identity(
+            context,
             t,
             name: p.appName.isEmpty ? 'GeekPlayer' : p.appName,
             version: p.version.isEmpty ? '-' : p.version,
@@ -115,20 +127,22 @@ class _Header extends StatelessWidget {
   }
 
   Widget _identity(
+    BuildContext context,
     TextTheme t, {
     required String name,
     required String version,
     required String buildNumber,
   }) {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     return Column(
       key: const Key('about-header'),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(name, style: t.titleLarge),
         const SizedBox(height: 8),
-        _MetaRow(label: 'バージョン', value: version),
-        _MetaRow(label: 'ビルド番号', value: buildNumber),
-        _MetaRow(label: 'コミット', value: formattedGitSha()),
+        _MetaRow(label: l10n.aboutVersion, value: version),
+        _MetaRow(label: l10n.aboutBuildNumber, value: buildNumber),
+        _MetaRow(label: l10n.aboutCommit, value: formattedGitSha()),
       ],
     );
   }
@@ -165,16 +179,17 @@ class _NoticeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Card(
-      margin: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text('Apache-2.0 ライセンス'),
-            SizedBox(height: 4),
-            SelectableText('Copyright 2026 GeekPlayer Contributors'),
+            Text(l10n.aboutApacheLicenseTitle),
+            const SizedBox(height: 4),
+            const SelectableText('Copyright 2026 GeekPlayer Contributors'),
           ],
         ),
       ),
@@ -194,6 +209,7 @@ class _LinksCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       child: Column(
@@ -201,21 +217,21 @@ class _LinksCard extends StatelessWidget {
           ListTile(
             key: const Key('about-link-github'),
             leading: const Icon(Icons.code),
-            title: const Text('GitHub リポジトリ'),
+            title: Text(l10n.aboutLinkGithub),
             trailing: const Icon(Icons.open_in_new),
             onTap: onGithub,
           ),
           ListTile(
             key: const Key('about-link-roadmap'),
             leading: const Icon(Icons.map_outlined),
-            title: const Text('ロードマップ'),
+            title: Text(l10n.aboutLinkRoadmap),
             trailing: const Icon(Icons.open_in_new),
             onTap: onRoadmap,
           ),
           ListTile(
             key: const Key('about-link-license'),
             leading: const Icon(Icons.description_outlined),
-            title: const Text('ライセンス全文'),
+            title: Text(l10n.aboutLinkLicense),
             trailing: const Icon(Icons.chevron_right),
             onTap: onFullLicense,
           ),
@@ -231,12 +247,13 @@ class _OssLicensesButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       child: ListTile(
         key: const Key('about-oss-licenses'),
         leading: const Icon(Icons.list_alt),
-        title: const Text('OSS ライセンス'),
+        title: Text(l10n.aboutOssLicenses),
         trailing: const Icon(Icons.chevron_right),
         onTap: onTap,
       ),

@@ -48,3 +48,13 @@ SiteConsentsDao siteConsentsDao(Ref ref) {
 AppSettingsDao appSettingsDao(Ref ref) {
   return ref.watch(appDatabaseProvider).appSettingsDao;
 }
+
+@Riverpod(keepAlive: true)
+BookMetadataDao bookMetadataDao(Ref ref) {
+  return ref.watch(appDatabaseProvider).bookMetadataDao;
+}
+
+@Riverpod(keepAlive: true)
+BookBookmarksDao bookBookmarksDao(Ref ref) {
+  return ref.watch(appDatabaseProvider).bookBookmarksDao;
+}

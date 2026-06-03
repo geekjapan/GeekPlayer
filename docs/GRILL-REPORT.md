@@ -568,26 +568,34 @@ By category: CROSS=20, VID=0, AUD=2, NOV=2, NAR=3, KAK=3, SET=2, ABT=0, GAP=4, R
 
 （HIGH の未解決はなし。round 1 で全消化）
 
-### Remaining for next round — MEDIUM-priority
+### Triage (prepare-v0-2-foundation, 2026-06-03)
 
-- [ ] Q-CROSS-010 — 小説作品を `recent_items` に乗せるか
-- [ ] Q-CROSS-012 — `EpisodeId` を sealed 化（int + string ハイブリッド）
-- [ ] Q-AUD-001 — macOS audio entitlement のキー名訂正
-- [ ] Q-AUD-002 — アートワーク placeholder asset の用意
-- [ ] Q-NAR-003 — R18 同意取消時の R18 キャッシュ削除動作
-- [ ] Q-KAK-001 — カクヨム任意キーワード検索を諦めるか
-- [ ] Q-KAK-002 — HTML パース失敗時は外部ブラウザに倒す
-- [ ] Q-KAK-003 — カクヨム HTML fixture をテストに含める
-- [ ] Q-SET-001 — drift migration v2 → v3 テスト
+v0.1 が実装・archive・リリース（`v0.1.0`）済みになったため、旧 "next round" 項目を再トリアージした。
+**Fixed** = v0.1 実装/テストで解決済み（実コードを確認）。**Routed** = v0.2 の named change / ADR に割り当て。
 
-### Remaining for next round — LOW-priority
+#### MEDIUM-priority — すべて v0.1 実装で解決済み（Fixed）
 
-- [ ] Q-NAR-001 — R18 consent vs scraping consent の意味論分離（ADR-0003 で部分的に整理。policyVersion の値設計が未決）
-- [ ] Q-SET-002 — 設定値リアルタイム反映の購読パターン明文化
-- [ ] Q-GAP-003 — `THIRD_PARTY_NOTICES.md` の `webfeed` → `webfeed_revised` 表記修正
-- [ ] Q-GAP-004 — about-screen の LGPL セクション必須表示テスト
-- [ ] Q-RISK-001 — iOS 対応時の libmpv 取り扱い（v0.2 で ADR）
-- [ ] Q-UX-001 — i18n skeleton の導入タイミング
+- [x] Q-CROSS-010 — 小説を `recent_items` に乗せる。`app/lib/core/storage/tables/recent_items.dart` が `kind='novel'` を含む free-form discriminator として実装済み。
+- [x] Q-CROSS-012 — `EpisodeId`。`app/lib/core/novel/models/episode.dart` で index ラッパの value class として実装（int/string sealed 化はせず、型安全な単一 index 表現に決定）。
+- [x] Q-AUD-001 — macOS audio。`app/macos/Runner/Info.plist` の `LSBackgroundModes: audio` で背景再生を宣言済み（entitlement キーではなく Info.plist で対応）。
+- [x] Q-AUD-002 — アートワーク。`app/lib/features/audio/` がメタデータの `artworkBytes` を読み、無い場合はファイル名/placeholder にフォールバックする実装で解決。
+- [x] Q-KAK-001 — カクヨム検索。`add-kakuyomu-novel-reader` 実装で解決済み。
+- [x] Q-KAK-002 — HTML パース失敗時のフォールバック。`app/lib/features/novel_kakuyomu/presentation/parser_failure_fallback.dart` で実装。
+- [x] Q-KAK-003 — カクヨム fixture。`app/test/fixtures/kakuyomu/{rss,html}/*` を整備済み。
+- [x] Q-SET-001 — migration v2→v3 テスト。`app/test/core/storage/migration_v2_to_v3_test.dart` で実装。
+
+#### LOW-priority
+
+- [x] Q-SET-002 — 設定値リアルタイム反映。reader screen 等が `ref.watch(...Provider)` で購読する実装で解決。今後の v0.2 settings は **`settings-persistence` capability の "propagation model" 要件**（新規/即時反映の明記）に従う。
+- [x] Q-GAP-003 — `webfeed_revised` 表記。`THIRD_PARTY_NOTICES.md` で修正済み。
+- [x] Q-GAP-004 — about-screen LGPL 表示テスト。`app/test/features/about/lgpl_notice_section_test.dart` で実装。
+
+#### Routed to v0.2 changes / ADR（戦略判断）
+
+- [x] Q-RISK-001 — iOS 対応時の libmpv 取り扱い → **[ADR-0006](adr/0006-ios-media-engine-distribution-policy.md)** に割り当て。`add-platform-ios` は本 ADR の決定に従う。
+- [x] Q-UX-001 — i18n skeleton 導入タイミング → **`add-english-localization`**（v0.2 sequencing #2）で確定。`en` ロケールと ARB parity test を book/manga UI より前に導入する。
+- [x] Q-NAR-001 — R18 consent vs scraping consent の意味論分離 / policyVersion 値設計 → **`site-consent` 計画 delta**（prepare-v0-2-foundation）で、R18 expansion を行う将来 change が consent 所有先・policyVersion・取消キャッシュ方針を proposal で明記することを要件化。具体実装は将来の R18 expansion change（例 `add-r18-consent-expansion`）に割り当て。
+- [x] Q-NAR-003 — R18 同意取消時の R18 キャッシュ削除動作 → 同上（`site-consent` の "consent revocation cache policy is explicit" 要件）。cached entry を読める/隠す/削除提示のいずれにするかを R18 expansion change が実装前に明記する。
 
 ---
 

@@ -7,11 +7,17 @@ import 'package:geekplayer/core/storage/database.dart';
 import 'package:geekplayer/core/storage/providers.dart';
 import 'package:geekplayer/features/settings/presentation/app_settings_notifier.dart';
 import 'package:geekplayer/features/settings/presentation/settings_screen.dart';
+import 'package:geekplayer/l10n/app_localizations.dart';
 
 Widget _harness(AppDatabase db) {
   return ProviderScope(
     overrides: [appDatabaseProvider.overrideWithValue(db)],
-    child: const MaterialApp(home: SettingsScreen()),
+    child: const MaterialApp(
+      locale: Locale('ja'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: SettingsScreen(),
+    ),
   );
 }
 
@@ -64,7 +70,12 @@ void main() {
           child: Builder(
             builder: (ctx) {
               container = ProviderScope.containerOf(ctx);
-              return const MaterialApp(home: SettingsScreen());
+              return const MaterialApp(
+                locale: Locale('ja'),
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                supportedLocales: AppLocalizations.supportedLocales,
+                home: SettingsScreen(),
+              );
             },
           ),
         ),

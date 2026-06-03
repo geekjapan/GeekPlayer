@@ -277,3 +277,50 @@ default playback speed, default subtitle on/off.
 - **THEN** the font size slider row does NOT display the next-launch helper
   text, because font size reflects immediately
 
+### Requirement: Settings screen supports English copy
+
+All Settings screen section headings, row labels, option labels, badges, dialogs, and helper text SHALL render through localization and support Japanese and English.
+
+#### Scenario: Settings placeholder badge is localized
+
+- **WHEN** the Settings screen is pumped with `Locale('en')`
+- **THEN** the v0.2 placeholder badge is displayed in English rather than the Japanese literal "v0.2 で対応"
+
+### Requirement: Book reader defaults are configurable
+
+The Settings screen SHALL expose book reader defaults for EPUB font size, EPUB line height, EPUB font family where supported, PDF initial zoom behavior, and whether to reopen the last position automatically. Defaults MUST be persisted via `AppSettings`.
+
+#### Scenario: EPUB font size default applies to new reader
+
+- **GIVEN** the user sets the EPUB font size default to 18sp
+- **WHEN** the user opens an EPUB
+- **THEN** the reader initially renders text at 18sp
+
+### Requirement: Active reader setting propagation is defined
+
+Each book setting SHALL define whether changes apply immediately to an open reader or only to newly opened readers.
+
+#### Scenario: EPUB display setting updates active reader
+
+- **WHEN** the user changes EPUB font size while an EPUB reader is open
+- **THEN** the active reader updates according to the documented propagation model
+
+### Requirement: Manga reader defaults are configurable
+
+The Settings screen SHALL expose manga reader defaults for reading direction, single-page versus spread layout, and zoom reset behavior. Defaults MUST be persisted via `AppSettings`.
+
+#### Scenario: Reading direction default applies to new viewer
+
+- **GIVEN** the user sets manga reading direction to right-to-left
+- **WHEN** the user opens a manga archive
+- **THEN** the viewer initially uses right-to-left navigation and spread ordering
+
+### Requirement: Active manga setting propagation is defined
+
+Each manga setting SHALL define whether changes apply immediately to an open viewer or only to newly opened viewers.
+
+#### Scenario: Spread mode updates according to policy
+
+- **WHEN** the user changes the manga spread-mode setting while a manga viewer is open
+- **THEN** the viewer behavior follows the documented propagation model for that setting
+

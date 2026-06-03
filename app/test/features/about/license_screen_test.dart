@@ -2,9 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geekplayer/features/about/presentation/license_screen.dart';
+import 'package:geekplayer/l10n/app_localizations.dart';
 
 Widget _harness() {
-  return const ProviderScope(child: MaterialApp(home: LicenseListScreen()));
+  return const ProviderScope(
+    child: MaterialApp(
+      locale: Locale('ja'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: LicenseListScreen(),
+    ),
+  );
 }
 
 void main() {

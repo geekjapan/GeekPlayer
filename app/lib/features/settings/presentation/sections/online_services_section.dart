@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/novel/models/site.dart';
 import '../../../../core/storage/database.dart';
 import '../../../../core/storage/providers.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../novel/data/consent_repository.dart';
 import '../settings_screen.dart';
 
@@ -61,6 +62,7 @@ class _OnlineServicesSectionState extends ConsumerState<OnlineServicesSection> {
   }
 
   Future<void> _toggle(Site site, bool nextValue) async {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     final ConsentRepository repo = ref.read(consentRepositoryProvider);
     if (nextValue) {
       await repo.grant(site);
@@ -81,17 +83,17 @@ class _OnlineServicesSectionState extends ConsumerState<OnlineServicesSection> {
       context: context,
       builder: (BuildContext ctx) => AlertDialog(
         key: Key('revoke-cache-${site.code}'),
-        content: Text('本文キャッシュ (${mb.toStringAsFixed(1)} MB) も削除しますか?'),
+        content: Text(l10n.settingsRevokeCachePrompt(mb.toStringAsFixed(1))),
         actions: <Widget>[
           TextButton(
             key: Key('revoke-keep-${site.code}'),
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('残す'),
+            child: Text(l10n.settingsRevokeKeepCache),
           ),
           FilledButton(
             key: Key('revoke-delete-${site.code}'),
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('削除する'),
+            child: Text(l10n.settingsRevokeDeleteCache),
           ),
         ],
       ),
@@ -107,19 +109,15 @@ class _OnlineServicesSectionState extends ConsumerState<OnlineServicesSection> {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     return SettingsSection(
       id: 'online-services',
-      title: 'オンラインサービス',
+      title: l10n.settingsSectionOnlineServices,
       children: <Widget>[
-        const Padding(
-          key: Key('online-services-disclosure'),
-          padding: EdgeInsets.fromLTRB(16, 4, 16, 12),
-          child: Text(
-            // ADR-0001 §注意書き-3 (permanent disclosure).
-            '本アプリは個人利用目的でなろう / ノクターン系 / カクヨムから '
-            '本文を取得します。各サイトの利用規約に同意した範囲でのみ '
-            '利用してください。',
-          ),
+        Padding(
+          key: const Key('online-services-disclosure'),
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+          child: Text(l10n.settingsOnlineServicesDisclosure),
         ),
         FutureBuilder<Map<Site, bool>>(
           future: _granted,

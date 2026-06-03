@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geekplayer/features/about/presentation/lgpl_notice_section.dart';
+import 'package:geekplayer/l10n/app_localizations.dart';
 
 Widget _harness() {
   return const MaterialApp(
+    locale: Locale('ja'),
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
     home: Scaffold(body: SingleChildScrollView(child: LgplNoticeSection())),
   );
 }
