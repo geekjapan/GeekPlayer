@@ -69,8 +69,7 @@ v0.2 の change は次の順に apply した。順序には実装上の依存が
 - ✅ **`add-auto-update`**（バナー版）— GitHub Releases チェック + Settings About の更新バナーを実装済み。
 - ✅ **`expand-auto-update-delivery`** — バナー版から OS 別の実ダウンロード（dio）+ `file://` での in-app install/handoff を実装済み（Android は file-provider 宣言が残課題、HANDOFF §7 参照）。
 - ✅ **`add-ml-runtime-abstraction`** — v1.0 AI 高画質化の seam（`core/ml/`：MlBackend / ImageUpscaler / MlRuntime / PassthroughUpscaler + Riverpod）を実装済み。
-- ⏳ **`add-platform-ios` / iPadOS** — **[ADR-0006](adr/0006-ios-media-engine-distribution-policy.md) は accepted**。
-  libmpv/media_kit の LGPL 動的リンクと非ストア配布の整合に従って着手する。v0.2 最後の主要プラットフォーム。
+- ✅ **`add-platform-ios` / iPadOS** — ADR-0006 Option A（libmpv/media_kit 継続 + 非ストア配布）で実装済み。iOS は SPM を無効化して CocoaPods で libmpv をビルド、deployment target 14.0、`build-ios` CI smoke ジョブ追加。配布の本番化（署名/プロビジョニング）は follow-up。
 
 ### v0.2 proposal readiness checklist
 
@@ -91,9 +90,14 @@ v0.2 の change は次の順に apply した。順序には実装上の依存が
 
 **AI 高画質化** 機能を段階導入する。
 
+> **状態 (2026-06-03)**: 抽象化レイヤ `core/ml/`（`add-ml-runtime-abstraction`）と CPU bicubic アップスケーラ
+> + manga viewer の「高画質化」アクション（`add-ai-image-upscaler`）を実装済み。残るは GPU/ネイティブ
+> バックエンドと学習済みモデル、および動画 AI。
+
 1. **画像系**（漫画 / 書籍）:
-   - Real-ESRGAN / waifu2x モデルを on-device GPU で推論
-   - 抽象化レイヤを `core/ml/` に置く（CoreML / NNAPI / ONNX Runtime / TensorRT を OS で切り替え）
+   - ✅ 抽象化レイヤを `core/ml/` に配置（`ImageUpscaler` / `MlRuntime` / `MlBackend`、CoreML/NNAPI/ONNX/TensorRT を OS で切替）
+   - ✅ CPU bicubic アップスケーラ（`CpuImageUpscaler`、`image` パッケージ）を既定実装として提供
+   - ⏳ Real-ESRGAN / waifu2x モデルを on-device GPU で推論（concrete backend）
 2. **動画リアルタイム**:
    - Anime4K をレンダリングパスに組み込む（GPU シェーダ）
 3. **動画オフライン書き出し**:
