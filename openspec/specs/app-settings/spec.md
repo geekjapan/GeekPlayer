@@ -259,9 +259,10 @@ value sourced from `package_info_plus` or equivalent.
 
 ### Requirement: Realtime reflection policy is disclosed in the UI
 
-For each setting whose policy is "next launch only" (per design D7), the
-section row SHALL display a 1-line ja helper text in a smaller font under the
-control reading "変更は次回起動から有効になります". For settings that reflect
+The Settings UI SHALL disclose the realtime-reflection policy per setting: for
+each setting whose policy is "next launch only" (per design D7), the section
+row displays a 1-line ja helper text in a smaller font under the control
+reading "変更は次回起動から有効になります". For settings that reflect
 immediately, no such helper is shown. The helper text MUST be present on:
 default playback speed, default subtitle on/off.
 
