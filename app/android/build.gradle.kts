@@ -25,11 +25,32 @@ subprojects {
 // own compile SDK (derived from `flutter.compileSdkVersion`, not hard-coded)
 // so they stay in lockstep when Flutter bumps the default. Reflection avoids
 // needing the AGP classpath in this root build script.
-fun Any.compileSdkApi(): Int? =
-    (runCatching { javaClass.getMethod("getCompileSdkVersion").invoke(this) as? String }
-        .getOrNull())
+//
+// AGP 9 (this repo) exposes the `compileSdk` Int property (getter
+// `getCompileSdk`) and removed the legacy `getCompileSdkVersion()` String
+// getter; older AGP only had the String form ("android-33"). Try the AGP 9
+// getter first, then fall back to the legacy String for forward/backward
+// compatibility.
+fun Any.compileSdkApi(): Int? {
+    runCatching { javaClass.getMethod("getCompileSdk").invoke(this) as? Int }
+        .getOrNull()
+        ?.let { return it }
+    return runCatching { javaClass.getMethod("getCompileSdkVersion").invoke(this) as? String }
+        .getOrNull()
         ?.removePrefix("android-")
         ?.toIntOrNull()
+}
+
+// Symmetric setter: AGP 9 uses the nullable `compileSdk` Int property
+// (setter `setCompileSdk(Integer)`); older AGP used `compileSdkVersion(int)`.
+fun Any.setCompileSdkApi(api: Int): Boolean {
+    runCatching {
+        javaClass.getMethod("setCompileSdk", Integer::class.java).invoke(this, api)
+    }.onSuccess { return true }
+    return runCatching {
+        javaClass.getMethod("compileSdkVersion", Int::class.javaPrimitiveType).invoke(this, api)
+    }.isSuccess
+}
 
 subprojects {
     afterEvaluate {
@@ -41,11 +62,7 @@ subprojects {
                 ?: 36
         val currentApi = android.compileSdkApi() ?: 0
         if (currentApi in 1 until targetApi) {
-            runCatching {
-                android.javaClass
-                    .getMethod("compileSdkVersion", Int::class.javaPrimitiveType)
-                    .invoke(android, targetApi)
-            }
+            android.setCompileSdkApi(targetApi)
         }
     }
 }
