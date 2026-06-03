@@ -93,7 +93,8 @@ v0.2 の change は次の順に apply した。順序には実装上の依存が
 > **状態 (2026-06-03)**: 抽象化レイヤ `core/ml/`（`add-ml-runtime-abstraction`）と CPU bicubic アップスケーラ
 > + manga viewer の「高画質化」アクション（`add-ai-image-upscaler`）を実装済み。GPU/ネイティブ backend に
 > 進む前のランタイム戦略・環境別挙動・モデル配布の基盤再整理を **[ADR-0007](adr/0007-ai-upscaling-runtime-strategy.md)**
-> （ONNX Runtime + Execution Provider 一本化、preferred/effective backend 分離、bicubic CPU を floor）に確定。
+> （accepted: ONNX Runtime + Execution Provider 一本化、preferred/effective backend 分離、bicubic CPU を floor、
+> **画像のみ・当面 Experimental 既定 OFF**、モデルは opt-in 初回 DL）に確定。
 > 後続は ADR-0007 の Consequences のシーケンス（基盤リファクタ → ORT 統合 → モデル配布 → GPU EP）。
 
 1. **画像系**（漫画 / 書籍）:

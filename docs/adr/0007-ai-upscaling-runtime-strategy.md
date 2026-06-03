@@ -1,6 +1,6 @@
 # 0007 — On-device AI 画像アップスケーリングのランタイム戦略と環境別挙動
 
-**Status**: proposed (2026-06-03)
+**Status**: accepted (2026-06-03)
 
 > 関連: [ADR-0002](0002-hybrid-media-engine.md)（メディアエンジン）。
 > 既存 capability: `ml-runtime`（`add-ml-runtime-abstraction`）、`ai-image-upscaler`（`add-ai-image-upscaler`）。
@@ -24,6 +24,17 @@ v0.2 で AI 高画質化の足場を 2 段階で入れた:
 v1.0 のゴールは Real-ESRGAN / waifu2x を on-device GPU で推論すること。複数の concrete change（各 OS backend、モデル配布、設定 UI）がこの基盤に乗るため、**先に基盤の挙動契約を確定する**。
 
 ## Decision
+
+### 0. AI アップスケーリングは「実験的機能（Experimental）」として出す
+
+当面、AI 画像アップスケーリングは **実験的機能**として提供する:
+
+- **既定 OFF**。設定の「実験的機能 / Experimental」ゲートの内側に置き、明示的に有効化したときだけ動作する。
+- UI は **Experimental ラベル**を表示し、品質・性能・安定性を保証しないこと、将来仕様変更や削除があり得ることを明記する。
+- 実験的扱いのため、ORT 経路・モデル配布・GPU EP を**段階的に**投入できる（フル品質の作り込みを待たずに出せる）。
+- 実験フラグが OFF の間、画像経路の effective backend は **bicubic CPU**（現行挙動）であり、ユーザー体験は変わらない。
+
+実験的機能を卒業（既定 ON 化や保証付与）する判断は、品質・性能の実測後に別途行う。
 
 ### 1. backend を「preferred（志向）」と「effective（実効）」の 2 層に分離する
 
@@ -64,18 +75,20 @@ preferred GPU EP（CoreML / NNAPI / DirectML / TensorRT）
 - AI アップスケーリングは **opt-in 機能**。アプリ本体にモデルを**同梱しない**（サイズのため）。
 - モデルは初回利用時に **GitHub Releases から DL**（バージョン付き、SHA-256 検証、on-disk キャッシュ）。`ModelRepository` を新設し、DL/検証/保存/削除を担う。
 - モデル未取得の間、effective backend は **bicubic CPU**（＝現在の挙動）。AI 品質はモデル取得後に有効化。
-- **設定**で AI アップスケーリングの ON/OFF、既定倍率、モデル管理（DL/削除/サイズ表示）、（上級）backend 上書きを提供。
+- **設定**は「実験的機能」セクション配下に置き、AI アップスケーリングの有効化トグル（既定 OFF）、既定倍率、モデル管理（DL/削除/サイズ表示）、（上級）backend 上書きを提供。
 - **ライセンス**: Real-ESRGAN は BSD-3-Clause、waifu2x は MIT と**寛容**。libmpv（LGPL）と違い配布上の動的リンク制約はないが、サイズの都合で同梱せず DL とする。採用モデルのライセンスは change 着手時に各々確認する。
 
 ### 5. 環境別の挙動・機能マトリクス
 
-| 環境 | AI 既定 | preferred 経路 | モデル未取得時 | 備考 |
+全環境で **実験的機能・既定 OFF**。下表は実験フラグを ON にしたときの経路（OFF の間は常に bicubic CPU）。
+
+| 環境 | AI（実験フラグ ON 時） | preferred 経路 | モデル未取得時 | 備考 |
 |---|---|---|---|---|
-| iOS / iPadOS | opt-in（既定 OFF） | CoreML EP | bicubic CPU | 非ストア配布（ADR-0006） |
-| macOS | opt-in | CoreML EP | bicubic CPU | |
-| Android | opt-in | NNAPI EP | bicubic CPU | 端末差が大きく要 fallback |
-| Windows | opt-in | DirectML EP | bicubic CPU | |
-| Linux | opt-in | ORT CPU EP | bicubic CPU | GPU EP は将来 |
+| iOS / iPadOS | experimental（既定 OFF） | CoreML EP | bicubic CPU | 非ストア配布（ADR-0006） |
+| macOS | experimental | CoreML EP | bicubic CPU | |
+| Android | experimental | NNAPI EP | bicubic CPU | 端末差が大きく要 fallback |
+| Windows | experimental | DirectML EP | bicubic CPU | |
+| Linux | experimental | ORT CPU EP | bicubic CPU | GPU EP は将来 |
 | Web/その他 | 常に bicubic CPU | — | — | ORT/モデル非対象 |
 
 ### 6. 機能境界
@@ -106,7 +119,9 @@ preferred GPU EP（CoreML / NNAPI / DirectML / TensorRT）
 
 ## Decision の位置づけ
 
-- 第一候補は **A（ONNX Runtime + EP）**。検証可能性（CI で CPU EP smoke）と保守性で最良。
+- **A（ONNX Runtime + EP）を採択**。検証可能性（CI で CPU EP smoke）と保守性で最良。
+- スコープは**画像のみ**（manga/book）。動画 AI は別トラック・別 ADR。
+- 機能は**当面 Experimental・既定 OFF**（上記 Decision 0）。
 - bicubic CPU（現 `CpuImageUpscaler`）は**恒久 floor**として常に残す。
 - **B は採らない**（OS 別ネイティブ増殖を避ける）。将来 ORT で性能不足が判明した特定 OS に限り、ADR を supersede して部分導入を検討する。
 

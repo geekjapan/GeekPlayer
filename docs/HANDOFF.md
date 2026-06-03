@@ -84,7 +84,7 @@ GeekPlayer/
 │   │   ├── 0003-narou-content-fetch-policy.md
 │   │   ├── 0004-home-screen-section-registry.md
 │   │   ├── 0006-ios-media-engine-distribution-policy.md  # accepted
-│   │   └── 0007-ai-upscaling-runtime-strategy.md         # proposed
+│   │   └── 0007-ai-upscaling-runtime-strategy.md         # accepted
 │   ├── roadmap.md                    # v0.1 / v0.2 / v1.0
 │   └── HANDOFF.md                    # このファイル
 ├── openspec/
@@ -249,7 +249,7 @@ v0.1 はリリース済み、**v0.2 の主要スコープ（§5 の 7 changes）
 
 ### 次の候補
 
-1. **v1.0 AI 高画質化（[ADR-0007](adr/0007-ai-upscaling-runtime-strategy.md) のシーケンス）** — ランタイム戦略は ADR-0007 で確定（ONNX Runtime + Execution Provider 一本化、preferred/effective backend 分離、bicubic CPU を floor、モデルは opt-in 初回 DL）。後続 change:
+1. **v1.0 AI 高画質化（[ADR-0007](adr/0007-ai-upscaling-runtime-strategy.md) のシーケンス）** — ランタイム戦略は ADR-0007 で **accepted**（ONNX Runtime + Execution Provider 一本化、preferred/effective backend 分離、bicubic CPU を floor、**画像のみ・当面 Experimental 既定 OFF**、モデルは opt-in 初回 DL）。後続 change:
    1. `refactor-ml-runtime-effective-backend` — `MlRuntime` を preferred/effective + 非同期 probe + フォールバックへ再構成（コードのみ・検証可能）。
    2. `add-onnx-upscaler-runtime` — ORT 統合 + CPU EP の `OnnxImageUpscaler`（軽量モデルで CI 検証、要 ORT パッケージ全 OS ビルド spike）。
    3. `add-upscale-model-distribution` — `ModelRepository`（初回 DL/SHA 検証/キャッシュ）+ 設定 UI。
