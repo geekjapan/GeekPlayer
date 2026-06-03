@@ -536,4 +536,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsMangaZoomReset => 'Reset zoom on page change';
+
+  @override
+  String get updateAvailableBannerTitle => 'Update available';
+
+  @override
+  String updateAvailableBannerBody(String version) {
+    return 'Version $version is available.';
+  }
+
+  @override
+  String get updateAvailableDownload => 'Download';
+
+  @override
+  String get updateAvailableDismiss => 'Later';
 }

@@ -515,4 +515,18 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get settingsMangaZoomReset => 'ページ移動時にズームをリセット';
+
+  @override
+  String get updateAvailableBannerTitle => 'アップデートあり';
+
+  @override
+  String updateAvailableBannerBody(String version) {
+    return '新しいバージョン $version が利用可能です。';
+  }
+
+  @override
+  String get updateAvailableDownload => 'ダウンロード';
+
+  @override
+  String get updateAvailableDismiss => '後で';
 }

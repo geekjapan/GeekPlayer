@@ -192,5 +192,17 @@
   "settingsMangaSpreadMode": "Spread layout",
   "settingsMangaSpreadModeSingle": "Single page",
   "settingsMangaSpreadModeSpread": "Two-page spread",
-  "settingsMangaZoomReset": "Reset zoom on page change"
+  "settingsMangaZoomReset": "Reset zoom on page change",
+  "updateAvailableBannerTitle": "Update available",
+  "updateAvailableBannerBody": "Version {version} is available.",
+  "@updateAvailableBannerBody": {
+    "placeholders": {
+      "version": {
+        "type": "String",
+        "example": "0.2.0"
+      }
+    }
+  },
+  "updateAvailableDownload": "Download",
+  "updateAvailableDismiss": "Later"
 }
