@@ -60,7 +60,7 @@ When following `openspec instructions` output, the JSON's `context` and `rules` 
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **GeekPlayer** (3736 symbols, 3926 relationships, 7 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **GeekPlayer** (7119 symbols, 13130 relationships, 164 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
