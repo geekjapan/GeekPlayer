@@ -392,7 +392,7 @@
   "@lgplNoticeReplacementTitle": {
     "description": "Sub-title for the replacement instructions in the LGPL notice."
   },
-  "lgplNoticeReplacementBody": "・macOS: アプリバンドル内 Contents/Frameworks/ 配下の Mpv.framework / libmpv.dylib を差し替え\n・Windows: GeekPlayer.exe と同じディレクトリの mpv-2.dll を差し替え\n・Android: APK 内 lib/<abi>/libmpv.so を差し替えた上で APK を再署名",
+  "lgplNoticeReplacementBody": "・macOS: アプリバンドル内 Contents/Frameworks/ 配下の Mpv.framework / libmpv.dylib を差し替え\n・Windows: GeekPlayer.exe と同じディレクトリの mpv-2.dll を差し替え\n・Android: APK 内 lib/<abi>/libmpv.so を差し替えた上で APK を再署名\n・iOS: .app バンドル内 Frameworks/ 配下の libmpv フレームワークを差し替え、再署名 (Ad Hoc / 開発者署名) が必要",
   "@lgplNoticeReplacementBody": {
     "description": "Per-platform replacement instructions for libmpv."
   },
@@ -811,5 +811,17 @@
   "updateNoCompatibleAsset": "対応アセットが見つかりません",
   "@updateNoCompatibleAsset": {
     "description": "SnackBar message shown when no release asset matches the running platform."
+  },
+  "mangaUpscaleAction": "高画質化",
+  "@mangaUpscaleAction": {
+    "description": "Tooltip / label for the upscale icon button in the manga viewer AppBar."
+  },
+  "mangaUpscaleInProgress": "高画質化処理中…",
+  "@mangaUpscaleInProgress": {
+    "description": "Label shown while upscaling is in progress in the manga viewer."
+  },
+  "mangaUpscaleError": "高画質化に失敗しました",
+  "@mangaUpscaleError": {
+    "description": "SnackBar message shown when upscaling fails in the manga viewer."
   }
 }

@@ -86,7 +86,7 @@
   "lgplNoticeBody": "GeekPlayer uses libmpv as its video playback engine, dynamically linked via media_kit. libmpv is distributed under LGPL-2.1+.",
   "lgplNoticeRights": "Under the terms of LGPL-2.1+, you have the right to independently modify and rebuild only the libmpv portion and replace it without rebuilding GeekPlayer itself. The replaced libmpv may be redistributed under the terms of LGPL.",
   "lgplNoticeReplacementTitle": "Replacement instructions (overview)",
-  "lgplNoticeReplacementBody": "· macOS: Replace Mpv.framework / libmpv.dylib under Contents/Frameworks/ in the app bundle\n· Windows: Replace mpv-2.dll in the same directory as GeekPlayer.exe\n· Android: Replace lib/<abi>/libmpv.so inside the APK and re-sign it",
+  "lgplNoticeReplacementBody": "· macOS: Replace Mpv.framework / libmpv.dylib under Contents/Frameworks/ in the app bundle\n· Windows: Replace mpv-2.dll in the same directory as GeekPlayer.exe\n· Android: Replace lib/<abi>/libmpv.so inside the APK and re-sign it\n· iOS: Replace the libmpv framework under Frameworks/ in the .app bundle and re-sign (Ad Hoc / developer signing required)",
   "lgplUpstreamLink": "Upstream source (mpv-player/mpv)",
   "lgplThirdPartyLink": "See THIRD_PARTY_NOTICES for details",
   "lgplFullTextLink": "LGPL-2.1 full text",
@@ -239,5 +239,8 @@
   },
   "updateDownloadFailed": "Download failed",
   "updateInstall": "Install / Open",
-  "updateNoCompatibleAsset": "No compatible asset found"
+  "updateNoCompatibleAsset": "No compatible asset found",
+  "mangaUpscaleAction": "Upscale",
+  "mangaUpscaleInProgress": "Upscaling…",
+  "mangaUpscaleError": "Upscaling failed"
 }

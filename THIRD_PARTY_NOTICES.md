@@ -31,8 +31,22 @@ libmpv は LGPL-2.1+ で配布されており、本アプリでは media_kit を
 - 本アプリは **App Store / Play Store 等の閉鎖型ストア配布を行わない**（OSS / GitHub
   Releases ベースの直接配布のみ）
 
-iOS / iPadOS 対応（v0.2 計画）で App Store 配布を視野に入れる場合、この方針は
-[ADR-0002](adr/0002-hybrid-media-engine.md) と共に再評価する必要があります。
+iOS / iPadOS 対応（v0.2）では [ADR-0006](docs/adr/0006-ios-media-engine-distribution-policy.md) に従い、
+**非 App Store 配布（Ad Hoc / 開発者直配布）** を前提として libmpv を動的リンクで利用します。
+App Store 配布は行いません（ADR-0006 参照）。
+
+### プラットフォーム別 libmpv 差し替え手順
+
+LGPL-2.1+ の条件により、ユーザーは本アプリに同梱された libmpv を自身でビルドしたものに差し替える権利を持ちます。
+
+| プラットフォーム | バイナリの場所 | 備考 |
+|---|---|---|
+| macOS | `GeekPlayer.app/Contents/Frameworks/Mpv.framework/` および `libmpv.dylib` | `.app` バンドル内 |
+| Windows | `GeekPlayer.exe` と同じディレクトリの `mpv-2.dll` | インストールディレクトリ直下 |
+| Android | APK / App Bundle 内 `lib/<abi>/libmpv.so` | 差し替え後に APK を再署名すること |
+| iOS | `.app` バンドル内 `Frameworks/` 配下の libmpv フレームワーク | Ad Hoc / 開発者署名で再署名が必要。App Store 配布は行いません（ADR-0006） |
+
+詳細な差し替え手順はアプリ内「アプリ情報 → OSS ライセンス」の LGPL 通知セクションも参照してください。
 
 ## 完全なライセンス情報
 
