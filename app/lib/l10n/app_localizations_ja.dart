@@ -288,7 +288,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get lgplNoticeReplacementBody =>
-      '・macOS: アプリバンドル内 Contents/Frameworks/ 配下の Mpv.framework / libmpv.dylib を差し替え\n・Windows: GeekPlayer.exe と同じディレクトリの mpv-2.dll を差し替え\n・Android: APK 内 lib/<abi>/libmpv.so を差し替えた上で APK を再署名';
+      '・macOS: アプリバンドル内 Contents/Frameworks/ 配下の Mpv.framework / libmpv.dylib を差し替え\n・Windows: GeekPlayer.exe と同じディレクトリの mpv-2.dll を差し替え\n・Android: APK 内 lib/<abi>/libmpv.so を差し替えた上で APK を再署名\n・iOS: .app バンドル内 Frameworks/ 配下の libmpv フレームワークを差し替え、再署名 (Ad Hoc / 開発者署名) が必要';
 
   @override
   String get lgplUpstreamLink => '上流ソース (mpv-player/mpv)';

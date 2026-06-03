@@ -617,7 +617,7 @@ abstract class AppLocalizations {
   /// Per-platform replacement instructions for libmpv.
   ///
   /// In ja, this message translates to:
-  /// **'・macOS: アプリバンドル内 Contents/Frameworks/ 配下の Mpv.framework / libmpv.dylib を差し替え\n・Windows: GeekPlayer.exe と同じディレクトリの mpv-2.dll を差し替え\n・Android: APK 内 lib/<abi>/libmpv.so を差し替えた上で APK を再署名'**
+  /// **'・macOS: アプリバンドル内 Contents/Frameworks/ 配下の Mpv.framework / libmpv.dylib を差し替え\n・Windows: GeekPlayer.exe と同じディレクトリの mpv-2.dll を差し替え\n・Android: APK 内 lib/<abi>/libmpv.so を差し替えた上で APK を再署名\n・iOS: .app バンドル内 Frameworks/ 配下の libmpv フレームワークを差し替え、再署名 (Ad Hoc / 開発者署名) が必要'**
   String get lgplNoticeReplacementBody;
 
   /// Link label for the libmpv upstream source.
