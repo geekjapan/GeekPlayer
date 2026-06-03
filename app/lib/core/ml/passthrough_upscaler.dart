@@ -14,12 +14,12 @@ class PassthroughUpscaler implements ImageUpscaler {
 
   @override
   Future<UpscaleResult> upscale(UpscaleRequest request) async {
-    // Passthrough always reports cpu — no hardware acceleration is used.
+    // Passthrough always reports the bicubic CPU floor — no acceleration.
     return UpscaleResult(
       bytes: request.bytes,
       outWidth: request.srcWidth * request.scaleFactor,
       outHeight: request.srcHeight * request.scaleFactor,
-      backend: MlBackend.cpu,
+      backend: MlBackend.bicubicCpu,
     );
   }
 }

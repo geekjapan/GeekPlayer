@@ -36,7 +36,7 @@ void main() {
       },
     );
 
-    test('backend is always cpu', () async {
+    test('backend is always bicubicCpu', () async {
       final request = UpscaleRequest(
         bytes: fakeBytes,
         srcWidth: 50,
@@ -44,7 +44,7 @@ void main() {
         scaleFactor: 4,
       );
       final result = await upscaler.upscale(request);
-      expect(result.backend, MlBackend.cpu);
+      expect(result.backend, MlBackend.bicubicCpu);
     });
 
     test('scaleFactor=1 returns same dimensions', () async {

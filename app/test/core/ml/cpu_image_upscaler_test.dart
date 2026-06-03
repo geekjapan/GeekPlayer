@@ -26,7 +26,7 @@ void main() {
 
       expect(result.outWidth, 8);
       expect(result.outHeight, 8);
-      expect(result.backend, MlBackend.cpu);
+      expect(result.backend, MlBackend.bicubicCpu);
       // Real interpolation: output bytes should be non-null and non-empty.
       expect(result.bytes, isNotEmpty);
     });
@@ -39,7 +39,7 @@ void main() {
 
       expect(result.outWidth, 8);
       expect(result.outHeight, 6);
-      expect(result.backend, MlBackend.cpu);
+      expect(result.backend, MlBackend.bicubicCpu);
       expect(result.bytes, isNotEmpty);
     });
 
@@ -51,7 +51,7 @@ void main() {
 
       expect(result.outWidth, 30);
       expect(result.outHeight, 15);
-      expect(result.backend, MlBackend.cpu);
+      expect(result.backend, MlBackend.bicubicCpu);
     });
 
     test('output bytes differ from input bytes for 2x upscale', () async {
