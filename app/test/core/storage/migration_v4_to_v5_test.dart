@@ -112,7 +112,7 @@ void main() {
 
         // user_version updated to 5.
         final ResultSet versionRow = raw.select('PRAGMA user_version');
-        expect(versionRow.first.values.first, 5);
+        expect(versionRow.first.values.first, 6);
       },
     );
   });
@@ -147,18 +147,18 @@ void main() {
       );
 
       final ResultSet versionRow = raw.select('PRAGMA user_version');
-      expect(versionRow.first.values.first, 5);
+      expect(versionRow.first.values.first, 6);
     });
   });
 
   group('fresh install (onCreate)', () {
-    test('schemaVersion is 5 and manga tables are empty', () async {
+    test('schemaVersion is 6 and manga tables are empty', () async {
       final AppDatabase db = AppDatabase.forTesting(
         DatabaseConnection(NativeDatabase.memory()),
       );
       addTearDown(db.close);
 
-      expect(db.schemaVersion, 5);
+      expect(db.schemaVersion, 6);
       expect(await db.mangaMetadataDao.listAll(), isEmpty);
       expect(await db.mangaBookmarksDao.listByManga('x'), isEmpty);
       expect(await db.playbackPositionsDao.getByUri('x'), isNull);

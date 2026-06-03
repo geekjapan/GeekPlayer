@@ -78,12 +78,12 @@ void main() {
       expect(await db.novelBookmarksDao.getBookmark('narou', 'x'), isNull);
       expect(await db.siteConsentsDao.getAll(), isEmpty);
 
-      // user_version is bumped to the current AppDatabase.schemaVersion.
+      // user_version is bumped to the current AppDatabase.schemaVersion (6).
       // After add-manga-zip-viewer (v5), v1 → v5 runs all onUpgrade
       // branches. The full v1 → v5 skip path is exercised by
       // migration_v4_to_v5_test.dart.
       final ResultSet versionRow = raw.select('PRAGMA user_version');
-      expect(versionRow.first.values.first, 5);
+      expect(versionRow.first.values.first, 6);
     },
   );
 }

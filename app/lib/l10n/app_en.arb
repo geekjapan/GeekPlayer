@@ -192,5 +192,28 @@
   "settingsMangaSpreadMode": "Spread layout",
   "settingsMangaSpreadModeSingle": "Single page",
   "settingsMangaSpreadModeSpread": "Two-page spread",
-  "settingsMangaZoomReset": "Reset zoom on page change"
+  "settingsMangaZoomReset": "Reset zoom on page change",
+  "mediaLibrarySectionTitle": "Media Library",
+  "mediaLibrarySectionEmpty": "No media files yet. Tap the scan button to index a folder.",
+  "mediaLibraryScanTooltip": "Scan folder",
+  "mediaLibraryScanDialogTitle": "Enter folder path",
+  "mediaLibraryScanDialogHint": "e.g. /Users/you/Movies",
+  "mediaLibraryScanDialogConfirm": "Scan",
+  "mediaLibraryScanResult": "Indexed {count} files",
+  "@mediaLibraryScanResult": {
+    "description": "SnackBar message shown after a folder scan completes. Interpolates the number of indexed files.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "42"
+      }
+    }
+  },
+  "mediaLibraryFavoritesLabel": "Favorites",
+  "mediaLibraryPlaylistsLabel": "Playlists",
+  "mediaLibraryAddFavorite": "Add to favorites",
+  "mediaLibraryRemoveFavorite": "Remove from favorites",
+  "mediaLibraryCreatePlaylist": "Create playlist",
+  "mediaLibraryDeletePlaylistConfirmTitle": "Delete playlist?",
+  "mediaLibraryDeletePlaylistConfirmBody": "All items in the playlist will be removed. The media files themselves will not be deleted."
 }

@@ -1039,6 +1039,90 @@ abstract class AppLocalizations {
   /// In ja, this message translates to:
   /// **'ページ移動時にズームをリセット'**
   String get settingsMangaZoomReset;
+
+  /// Title heading for the local media library home section.
+  ///
+  /// In ja, this message translates to:
+  /// **'メディアライブラリ'**
+  String get mediaLibrarySectionTitle;
+
+  /// Placeholder shown in the media library home section when no items have been scanned.
+  ///
+  /// In ja, this message translates to:
+  /// **'メディアファイルがまだありません。「フォルダスキャン」からフォルダを追加してください。'**
+  String get mediaLibrarySectionEmpty;
+
+  /// Tooltip for the folder-scan icon button in the media library home section.
+  ///
+  /// In ja, this message translates to:
+  /// **'フォルダをスキャン'**
+  String get mediaLibraryScanTooltip;
+
+  /// Title of the folder-path input dialog.
+  ///
+  /// In ja, this message translates to:
+  /// **'フォルダパスを入力'**
+  String get mediaLibraryScanDialogTitle;
+
+  /// Hint text for the folder-path text field in the scan dialog.
+  ///
+  /// In ja, this message translates to:
+  /// **'例: /Users/you/Movies'**
+  String get mediaLibraryScanDialogHint;
+
+  /// Confirm button label in the folder-scan dialog.
+  ///
+  /// In ja, this message translates to:
+  /// **'スキャン'**
+  String get mediaLibraryScanDialogConfirm;
+
+  /// SnackBar message shown after a folder scan completes. Interpolates the number of indexed files.
+  ///
+  /// In ja, this message translates to:
+  /// **'{count} 件のファイルをインデックスしました'**
+  String mediaLibraryScanResult(int count);
+
+  /// Label for the favorites badge or section in the media library.
+  ///
+  /// In ja, this message translates to:
+  /// **'お気に入り'**
+  String get mediaLibraryFavoritesLabel;
+
+  /// Label for the playlists entry in the media library.
+  ///
+  /// In ja, this message translates to:
+  /// **'プレイリスト'**
+  String get mediaLibraryPlaylistsLabel;
+
+  /// Tooltip / menu label to add an item to favorites.
+  ///
+  /// In ja, this message translates to:
+  /// **'お気に入りに追加'**
+  String get mediaLibraryAddFavorite;
+
+  /// Tooltip / menu label to remove an item from favorites.
+  ///
+  /// In ja, this message translates to:
+  /// **'お気に入りから削除'**
+  String get mediaLibraryRemoveFavorite;
+
+  /// Label for the create-playlist button.
+  ///
+  /// In ja, this message translates to:
+  /// **'プレイリストを作成'**
+  String get mediaLibraryCreatePlaylist;
+
+  /// Title of the confirmation dialog for deleting a playlist.
+  ///
+  /// In ja, this message translates to:
+  /// **'プレイリストを削除しますか?'**
+  String get mediaLibraryDeletePlaylistConfirmTitle;
+
+  /// Body of the playlist-delete confirmation dialog.
+  ///
+  /// In ja, this message translates to:
+  /// **'プレイリスト内のすべての項目が削除されます。メディアファイル本体は削除されません。'**
+  String get mediaLibraryDeletePlaylistConfirmBody;
 }
 
 class _AppLocalizationsDelegate

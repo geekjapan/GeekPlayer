@@ -16,8 +16,8 @@ void main() {
         await db.playbackPositionsDao.getByUri('file:///nonexistent');
         final List<dynamic> recents = await db.recentItemsDao.list();
         expect(recents, isEmpty);
-        // v5 — `add-manga-zip-viewer` bumped from 4.
-        expect(db.schemaVersion, 5);
+        // v6 — `add-media-library` bumped from 5.
+        expect(db.schemaVersion, 6);
       },
     );
   });

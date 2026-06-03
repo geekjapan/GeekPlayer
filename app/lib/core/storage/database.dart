@@ -4,17 +4,23 @@ import 'package:drift_flutter/drift_flutter.dart';
 import 'migrations/v2_to_v3.dart';
 import 'migrations/v3_to_v4.dart';
 import 'migrations/v4_to_v5.dart';
+import 'migrations/v5_to_v6.dart';
 import 'tables/app_settings.dart';
 import 'tables/book_bookmarks.dart';
 import 'tables/book_metadata.dart';
+import 'tables/favorites.dart';
 import 'tables/manga_bookmarks.dart';
 import 'tables/manga_metadata.dart';
+import 'tables/media_index.dart';
 import 'tables/novel_bookmarks.dart';
 import 'tables/novel_episodes.dart';
 import 'tables/novel_works.dart';
 import 'tables/playback_positions.dart';
+import 'tables/playlist_items.dart';
+import 'tables/playlists.dart';
 import 'tables/recent_items.dart';
 import 'tables/site_consents.dart';
+import 'tables/watch_history.dart';
 
 part 'database.g.dart';
 
@@ -30,6 +36,8 @@ const int kRecentItemsCap = 50;
 ///   - v3 — `add-app-settings`: app_settings
 ///   - v4 — `add-pdf-epub-reader`: book_metadata, book_bookmarks
 ///   - v5 — `add-manga-zip-viewer`: manga_metadata, manga_bookmarks
+///   - v6 — `add-media-library`: media_index, watch_history, favorites,
+///          playlists, playlist_items
 @DriftDatabase(
   tables: <Type>[
     PlaybackPositions,
@@ -43,6 +51,11 @@ const int kRecentItemsCap = 50;
     BookBookmarks,
     MangaMetadata,
     MangaBookmarks,
+    MediaIndex,
+    WatchHistory,
+    Favorites,
+    Playlists,
+    PlaylistItems,
   ],
   daos: <Type>[
     PlaybackPositionsDao,
@@ -56,6 +69,11 @@ const int kRecentItemsCap = 50;
     BookBookmarksDao,
     MangaMetadataDao,
     MangaBookmarksDao,
+    MediaIndexDao,
+    WatchHistoryDao,
+    FavoritesDao,
+    PlaylistsDao,
+    PlaylistItemsDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -65,7 +83,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.connection);
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -102,6 +120,20 @@ class AppDatabase extends _$AppDatabase {
       // app/lib/core/storage/migrations/v4_to_v5.dart.
       if (from < 5) {
         await migrateV4ToV5(m, mangaMetadata, mangaBookmarks);
+      }
+      // v5 -> v6: introduce media_index, watch_history, favorites, playlists,
+      // playlist_items. Additive only.
+      // See app/test/core/storage/migration_v5_to_v6_test.dart and
+      // app/lib/core/storage/migrations/v5_to_v6.dart.
+      if (from < 6) {
+        await migrateV5ToV6(
+          m,
+          mediaIndex,
+          watchHistory,
+          favorites,
+          playlists,
+          playlistItems,
+        );
       }
     },
   );
@@ -789,5 +821,277 @@ class MangaBookmarksDao extends DatabaseAccessor<AppDatabase>
     return (delete(
       mangaBookmarks,
     )..where(($MangaBookmarksTable t) => t.id.equals(id))).go();
+  }
+}
+
+/// DAO for [MediaIndex]. Upsert, lookup, kind-filtered listing, and deletion.
+@DriftAccessor(tables: <Type>[MediaIndex])
+class MediaIndexDao extends DatabaseAccessor<AppDatabase>
+    with _$MediaIndexDaoMixin {
+  MediaIndexDao(super.db);
+
+  /// Insert or replace a media-index row.
+  Future<void> upsert({
+    required String uri,
+    required String path,
+    required String kind,
+    required String title,
+    required String extension,
+    required int fileSizeBytes,
+    required DateTime fileLastModified,
+    required DateTime scannedAt,
+  }) {
+    return into(mediaIndex).insertOnConflictUpdate(
+      MediaIndexCompanion.insert(
+        uri: uri,
+        path: path,
+        kind: kind,
+        title: title,
+        extension: extension,
+        fileSizeBytes: fileSizeBytes,
+        fileLastModified: fileLastModified,
+        scannedAt: scannedAt,
+      ),
+    );
+  }
+
+  /// Return the row for [uri], or `null` if absent.
+  Future<MediaIndexRow?> getByUri(String uri) {
+    return (select(
+      mediaIndex,
+    )..where(($MediaIndexTable t) => t.uri.equals(uri))).getSingleOrNull();
+  }
+
+  /// All indexed items, newest-scanned first.
+  Future<List<MediaIndexRow>> listAll() {
+    return (select(mediaIndex)
+          ..orderBy(<OrderClauseGenerator<$MediaIndexTable>>[
+            ($MediaIndexTable t) =>
+                OrderingTerm(expression: t.scannedAt, mode: OrderingMode.desc),
+          ]))
+        .get();
+  }
+
+  /// All items with [kind] (`'video'` or `'audio'`), newest-scanned first.
+  Future<List<MediaIndexRow>> listByKind(String kind) {
+    return (select(mediaIndex)
+          ..where(($MediaIndexTable t) => t.kind.equals(kind))
+          ..orderBy(<OrderClauseGenerator<$MediaIndexTable>>[
+            ($MediaIndexTable t) =>
+                OrderingTerm(expression: t.scannedAt, mode: OrderingMode.desc),
+          ]))
+        .get();
+  }
+
+  /// Delete a single row by URI. Returns rows removed (0 or 1).
+  Future<int> deleteByUri(String uri) {
+    return (delete(
+      mediaIndex,
+    )..where(($MediaIndexTable t) => t.uri.equals(uri))).go();
+  }
+}
+
+/// DAO for [WatchHistory]. Upsert by URI; recent-first listing.
+@DriftAccessor(tables: <Type>[WatchHistory])
+class WatchHistoryDao extends DatabaseAccessor<AppDatabase>
+    with _$WatchHistoryDaoMixin {
+  WatchHistoryDao(super.db);
+
+  /// Insert or update watch history for [uri].
+  Future<void> upsert({
+    required String uri,
+    required DateTime lastPlayedAt,
+    required int positionMs,
+    required int durationMs,
+    required bool completed,
+  }) {
+    return into(watchHistory).insertOnConflictUpdate(
+      WatchHistoryCompanion.insert(
+        uri: uri,
+        lastPlayedAt: lastPlayedAt,
+        positionMs: positionMs,
+        durationMs: durationMs,
+        completed: Value<bool>(completed),
+      ),
+    );
+  }
+
+  /// Return the watch history row for [uri], or `null` if absent.
+  Future<WatchHistoryRow?> getByUri(String uri) {
+    return (select(
+      watchHistory,
+    )..where(($WatchHistoryTable t) => t.uri.equals(uri))).getSingleOrNull();
+  }
+
+  /// All history rows, most-recently-played first.
+  Future<List<WatchHistoryRow>> listRecent({int limit = 50}) {
+    return (select(watchHistory)
+          ..orderBy(<OrderClauseGenerator<$WatchHistoryTable>>[
+            ($WatchHistoryTable t) => OrderingTerm(
+              expression: t.lastPlayedAt,
+              mode: OrderingMode.desc,
+            ),
+          ])
+          ..limit(limit))
+        .get();
+  }
+
+  /// Delete a single history row by URI. Returns rows removed (0 or 1).
+  Future<int> deleteByUri(String uri) {
+    return (delete(
+      watchHistory,
+    )..where(($WatchHistoryTable t) => t.uri.equals(uri))).go();
+  }
+}
+
+/// DAO for [Favorites]. Presence = favorited; absence = not favorited.
+@DriftAccessor(tables: <Type>[Favorites])
+class FavoritesDao extends DatabaseAccessor<AppDatabase>
+    with _$FavoritesDaoMixin {
+  FavoritesDao(super.db);
+
+  /// Mark [uri] as favorited. Idempotent.
+  Future<void> add(String uri, DateTime favoritedAt) {
+    return into(favorites).insertOnConflictUpdate(
+      FavoritesCompanion.insert(uri: uri, favoritedAt: favoritedAt),
+    );
+  }
+
+  /// Remove [uri] from favorites. Returns rows removed (0 or 1).
+  Future<int> remove(String uri) {
+    return (delete(
+      favorites,
+    )..where(($FavoritesTable t) => t.uri.equals(uri))).go();
+  }
+
+  /// `true` iff [uri] is currently favorited.
+  Future<bool> isFavorite(String uri) async {
+    final FavoriteRow? row = await (select(
+      favorites,
+    )..where(($FavoritesTable t) => t.uri.equals(uri))).getSingleOrNull();
+    return row != null;
+  }
+
+  /// All favorite rows, most-recently-favorited first.
+  Future<List<FavoriteRow>> listAll() {
+    return (select(favorites)..orderBy(<OrderClauseGenerator<$FavoritesTable>>[
+          ($FavoritesTable t) =>
+              OrderingTerm(expression: t.favoritedAt, mode: OrderingMode.desc),
+        ]))
+        .get();
+  }
+}
+
+/// DAO for [Playlists]. CRUD plus cascade-delete of [PlaylistItems].
+@DriftAccessor(tables: <Type>[Playlists, PlaylistItems])
+class PlaylistsDao extends DatabaseAccessor<AppDatabase>
+    with _$PlaylistsDaoMixin {
+  PlaylistsDao(super.db);
+
+  /// Insert a new playlist. Returns the generated id.
+  Future<int> create(String name, DateTime now) {
+    return into(playlists).insert(
+      PlaylistsCompanion.insert(name: name, createdAt: now, updatedAt: now),
+    );
+  }
+
+  /// Rename a playlist and update [updatedAt].
+  Future<void> rename(int id, String newName, DateTime now) async {
+    await (update(
+      playlists,
+    )..where(($PlaylistsTable t) => t.id.equals(id))).write(
+      PlaylistsCompanion(
+        name: Value<String>(newName),
+        updatedAt: Value<DateTime>(now),
+      ),
+    );
+  }
+
+  /// Return all playlists, newest-created first.
+  Future<List<PlaylistRow>> listAll() {
+    return (select(playlists)..orderBy(<OrderClauseGenerator<$PlaylistsTable>>[
+          ($PlaylistsTable t) =>
+              OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc),
+        ]))
+        .get();
+  }
+
+  /// Return a single playlist by [id], or `null` if absent.
+  Future<PlaylistRow?> getById(int id) {
+    return (select(
+      playlists,
+    )..where(($PlaylistsTable t) => t.id.equals(id))).getSingleOrNull();
+  }
+
+  /// Delete a playlist and all its items inside a single transaction.
+  Future<void> deleteById(int id) {
+    return db.transaction<void>(() async {
+      await (delete(
+        playlistItems,
+      )..where(($PlaylistItemsTable t) => t.playlistId.equals(id))).go();
+      await (delete(
+        playlists,
+      )..where(($PlaylistsTable t) => t.id.equals(id))).go();
+    });
+  }
+}
+
+/// DAO for [PlaylistItems]. Add, remove, reorder, and list items.
+@DriftAccessor(tables: <Type>[PlaylistItems])
+class PlaylistItemsDao extends DatabaseAccessor<AppDatabase>
+    with _$PlaylistItemsDaoMixin {
+  PlaylistItemsDao(super.db);
+
+  /// Add [mediaUri] to [playlistId] at [position].
+  Future<void> add({
+    required int playlistId,
+    required String mediaUri,
+    required int position,
+  }) {
+    return into(playlistItems).insertOnConflictUpdate(
+      PlaylistItemsCompanion.insert(
+        playlistId: playlistId,
+        mediaUri: mediaUri,
+        position: position,
+      ),
+    );
+  }
+
+  /// Remove [mediaUri] from [playlistId].
+  Future<int> remove(int playlistId, String mediaUri) {
+    return (delete(playlistItems)..where(
+          ($PlaylistItemsTable t) =>
+              t.playlistId.equals(playlistId) & t.mediaUri.equals(mediaUri),
+        ))
+        .go();
+  }
+
+  /// All items in [playlistId], sorted by [position] ascending.
+  Future<List<PlaylistItemRow>> listByPlaylist(int playlistId) {
+    return (select(playlistItems)
+          ..where(($PlaylistItemsTable t) => t.playlistId.equals(playlistId))
+          ..orderBy(<OrderClauseGenerator<$PlaylistItemsTable>>[
+            ($PlaylistItemsTable t) =>
+                OrderingTerm(expression: t.position, mode: OrderingMode.asc),
+          ]))
+        .get();
+  }
+
+  /// Replace all items of [playlistId] with [orderedUris] (positions 0..n-1).
+  Future<void> replaceAll(int playlistId, List<String> orderedUris) {
+    return db.transaction<void>(() async {
+      await (delete(playlistItems)
+            ..where(($PlaylistItemsTable t) => t.playlistId.equals(playlistId)))
+          .go();
+      for (int i = 0; i < orderedUris.length; i++) {
+        await into(playlistItems).insert(
+          PlaylistItemsCompanion.insert(
+            playlistId: playlistId,
+            mediaUri: orderedUris[i],
+            position: i,
+          ),
+        );
+      }
+    });
   }
 }
