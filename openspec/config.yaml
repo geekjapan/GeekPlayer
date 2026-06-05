@@ -1,6 +1,10 @@
 schema: spec-driven
 
 context: |
+  言語: 日本語
+  すべてのOpenSpec成果物（proposal、specs、design、tasks）は日本語で作成してください。
+  技術用語、ファイルパス、コマンド、コード識別子は必要に応じて英語のまま保持してください。
+
   GeekPlayer is a cross-platform multimedia player built with Flutter (Dart).
   License: Apache-2.0. Monorepo layout: app/ holds the Flutter project.
   v0.1 targets macOS / Windows / Android. v0.2 adds Linux / iOS / iPadOS plus
@@ -20,7 +24,7 @@ context: |
 
 rules:
   proposal:
-    - 'Always include a "Non-goals" section'
-    - 'Cite affected files with file_path:line_number references'
+    - "Always include a \"Non-goals\" section"
+    - "Cite affected files with file_path:line_number references"
   tasks:
-    - 'Use checkbox list, toggle [ ] -> [x] one at a time as work completes'
+    - "Use checkbox list, toggle [ ] -> [x] one at a time as work completes"
