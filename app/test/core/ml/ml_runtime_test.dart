@@ -106,4 +106,50 @@ void main() {
       expect(caps.effective, MlBackend.ortCpu);
     });
   });
+
+  group('MlRuntime.probe() preferred override (ADR-0007 step 4)', () {
+    test(
+      'override forceCpu pins preferred to ortCpu even on a GPU platform',
+      () async {
+        final caps = await MlRuntime(
+          platform: () => TargetPlatform.iOS,
+          experimentalFlag: () async => true,
+          modelState: () async => MlModelState.present,
+          // Both CoreML and CPU are "available"; the override must win.
+          executionProviderProbe: (_) async => true,
+          preferredOverride: () async => MlBackend.ortCpu,
+        ).probe();
+        expect(caps.preferred, MlBackend.ortCpu);
+        expect(caps.effective, MlBackend.ortCpu);
+      },
+    );
+
+    test(
+      'override forceGpu with the GPU EP unavailable degrades to the floor',
+      () async {
+        final caps = await MlRuntime(
+          platform: () => TargetPlatform.android,
+          experimentalFlag: () async => true,
+          modelState: () async => MlModelState.present,
+          // Neither the forced GPU EP nor ORT CPU is available → floor.
+          executionProviderProbe: (_) async => false,
+          preferredOverride: () async => MlBackend.coremlEp,
+        ).probe();
+        expect(caps.preferred, MlBackend.coremlEp);
+        expect(caps.effective, MlBackend.bicubicCpu);
+      },
+    );
+
+    test('null override uses the platform default', () async {
+      final caps = await MlRuntime(
+        platform: () => TargetPlatform.android,
+        experimentalFlag: () async => true,
+        modelState: () async => MlModelState.present,
+        executionProviderProbe: (b) async => b == MlBackend.nnapiEp,
+        preferredOverride: () async => null,
+      ).probe();
+      expect(caps.preferred, MlBackend.nnapiEp);
+      expect(caps.effective, MlBackend.nnapiEp);
+    });
+  });
 }

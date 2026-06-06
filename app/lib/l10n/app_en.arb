@@ -253,5 +253,10 @@
   "settingsAiUpscaleModelPresent": "Downloaded ({size})",
   "settingsAiUpscaleModelError": "Failed to download the model",
   "settingsAiUpscaleDownload": "Download",
-  "settingsAiUpscaleDelete": "Delete"
+  "settingsAiUpscaleDelete": "Delete",
+  "settingsAiUpscaleBackend": "Execution backend",
+  "settingsAiUpscaleBackendAuto": "Auto",
+  "settingsAiUpscaleBackendForceCpu": "Force CPU",
+  "settingsAiUpscaleBackendForceGpu": "Force GPU",
+  "settingsAiUpscaleBackendHelper": "Falls back to CPU automatically where the GPU is unavailable."
 }

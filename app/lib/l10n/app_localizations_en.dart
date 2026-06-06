@@ -656,4 +656,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsAiUpscaleDelete => 'Delete';
+
+  @override
+  String get settingsAiUpscaleBackend => 'Execution backend';
+
+  @override
+  String get settingsAiUpscaleBackendAuto => 'Auto';
+
+  @override
+  String get settingsAiUpscaleBackendForceCpu => 'Force CPU';
+
+  @override
+  String get settingsAiUpscaleBackendForceGpu => 'Force GPU';
+
+  @override
+  String get settingsAiUpscaleBackendHelper =>
+      'Falls back to CPU automatically where the GPU is unavailable.';
 }

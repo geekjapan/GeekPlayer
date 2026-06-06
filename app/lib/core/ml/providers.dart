@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -8,9 +9,9 @@ import 'image_upscaler.dart';
 import 'ml_backend.dart';
 import 'ml_model_state.dart';
 import 'ml_runtime.dart';
+import 'gpu_capability_probe.dart';
 import 'model_repository.dart';
 import 'onnx_model_source.dart';
-import 'ort_capability_probe.dart';
 import 'upscale_model_catalog.dart';
 import 'upscaler_selection.dart';
 
@@ -39,10 +40,17 @@ ModelRepository modelRepository(Ref ref) {
 @Riverpod(keepAlive: true)
 MlRuntime mlRuntime(Ref ref) {
   return MlRuntime(
-    executionProviderProbe: ortCpuExecutionProviderProbe,
+    executionProviderProbe: combinedExecutionProviderProbe,
     experimentalFlag: () async {
       final settings = await ref.read(appSettingsProvider.future);
       return settings.aiUpscaleEnabled;
+    },
+    preferredOverride: () async {
+      final settings = await ref.read(appSettingsProvider.future);
+      return resolvePreferredOverride(
+        settings.aiUpscaleBackendOverride,
+        defaultTargetPlatform,
+      );
     },
     modelState: () async {
       final settings = await ref.read(appSettingsProvider.future);
@@ -67,7 +75,14 @@ MlRuntime mlRuntime(Ref ref) {
 Future<ImageUpscaler> imageUpscaler(Ref ref) async {
   final MlRuntime runtime = ref.watch(mlRuntimeProvider);
   final caps = await runtime.probe();
-  if (caps.effective != MlBackend.ortCpu) {
+  // Floor branch (bicubic) stays settings/DB-free. ONNX Runtime EPs (CPU or
+  // GPU) go through the model-backed selection seam.
+  const Set<MlBackend> onnxBackends = <MlBackend>{
+    MlBackend.ortCpu,
+    MlBackend.coremlEp,
+    MlBackend.nnapiEp,
+  };
+  if (!onnxBackends.contains(caps.effective)) {
     return const CpuImageUpscaler();
   }
   final settings = await ref.watch(appSettingsProvider.future);

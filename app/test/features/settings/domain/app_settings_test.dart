@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' show ThemeMode;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:geekplayer/features/settings/domain/ai_upscale_backend_override.dart';
 import 'package:geekplayer/features/settings/domain/app_settings.dart';
 import 'package:geekplayer/features/settings/domain/novel_writing_mode.dart';
 
@@ -23,6 +24,7 @@ void main() {
       // Experimental AI upscaling defaults OFF at scale 2 (ADR-0007).
       expect(d.aiUpscaleEnabled, false);
       expect(d.aiUpscaleScale, 2);
+      expect(d.aiUpscaleBackendOverride, AiUpscaleBackendOverride.auto);
     });
   });
 

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart' show ThemeMode;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geekplayer/core/storage/database.dart';
 import 'package:geekplayer/features/settings/data/app_settings_repository.dart';
+import 'package:geekplayer/features/settings/domain/ai_upscale_backend_override.dart';
 import 'package:geekplayer/features/settings/domain/app_settings.dart';
 import 'package:geekplayer/features/settings/domain/novel_writing_mode.dart';
 import 'package:geekplayer/features/settings/domain/setting_keys.dart';
@@ -141,6 +142,38 @@ void main() {
     });
   });
 
+  group('AI upscaling backend override (ADR-0007 step 4)', () {
+    test('defaults to auto on an empty table', () async {
+      final AppDatabase db = _freshDb();
+      addTearDown(db.close);
+      final AppSettingsRepository repo = AppSettingsRepository(
+        db.appSettingsDao,
+      );
+      final AppSettings s = await repo.readAll();
+      expect(s.aiUpscaleBackendOverride, AiUpscaleBackendOverride.auto);
+    });
+
+    test('forceCpu round-trips through writeDiff/readAll', () async {
+      final AppDatabase db = _freshDb();
+      addTearDown(db.close);
+      final AppSettingsRepository repo = AppSettingsRepository(
+        db.appSettingsDao,
+      );
+      final AppSettings before = AppSettings.defaults();
+      final AppSettings after = before.copyWith(
+        aiUpscaleBackendOverride: AiUpscaleBackendOverride.forceCpu,
+      );
+      await repo.writeDiff(before, after);
+
+      final reread = await repo.readAll();
+      expect(
+        reread.aiUpscaleBackendOverride,
+        AiUpscaleBackendOverride.forceCpu,
+      );
+      expect(reread, after);
+    });
+  });
+
   group('writeDiff failure path', () {
     test(
       'throws and leaves the table unchanged when the DB is closed',
@@ -179,7 +212,7 @@ void main() {
         novelCacheCapMb: 500,
       );
       await repo.writeAll(snap);
-      expect((await db.appSettingsDao.getAll()).length, 15);
+      expect((await db.appSettingsDao.getAll()).length, 16);
       expect(await repo.readAll(), snap);
     });
   });

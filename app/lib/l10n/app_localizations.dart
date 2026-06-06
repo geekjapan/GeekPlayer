@@ -1255,6 +1255,36 @@ abstract class AppLocalizations {
   /// In ja, this message translates to:
   /// **'削除'**
   String get settingsAiUpscaleDelete;
+
+  /// Title for the advanced AI-upscaling execution-backend override control.
+  ///
+  /// In ja, this message translates to:
+  /// **'実行バックエンド'**
+  String get settingsAiUpscaleBackend;
+
+  /// Backend override choice: use the platform default (no override).
+  ///
+  /// In ja, this message translates to:
+  /// **'自動'**
+  String get settingsAiUpscaleBackendAuto;
+
+  /// Backend override choice: force the ONNX Runtime CPU execution provider.
+  ///
+  /// In ja, this message translates to:
+  /// **'CPU を強制'**
+  String get settingsAiUpscaleBackendForceCpu;
+
+  /// Backend override choice: force the platform GPU execution provider.
+  ///
+  /// In ja, this message translates to:
+  /// **'GPU を強制'**
+  String get settingsAiUpscaleBackendForceGpu;
+
+  /// Helper note explaining that forced GPU degrades to CPU when unavailable.
+  ///
+  /// In ja, this message translates to:
+  /// **'GPU が利用できない環境では自動的に CPU へ切り替わります。'**
+  String get settingsAiUpscaleBackendHelper;
 }
 
 class _AppLocalizationsDelegate

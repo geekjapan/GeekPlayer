@@ -24,7 +24,7 @@ void main() {
     expect(SettingKeys.all.toSet().length, SettingKeys.all.length);
   });
 
-  test('all spec fields are represented (15)', () {
-    expect(SettingKeys.all.length, 15);
+  test('all spec fields are represented (16)', () {
+    expect(SettingKeys.all.length, 16);
   });
 }

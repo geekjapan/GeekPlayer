@@ -178,6 +178,49 @@ void main() {
       expect(upscaler, isA<OnnxImageUpscaler>());
     });
 
+    test(
+      'GPU effective backend → OnnxImageUpscaler targeting the GPU EP',
+      () async {
+        // iOS platform + experimental ON + CoreML probe true + model present →
+        // effective coremlEp → Onnx upscaler targeting CoreML.
+        final runtime = MlRuntime(
+          platform: () => TargetPlatform.iOS,
+          experimentalFlag: () async => true,
+          executionProviderProbe: (b) async =>
+              b == MlBackend.coremlEp || b == MlBackend.ortCpu,
+          modelState: () async => MlModelState.present,
+        );
+        final db = _freshDb();
+        addTearDown(db.close);
+        final dir = await Directory.systemTemp.createTemp('gp_prov_gpu_');
+        addTearDown(() => dir.delete(recursive: true));
+        final x2Bytes = await File(
+          'test/fixtures/ml/upscale_x2_nearest.onnx',
+        ).readAsBytes();
+        final repo = await _repoWithPresent(
+          UpscaleModelCatalog.x2,
+          x2Bytes,
+          dir,
+        );
+
+        final container = ProviderContainer(
+          overrides: [
+            mlRuntimeProvider.overrideWithValue(runtime),
+            appDatabaseProvider.overrideWithValue(db),
+            modelRepositoryProvider.overrideWithValue(repo),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        final upscaler = await container.read(imageUpscalerProvider.future);
+        expect(upscaler, isA<OnnxImageUpscaler>());
+        expect(
+          (upscaler as OnnxImageUpscaler).targetBackend,
+          MlBackend.coremlEp,
+        );
+      },
+    );
+
     test('overrideWith substitutes a fake upscaler', () async {
       final fake = _FakeUpscaler();
       final container = ProviderContainer(
