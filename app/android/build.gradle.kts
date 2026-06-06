@@ -16,7 +16,11 @@ subprojects {
     project.layout.buildDirectory.value(newSubprojectBuildDir)
 }
 subprojects {
-    project.evaluationDependsOn(":app")
+    // `:app` must not depend on itself; only plugin modules wait for it so its
+    // compile SDK is readable in their `afterEvaluate` below.
+    if (project.name != "app") {
+        project.evaluationDependsOn(":app")
+    }
 }
 
 // Some plugins (e.g. onnxruntime) declare an older Android compileSdk
@@ -53,6 +57,10 @@ fun Any.setCompileSdkApi(api: Int): Boolean {
 }
 
 subprojects {
+    // Only bump *plugin* modules up to `:app`'s compile SDK. `:app` already
+    // sets its own, and it is force-evaluated by the dependency above — adding
+    // an `afterEvaluate` to an already-evaluated `:app` throws, so skip it.
+    if (project.name == "app") return@subprojects
     afterEvaluate {
         val android = extensions.findByName("android") ?: return@afterEvaluate
         // :app is evaluated first (evaluationDependsOn above), so its compile
