@@ -15,6 +15,13 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
+    <!-- In-app update install handoff (add-android-apk-install-handoff):
+         launch the system package installer for a downloaded .apk. The
+         FileProvider that exposes the content:// URI is registered by the
+         open_filex package (authority ${applicationId}.fileProvider); we do
+         not declare our own provider to avoid an authority collision. -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
     <application
         android:label="geekplayer"
         android:name="${applicationName}"
@@ -82,6 +89,13 @@
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="https" />
+        </intent>
+        <!-- In-app update install handoff (add-android-apk-install-handoff):
+             resolve the system package installer for a downloaded .apk
+             (Android 11+ package visibility). -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:mimeType="application/vnd.android.package-archive" />
         </intent>
     </queries>
 </manifest>
