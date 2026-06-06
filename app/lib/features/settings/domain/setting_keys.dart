@@ -37,9 +37,11 @@ class SettingKeys {
   // Cache.
   static const String novelCacheCapMb = 'cache.cap_mb';
 
-  // Experimental — AI image upscaling (ADR-0007 step 3).
+  // Experimental — AI image upscaling (ADR-0007 step 3 / step 4).
   static const String aiUpscaleEnabled = 'experimental.ai_upscale_enabled';
   static const String aiUpscaleScale = 'experimental.ai_upscale_scale';
+  static const String aiUpscaleBackendOverride =
+      'experimental.ai_upscale_backend_override';
 
   /// Every persisted setting key. Order is informational only; the
   /// repository writes only the diff between two snapshots.
@@ -59,5 +61,6 @@ class SettingKeys {
     novelCacheCapMb,
     aiUpscaleEnabled,
     aiUpscaleScale,
+    aiUpscaleBackendOverride,
   ];
 }

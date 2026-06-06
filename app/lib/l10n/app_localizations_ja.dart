@@ -634,4 +634,20 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get settingsAiUpscaleDelete => '削除';
+
+  @override
+  String get settingsAiUpscaleBackend => '実行バックエンド';
+
+  @override
+  String get settingsAiUpscaleBackendAuto => '自動';
+
+  @override
+  String get settingsAiUpscaleBackendForceCpu => 'CPU を強制';
+
+  @override
+  String get settingsAiUpscaleBackendForceGpu => 'GPU を強制';
+
+  @override
+  String get settingsAiUpscaleBackendHelper =>
+      'GPU が利用できない環境では自動的に CPU へ切り替わります。';
 }

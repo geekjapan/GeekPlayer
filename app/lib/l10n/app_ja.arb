@@ -843,5 +843,25 @@
   },
   "settingsAiUpscaleModelError": "モデルのダウンロードに失敗しました",
   "settingsAiUpscaleDownload": "ダウンロード",
-  "settingsAiUpscaleDelete": "削除"
+  "settingsAiUpscaleDelete": "削除",
+  "settingsAiUpscaleBackend": "実行バックエンド",
+  "@settingsAiUpscaleBackend": {
+    "description": "Title for the advanced AI-upscaling execution-backend override control."
+  },
+  "settingsAiUpscaleBackendAuto": "自動",
+  "@settingsAiUpscaleBackendAuto": {
+    "description": "Backend override choice: use the platform default (no override)."
+  },
+  "settingsAiUpscaleBackendForceCpu": "CPU を強制",
+  "@settingsAiUpscaleBackendForceCpu": {
+    "description": "Backend override choice: force the ONNX Runtime CPU execution provider."
+  },
+  "settingsAiUpscaleBackendForceGpu": "GPU を強制",
+  "@settingsAiUpscaleBackendForceGpu": {
+    "description": "Backend override choice: force the platform GPU execution provider."
+  },
+  "settingsAiUpscaleBackendHelper": "GPU が利用できない環境では自動的に CPU へ切り替わります。",
+  "@settingsAiUpscaleBackendHelper": {
+    "description": "Helper note explaining that forced GPU degrades to CPU when unavailable."
+  }
 }

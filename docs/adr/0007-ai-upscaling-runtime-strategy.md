@@ -138,3 +138,33 @@ preferred GPU EP（CoreML / NNAPI / DirectML / TensorRT）
   5. 動画 AI（Anime4K / RIFE / 動画 Real-ESRGAN）は別 ADR・別トラック。
 - 各後続 change の proposal は本 ADR を Related ADR として参照し、roadmap の **v0.2 proposal readiness checklist**（依存/ライセンス/全 OS サポート/検証コマンド）に通すこと。
 - AI 高画質化の挙動を変える将来判断（モデル同梱化、クラウド推論等）は本 ADR を supersede する新 ADR を立てる。
+
+## Amendment 2026-06-06 — Execution Provider 有効化の実情（step 4）
+
+`enable-gpu-execution-providers`（step 4）の実装にあたり、採用済みの ONNX Runtime
+Flutter パッケージ（`onnxruntime` 1.4.1）の高レベル API が公開する EP を精査した結果、
+当初 step 4 で想定した「CoreML / NNAPI / DirectML を段階有効化」のうち **DirectML は
+本パッケージでは有効化できない**ことが判明した。本 amendment はその実情と、Decision を
+変えずに degrade 設計の枠内で吸収する方針を明文化する（Decision A・Decision 0・bicubic
+恒久 floor はいずれも不変）。
+
+- **公開されている EP append API**: `appendCoreMLProvider(CoreMLFlags)` /
+  `appendNnapiProvider(NnapiFlags)` / `appendCPUProvider(CPUFlags)` /
+  `appendXnnpackProvider()`。`OrtProvider` enum も `cpu` / `coreml` / `nnapi` /
+  `xnnpack` のみ。append 失敗は `checkOrtStatus` 経由で throw され **catch 可能**。
+- **有効化できる GPU EP**: **CoreML EP（iOS/macOS）** と **NNAPI EP（Android）**。
+  本 step で `OnnxImageUpscaler` が target backend に応じて当該 EP を先に append
+  （失敗時は catch して CPU-only セッションに degrade）、CPU EP は常に append する。
+- **DirectML（Windows GPU）は不可**: 高レベル API も `OrtProvider` も DirectML を
+  公開しない（CUDA も同様で raw bindings のみ）。よって **Windows は当面 ORT CPU EP**
+  に留まり、`preferredBackend()` が返す `directmlEp` は probe で常に false → 既存の
+  フォールバック連鎖（preferred → ortCpu → bicubicCpu）で **ortCpu に縮退**する。
+  これは ADR の degrade 設計（Decision: preferred/effective 分離 + 非同期 probe）の
+  範囲内であり、ADR の supersede は不要。
+- **将来 Windows GPU が必要になった場合**: DirectML を公開する ORT パッケージへの移行、
+  raw bindings への降りた実装、または別ランタイム採用を、本 ADR を supersede する新 ADR
+  で検討する（Decision の「特定 OS に限り supersede して部分導入」条項に整合）。
+- **上級者向け backend 上書き UI**（step 3 から繰り延べ）を step 4 で実装: Experimental
+  セクションに `Auto / 強制 CPU / 強制 GPU` の 3 択を追加。上書きは *preferred* backend に
+  のみ作用し、probe による可用性検証と bicubic floor への縮退は引き続き優先される
+  （`強制 GPU` でも当該ホストに GPU EP が無ければ自動的に CPU/floor へ degrade）。

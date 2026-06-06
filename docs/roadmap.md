@@ -92,18 +92,22 @@ v0.2 の change は次の順に apply した。順序には実装上の依存が
 
 > **状態 (2026-06-06)**: ランタイム戦略 **[ADR-0007](adr/0007-ai-upscaling-runtime-strategy.md)**
 > （accepted: ONNX Runtime + Execution Provider 一本化、preferred/effective backend 分離、bicubic CPU を floor、
-> **画像のみ・当面 Experimental 既定 OFF**、モデルは opt-in 初回 DL）のシーケンスを step3 まで実装:
+> **画像のみ・当面 Experimental 既定 OFF**、モデルは opt-in 初回 DL）のシーケンスを step4 まで実装:
 > step1 ✅ `refactor-ml-runtime-effective-backend`（preferred/effective + 非同期 probe + フォールバック）/
 > step2 ✅ `add-onnx-upscaler-runtime`（ORT CPU EP の `OnnxImageUpscaler`）/
 > step3 ✅ `add-upscale-model-distribution`（`ModelRepository` で初回 DL/SHA-256 検証/キャッシュ、Experimental 設定 UI で
 > 有効化トグル既定 OFF・2x/4x・モデル管理、async `imageUpscalerProvider` 配線、manga viewer 移行。フィクスチャモデルで
-> 配線完成・実モデル選定は follow-up）。残りは step4（GPU EP 有効化）。
+> 配線完成・実モデル選定は follow-up）/
+> step4 ✅ `enable-gpu-execution-providers`（CoreML EP〔iOS/macOS〕・NNAPI EP〔Android〕を `OnnxImageUpscaler` で有効化、
+> CPU+GPU 統合 probe、上級 backend 上書き UI〔Auto/強制 CPU/強制 GPU〕。**DirectML は `onnxruntime` 1.4.1 が非公開のため
+> Windows は ORT CPU EP に縮退** — ADR-0007 amendment 2026-06-06 参照）。実モデル選定は follow-up。
 
 1. **画像系**（漫画 / 書籍）:
    - ✅ 抽象化レイヤを `core/ml/` に配置（`ImageUpscaler` / `MlRuntime` / `MlBackend`、CoreML/NNAPI/ONNX/TensorRT を OS で切替）
    - ✅ CPU bicubic アップスケーラ（`CpuImageUpscaler`、`image` パッケージ）を既定実装として提供
    - ✅ ORT CPU EP の `OnnxImageUpscaler` + `ModelRepository`（初回 DL/検証/キャッシュ）+ Experimental 設定 UI（既定 OFF・2x/4x）
-   - ⏳ Real-ESRGAN / waifu2x の実モデル選定・配置（follow-up）と、GPU EP（CoreML/NNAPI/DirectML）での推論（step4 `enable-gpu-execution-providers`）
+   - ✅ GPU EP 有効化（step4 `enable-gpu-execution-providers`）: CoreML EP〔iOS/macOS〕・NNAPI EP〔Android〕で推論、上級 backend 上書き UI。**DirectML は `onnxruntime` 1.4.1 非公開 → Windows は ORT CPU 縮退**（ADR-0007 amendment）
+   - ⏳ Real-ESRGAN / waifu2x の実モデル選定・配置（follow-up）
 2. **動画リアルタイム**:
    - Anime4K をレンダリングパスに組み込む（GPU シェーダ）
 3. **動画オフライン書き出し**:

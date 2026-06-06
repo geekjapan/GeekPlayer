@@ -24,8 +24,13 @@ class OnnxUpscaleException implements Exception {
       : 'OnnxUpscaleException: $message ($cause)';
 }
 
-/// An [ImageUpscaler] that runs an injected ONNX super-resolution model on the
-/// ONNX Runtime **CPU execution provider** (ADR-0007 step 2).
+/// An [ImageUpscaler] that runs an injected ONNX super-resolution model via
+/// ONNX Runtime (ADR-0007 step 2 / step 4).
+///
+/// The execution provider is selected by [targetBackend]: GPU EPs (CoreML /
+/// NNAPI) are appended first and degrade to the CPU EP automatically when the
+/// GPU EP cannot be appended on this host. The EP actually used is reported in
+/// [UpscaleResult.backend].
 ///
 /// Image ↔ tensor contract: NCHW `float32` RGB normalized to `[0, 1]`
 /// (`[1, 3, H, W]` in, `[1, 3, outH, outW]` out). The scale factor is read
@@ -35,12 +40,21 @@ class OnnxUpscaleException implements Exception {
 /// Inference runs synchronously on the calling isolate in this step; moving to
 /// a background isolate ([OrtIsolateSession]) is a tracked follow-up.
 class OnnxImageUpscaler implements ImageUpscaler {
-  OnnxImageUpscaler(this.modelSource);
+  OnnxImageUpscaler(this.modelSource, {this.targetBackend = MlBackend.ortCpu});
 
   final OnnxModelSource modelSource;
 
+  /// The execution provider this upscaler should prefer (ADR-0007 step 4).
+  /// `coremlEp`/`nnapiEp` append the GPU EP (with CPU fallback in the same
+  /// session); anything else runs on the CPU EP. If a GPU EP cannot be appended
+  /// on this host, the upscaler degrades to a CPU-only session.
+  final MlBackend targetBackend;
+
   OrtSession? _session;
   bool _disposed = false;
+
+  /// The EP actually used once the session is created.
+  MlBackend _effectiveBackend = MlBackend.ortCpu;
 
   OrtSession _ensureSession() {
     if (_disposed) {
@@ -48,12 +62,34 @@ class OnnxImageUpscaler implements ImageUpscaler {
     }
     final OrtSession? existing = _session;
     if (existing != null) return existing;
+    // Declared outside the try so it is released in `finally` even when session
+    // creation throws (ORT copies the options into the session, so releasing
+    // after `fromFile`/`fromBuffer` is safe).
+    OrtSessionOptions? options;
     try {
       OrtEnv.instance.init();
-      final OrtSessionOptions options = OrtSessionOptions()
+      options = OrtSessionOptions()
         ..setIntraOpNumThreads(1)
-        ..setInterOpNumThreads(1)
-        ..appendCPUProvider(CPUFlags.useArena);
+        ..setInterOpNumThreads(1);
+      // Append the requested GPU EP first (so it claims supported nodes), then
+      // always append CPU as the in-session fallback. A GPU append failure is
+      // caught and degrades to CPU-only — never fails the load.
+      MlBackend effective = MlBackend.ortCpu;
+      try {
+        switch (targetBackend) {
+          case MlBackend.coremlEp:
+            options.appendCoreMLProvider(CoreMLFlags.useNone);
+            effective = MlBackend.coremlEp;
+          case MlBackend.nnapiEp:
+            options.appendNnapiProvider(NnapiFlags.useNone);
+            effective = MlBackend.nnapiEp;
+          default:
+            break;
+        }
+      } catch (_) {
+        effective = MlBackend.ortCpu;
+      }
+      options.appendCPUProvider(CPUFlags.useArena);
       final OrtSession created = switch (modelSource) {
         OnnxModelFileSource(:final file) => OrtSession.fromFile(file, options),
         OnnxModelBytesSource(:final bytes) => OrtSession.fromBuffer(
@@ -61,11 +97,13 @@ class OnnxImageUpscaler implements ImageUpscaler {
           options,
         ),
       };
-      options.release();
       _session = created;
+      _effectiveBackend = effective;
       return created;
     } catch (e) {
       throw OnnxUpscaleException('failed to load ONNX model', e);
+    } finally {
+      options?.release();
     }
   }
 
@@ -89,13 +127,14 @@ class OnnxImageUpscaler implements ImageUpscaler {
       if (out == null) {
         throw const OnnxUpscaleException('model produced no output tensor');
       }
-      final Uint8List bytes = _fromOutputTensor(out);
-      final img.Image upscaled = img.decodeImage(bytes)!;
+      final (Uint8List bytes, int outWidth, int outHeight) = _fromOutputTensor(
+        out,
+      );
       return UpscaleResult(
         bytes: bytes,
-        outWidth: upscaled.width,
-        outHeight: upscaled.height,
-        backend: MlBackend.ortCpu,
+        outWidth: outWidth,
+        outHeight: outHeight,
+        backend: _effectiveBackend,
       );
     } on OnnxUpscaleException {
       rethrow;
@@ -127,8 +166,9 @@ class OnnxImageUpscaler implements ImageUpscaler {
     return OrtValueTensor.createTensorWithDataList(data, [1, 3, h, w]);
   }
 
-  /// `[1, 3, outH, outW]` float in `[0, 1]` → encoded PNG bytes.
-  Uint8List _fromOutputTensor(OrtValue out) {
+  /// `[1, 3, outH, outW]` float in `[0, 1]` → encoded PNG bytes plus the output
+  /// dimensions, so callers avoid a redundant decode just to read width/height.
+  (Uint8List bytes, int width, int height) _fromOutputTensor(OrtValue out) {
     final Object? value = out.value;
     if (value is! List<dynamic> || value.isEmpty) {
       throw const OnnxUpscaleException('unexpected output tensor shape');
@@ -158,7 +198,7 @@ class OnnxImageUpscaler implements ImageUpscaler {
         );
       }
     }
-    return Uint8List.fromList(img.encodePng(result));
+    return (Uint8List.fromList(img.encodePng(result)), outW, outH);
   }
 
   static int _to8bit(num normalized) =>

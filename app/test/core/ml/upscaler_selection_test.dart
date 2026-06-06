@@ -1,11 +1,11 @@
-import 'dart:typed_data';
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geekplayer/core/ml/cpu_image_upscaler.dart';
 import 'package:geekplayer/core/ml/ml_backend.dart';
 import 'package:geekplayer/core/ml/onnx_image_upscaler.dart';
 import 'package:geekplayer/core/ml/onnx_model_source.dart';
 import 'package:geekplayer/core/ml/upscaler_selection.dart';
+import 'package:geekplayer/features/settings/domain/ai_upscale_backend_override.dart';
 
 void main() {
   final model = OnnxModelSource.bytes(Uint8List.fromList([0, 1, 2, 3]));
@@ -32,11 +32,108 @@ void main() {
       );
     });
 
-    test('GPU EP backend → floor in this step (no model selected)', () {
-      // CoreML/NNAPI/DirectML EPs are not yet wired to the ORT upscaler here.
+    test('coremlEp + model → OnnxImageUpscaler targeting CoreML', () {
+      final upscaler = resolveImageUpscaler(
+        effective: MlBackend.coremlEp,
+        model: model,
+      );
+      expect(upscaler, isA<OnnxImageUpscaler>());
+      expect((upscaler as OnnxImageUpscaler).targetBackend, MlBackend.coremlEp);
+    });
+
+    test('nnapiEp + model → OnnxImageUpscaler targeting NNAPI', () {
+      final upscaler = resolveImageUpscaler(
+        effective: MlBackend.nnapiEp,
+        model: model,
+      );
+      expect(upscaler, isA<OnnxImageUpscaler>());
+      expect((upscaler as OnnxImageUpscaler).targetBackend, MlBackend.nnapiEp);
+    });
+
+    test('GPU EP without model → floor', () {
       expect(
-        resolveImageUpscaler(effective: MlBackend.coremlEp, model: model),
+        resolveImageUpscaler(effective: MlBackend.coremlEp),
         isA<CpuImageUpscaler>(),
+      );
+    });
+
+    test('directmlEp + model → floor (not an ORT-package EP)', () {
+      expect(
+        resolveImageUpscaler(effective: MlBackend.directmlEp, model: model),
+        isA<CpuImageUpscaler>(),
+      );
+    });
+  });
+
+  group('resolvePreferredOverride', () {
+    test('auto → null on every platform', () {
+      for (final p in TargetPlatform.values) {
+        expect(
+          resolvePreferredOverride(AiUpscaleBackendOverride.auto, p),
+          isNull,
+        );
+      }
+    });
+
+    test('forceCpu → ortCpu on every platform', () {
+      for (final p in TargetPlatform.values) {
+        expect(
+          resolvePreferredOverride(AiUpscaleBackendOverride.forceCpu, p),
+          MlBackend.ortCpu,
+        );
+      }
+    });
+
+    test('forceGpu maps to the platform GPU EP', () {
+      expect(
+        resolvePreferredOverride(
+          AiUpscaleBackendOverride.forceGpu,
+          TargetPlatform.iOS,
+        ),
+        MlBackend.coremlEp,
+      );
+      expect(
+        resolvePreferredOverride(
+          AiUpscaleBackendOverride.forceGpu,
+          TargetPlatform.macOS,
+        ),
+        MlBackend.coremlEp,
+      );
+      expect(
+        resolvePreferredOverride(
+          AiUpscaleBackendOverride.forceGpu,
+          TargetPlatform.android,
+        ),
+        MlBackend.nnapiEp,
+      );
+    });
+
+    test('forceGpu on Windows pins ortCpu (no usable GPU EP, DirectML)', () {
+      // DirectML is not exposed by the onnxruntime package, so forceGpu must
+      // not select directmlEp (it could never be appended); it pins ortCpu.
+      expect(
+        resolvePreferredOverride(
+          AiUpscaleBackendOverride.forceGpu,
+          TargetPlatform.windows,
+        ),
+        MlBackend.ortCpu,
+      );
+    });
+
+    test('forceGpu → null on platforms with no GPU EP', () {
+      expect(
+        resolvePreferredOverride(
+          AiUpscaleBackendOverride.forceGpu,
+          TargetPlatform.linux,
+        ),
+        isNull,
+      );
+      expect(
+        resolvePreferredOverride(
+          AiUpscaleBackendOverride.forceGpu,
+          TargetPlatform.fuchsia,
+        ),
+        isNull,
       );
     });
   });

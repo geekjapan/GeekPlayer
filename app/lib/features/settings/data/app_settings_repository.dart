@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/storage/database.dart';
 import '../../../core/storage/providers.dart';
+import '../domain/ai_upscale_backend_override.dart';
 import '../domain/app_settings.dart';
 import '../domain/novel_writing_mode.dart';
 import '../domain/setting_keys.dart';
@@ -126,6 +127,12 @@ class AppSettingsRepository {
         kIntCodec,
         d.aiUpscaleScale,
       ),
+      aiUpscaleBackendOverride: _decode<AiUpscaleBackendOverride>(
+        map,
+        SettingKeys.aiUpscaleBackendOverride,
+        kAiUpscaleBackendOverrideCodec,
+        d.aiUpscaleBackendOverride,
+      ),
     );
   }
 
@@ -229,6 +236,10 @@ class AppSettingsRepository {
     if (o.aiUpscaleScale != n.aiUpscaleScale) {
       out[SettingKeys.aiUpscaleScale] = kIntCodec.encode(n.aiUpscaleScale);
     }
+    if (o.aiUpscaleBackendOverride != n.aiUpscaleBackendOverride) {
+      out[SettingKeys.aiUpscaleBackendOverride] = kAiUpscaleBackendOverrideCodec
+          .encode(n.aiUpscaleBackendOverride);
+    }
     return out;
   }
 
@@ -261,6 +272,10 @@ class AppSettingsRepository {
           : (s.novelCacheCapMb! + 1) * -1 - 1,
       aiUpscaleEnabled: !s.aiUpscaleEnabled,
       aiUpscaleScale: -s.aiUpscaleScale - 1,
+      aiUpscaleBackendOverride:
+          s.aiUpscaleBackendOverride == AiUpscaleBackendOverride.auto
+          ? AiUpscaleBackendOverride.forceCpu
+          : AiUpscaleBackendOverride.auto,
     );
   }
 }

@@ -110,4 +110,28 @@ void main() {
       findsOneWidget,
     );
   });
+
+  testWidgets('offers the backend override with Auto selected by default', (
+    tester,
+  ) async {
+    await tester.pumpWidget(harness());
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const Key('experimental-ai-upscale-backend')),
+      findsOneWidget,
+    );
+    final ChoiceChip auto = tester.widget<ChoiceChip>(
+      find.byKey(const Key('experimental-ai-upscale-backend-auto')),
+    );
+    final ChoiceChip cpu = tester.widget<ChoiceChip>(
+      find.byKey(const Key('experimental-ai-upscale-backend-forceCpu')),
+    );
+    final ChoiceChip gpu = tester.widget<ChoiceChip>(
+      find.byKey(const Key('experimental-ai-upscale-backend-forceGpu')),
+    );
+    expect(auto.selected, isTrue);
+    expect(cpu.selected, isFalse);
+    expect(gpu.selected, isFalse);
+  });
 }
