@@ -24,8 +24,13 @@ class OnnxUpscaleException implements Exception {
       : 'OnnxUpscaleException: $message ($cause)';
 }
 
-/// An [ImageUpscaler] that runs an injected ONNX super-resolution model on the
-/// ONNX Runtime **CPU execution provider** (ADR-0007 step 2).
+/// An [ImageUpscaler] that runs an injected ONNX super-resolution model via
+/// ONNX Runtime (ADR-0007 step 2 / step 4).
+///
+/// The execution provider is selected by [targetBackend]: GPU EPs (CoreML /
+/// NNAPI) are appended first and degrade to the CPU EP automatically when the
+/// GPU EP cannot be appended on this host. The EP actually used is reported in
+/// [UpscaleResult.backend].
 ///
 /// Image ↔ tensor contract: NCHW `float32` RGB normalized to `[0, 1]`
 /// (`[1, 3, H, W]` in, `[1, 3, outH, outW]` out). The scale factor is read
@@ -57,9 +62,13 @@ class OnnxImageUpscaler implements ImageUpscaler {
     }
     final OrtSession? existing = _session;
     if (existing != null) return existing;
+    // Declared outside the try so it is released in `finally` even when session
+    // creation throws (ORT copies the options into the session, so releasing
+    // after `fromFile`/`fromBuffer` is safe).
+    OrtSessionOptions? options;
     try {
       OrtEnv.instance.init();
-      final OrtSessionOptions options = OrtSessionOptions()
+      options = OrtSessionOptions()
         ..setIntraOpNumThreads(1)
         ..setInterOpNumThreads(1);
       // Append the requested GPU EP first (so it claims supported nodes), then
@@ -88,12 +97,13 @@ class OnnxImageUpscaler implements ImageUpscaler {
           options,
         ),
       };
-      options.release();
       _session = created;
       _effectiveBackend = effective;
       return created;
     } catch (e) {
       throw OnnxUpscaleException('failed to load ONNX model', e);
+    } finally {
+      options?.release();
     }
   }
 
