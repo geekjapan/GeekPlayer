@@ -3,9 +3,7 @@
 ## Purpose
 
 Defines the GitHub Actions CI job matrix for GeekPlayer: static analysis and unit tests, plus per-platform release/debug build smoke jobs (Android, Windows, macOS, Linux) with a pinned Flutter version, build_runner codegen, and GIT_SHA embedding. iOS CI is explicitly deferred until ADR-0006.
-
 ## Requirements
-
 ### Requirement: analyze-and-test job covers static analysis and unit tests
 
 An `analyze-and-test` job MUST run on `ubuntu-latest`, execute `flutter analyze --fatal-infos` with zero warnings, and execute `flutter test` with all tests passing.
@@ -96,3 +94,19 @@ A `build-ios` job MUST run on `macos-latest`, force CocoaPods plugin resolution 
 - **GIVEN** the `build-ios` job definition
 - **WHEN** its steps are read
 - **THEN** `flutter config --no-enable-swift-package-manager` runs before `flutter pub get`
+
+### Requirement: build-android-debug job verifies 16 KB ELF alignment
+
+`build-android-debug` ジョブ（`.github/workflows/ci.yaml`）は、APK ビルド後に同梱 `lib/arm64-v8a/*.so` の 16 KB ELF アラインメントを検査するステップを MUST 実行する。`libVkLayer_*.so` を除くいずれかの `.so` の LOAD セグメント最大 `p_align` が `0x4000` 未満の場合、ジョブは fail する。これにより 16 KB 非対応ライブラリの混入を継続的に回帰検出する。
+
+#### Scenario: 全ライブラリが 16 KB アラインメントなら CI は通過する
+
+- **WHEN** `build-android-debug` ジョブがビルド済み APK の `lib/arm64-v8a/*.so` を検査する
+- **AND** `libVkLayer_*.so` を除く全 `.so` の LOAD `p_align` が `0x4000` 以上である
+- **THEN** 検査ステップは成功し、ジョブは APK アーティファクトをアップロードする
+
+#### Scenario: 16 KB 非対応ライブラリが混入すると CI が fail する
+
+- **WHEN** `lib/arm64-v8a/` のいずれかの `.so`（`libVkLayer_*.so` を除く）の LOAD `p_align` が `0x4000` 未満である
+- **THEN** 検査ステップは非ゼロ終了し、`build-android-debug` ジョブは fail する
+
