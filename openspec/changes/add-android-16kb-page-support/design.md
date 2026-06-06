@@ -81,9 +81,9 @@ Android 15+ は 16 KB メモリページサイズへ移行中で、同梱 `.so` 
 4. （将来 / 方針 B 昇格時）16 KB 対応 ORT AAR を差し替え→例外撤去→CI 厳格化→16 KB 実機で AI upscale 実走回帰。
 - ロールバック: 依存・AAR 変更を伴わない方針 A は実質ロールバック不要。B 採用時は pubspec / Gradle 変更の revert で戻す。
 
-## Open Questions
+## Open Questions（解決済み・2026-06-07）
 
-- **Q1**: remediation 方針は A（検査基盤＋待機、推奨）か、B（今すぐ AAR 差し替えで 16 KB 化）か。AI upscale を 16 KB 必須デバイスで動かす必要性の見込みで決まる。**ユーザー確定事項**。
-- **Q2**: CI 検査は当初から `libonnxruntime.so` を warning 例外にするか（方針 A 前提）、それとも例外なし厳格 fail にして B を即実施するか。Q1 に従属。
-- **Q3**: 監査スクリプトの実装は純正 Python ELF パーサ（推奨）か、NDK `llvm-readelf` 依存か。
-- **Q4**: 方針 B 採用時、Microsoft `onnxruntime-android` のどのバージョン（16 KB 対応の最小）を pin するか、pub binding(1.4.1) の期待 ORT ABI と互換か。
+- **Q1 → 確定: 方針 A**（検査基盤＋上流待機）。根拠: AI upscale は Experimental・default-OFF・opt-in で実害は警告のみ、配布は GitHub Releases でストア必須要件に非該当、B/C の侵襲・回帰コストは現リスクに見合わない。16 KB 必須デバイスが現実化したら B へ昇格。
+- **Q2 → 確定: warning 例外で開始**。`libonnxruntime.so` のみ既知例外（warning 許容）、それ以外が 16 KB を割ったら fail。onnxruntime 解消時に例外撤去して厳格化。
+- **Q3 → 確定: 純正 Python ELF パーサ**（`tool/check_so_alignment.py`、外部依存なし）。CI 環境差に強く、ローカル監査にも流用可能。
+- **Q4 → N/A**（方針 B 専用。A 採用のため対象外。B 昇格時に再オープン）。

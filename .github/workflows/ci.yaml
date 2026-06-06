@@ -77,6 +77,12 @@ jobs:
       - name: Build Android debug APK
         run: flutter build apk --debug
 
+      # 16 KB page-size ELF alignment gate (OpenSpec add-android-16kb-page-support).
+      # Non-strict: libonnxruntime.so is a tolerated known-warning while upstream
+      # ships no 16 KB-aligned build (方針 A); any other unaligned arm64 lib fails.
+      - name: Verify 16 KB ELF alignment of bundled arm64 libs
+        run: python3 tool/check_so_alignment.py build/app/outputs/flutter-apk/app-debug.apk
+
       - name: Upload Android debug APK
         uses: actions/upload-artifact@v4
         with:
