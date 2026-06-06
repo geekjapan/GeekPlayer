@@ -112,6 +112,7 @@ const allDependencies = <Package>[
   _node_preamble,
   _objective_c,
   _onnxruntime,
+  _open_filex,
   _package_config,
   _package_info_plus,
   _package_info_plus_platform_interface,
@@ -222,6 +223,7 @@ const dependencies = <Package>[
   _collection,
   _html_unescape,
   _url_launcher,
+  _open_filex,
   _pdfrx,
   _flutter_html,
   _archive,
@@ -5510,6 +5512,46 @@ SOFTWARE.''',
     devDependencies: [PackageRef('flutter_lints')],
   );
 
+/// open_filex 4.7.0
+const _open_filex = Package(
+    name: 'open_filex',
+    description: 'A plug-in that can call native APP to open files with string result in flutter, support iOS(UTI) / android(intent) / PC(ffi) / web(dart:html)',
+    homepage: 'https://github.com/javaherisaber/open_file',
+    authors: [],
+    version: '4.7.0',
+    license: '''Copyright 2018 crazecoder. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above
+      copyright notice, this list of conditions and the following
+      disclaimer in the documentation and/or other materials provided
+      with the distribution.
+    * Neither the name of Google Inc. nor the names of its
+      contributors may be used to endorse or promote products derived
+      from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.''',
+    isMarkdown: false,
+    isSdk: false,
+    dependencies: [PackageRef('ffi')],
+    devDependencies: [],
+  );
+
 /// package_config 2.2.0
 const _package_config = Package(
     name: 'package_config',
@@ -8947,7 +8989,7 @@ const _geekplayer = Package(
     version: '0.1.0+1',
     isMarkdown: false,
     isSdk: false,
-    dependencies: [PackageRef('cupertino_icons'), PackageRef('flutter_riverpod'), PackageRef('riverpod_annotation'), PackageRef('media_kit'), PackageRef('media_kit_libs_video'), PackageRef('media_kit_video'), PackageRef('just_audio'), PackageRef('audio_service'), PackageRef('audio_metadata_reader'), PackageRef('drift'), PackageRef('drift_flutter'), PackageRef('dio'), PackageRef('html'), PackageRef('webfeed_revised'), PackageRef('intl'), PackageRef('logger'), PackageRef('path'), PackageRef('path_provider'), PackageRef('file_picker'), PackageRef('package_info_plus'), PackageRef('xml'), PackageRef('collection'), PackageRef('html_unescape'), PackageRef('url_launcher'), PackageRef('pdfrx'), PackageRef('flutter_html'), PackageRef('archive'), PackageRef('image'), PackageRef('onnxruntime')],
+    dependencies: [PackageRef('cupertino_icons'), PackageRef('flutter_riverpod'), PackageRef('riverpod_annotation'), PackageRef('media_kit'), PackageRef('media_kit_libs_video'), PackageRef('media_kit_video'), PackageRef('just_audio'), PackageRef('audio_service'), PackageRef('audio_metadata_reader'), PackageRef('drift'), PackageRef('drift_flutter'), PackageRef('dio'), PackageRef('html'), PackageRef('webfeed_revised'), PackageRef('intl'), PackageRef('logger'), PackageRef('path'), PackageRef('path_provider'), PackageRef('file_picker'), PackageRef('package_info_plus'), PackageRef('xml'), PackageRef('collection'), PackageRef('html_unescape'), PackageRef('url_launcher'), PackageRef('open_filex'), PackageRef('pdfrx'), PackageRef('flutter_html'), PackageRef('archive'), PackageRef('image'), PackageRef('onnxruntime')],
     devDependencies: [PackageRef('flutter_lints'), PackageRef('mocktail'), PackageRef('build_runner'), PackageRef('drift_dev'), PackageRef('riverpod_generator'), PackageRef('fake_async'), PackageRef('sqlite3'), PackageRef('flutter_oss_licenses')],
   );
 
