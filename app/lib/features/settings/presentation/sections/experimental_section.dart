@@ -61,6 +61,12 @@ class _ExperimentalSectionState extends ConsumerState<ExperimentalSection> {
     final MlModelState state = await repo.stateOf(entry);
     final int size = await repo.sizeOf(entry);
     if (!mounted) return;
+    // Drop a stale result if the selected scale changed during the awaits,
+    // otherwise a late refresh could mark the wrong entry present/sized and the
+    // delete action would target the wrong model.
+    final int currentScale =
+        ref.read(appSettingsProvider).value?.aiUpscaleScale ?? 2;
+    if (scale != currentScale) return;
     setState(() {
       _modelState = state;
       _modelSize = size;

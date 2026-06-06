@@ -9,6 +9,7 @@ import 'ml_backend.dart';
 import 'ml_model_state.dart';
 import 'ml_runtime.dart';
 import 'model_repository.dart';
+import 'onnx_image_upscaler.dart';
 import 'onnx_model_source.dart';
 import 'ort_capability_probe.dart';
 import 'upscale_model_catalog.dart';
@@ -81,5 +82,15 @@ Future<ImageUpscaler> imageUpscaler(Ref ref) async {
   final OnnxModelSource? model = entry == null
       ? null
       : await ref.read(modelRepositoryProvider).sourceOf(entry);
-  return resolveImageUpscaler(effective: caps.effective, model: model);
+  final ImageUpscaler upscaler = resolveImageUpscaler(
+    effective: caps.effective,
+    model: model,
+  );
+  // An ONNX upscaler holds a native ORT session once it runs; release it when
+  // this keepAlive provider is invalidated (e.g. after a model delete or scale
+  // change) so the session does not leak and the model file is not left locked.
+  if (upscaler is OnnxImageUpscaler) {
+    ref.onDispose(upscaler.dispose);
+  }
+  return upscaler;
 }
