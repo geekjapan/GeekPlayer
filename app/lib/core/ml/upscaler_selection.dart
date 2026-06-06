@@ -33,11 +33,17 @@ bool _isOnnxBackend(MlBackend backend) =>
 /// Maps an advanced backend [override] (+ current [platform]) to a forced
 /// preferred [MlBackend], or null for "auto" (use the platform default).
 ///
-/// `forceCpu` always pins ONNX Runtime's CPU EP. `forceGpu` resolves to the
-/// platform's GPU EP (iOS/macOS → CoreML, Android → NNAPI, Windows → DirectML);
-/// on platforms with no GPU EP it returns null so the normal chain applies.
-/// The result is still validated by `MlRuntime.probe()` and degrades to the
-/// bicubic floor when the chosen backend is unavailable.
+/// `forceCpu` always pins ONNX Runtime's CPU EP. `forceGpu` resolves to a GPU EP
+/// the current `onnxruntime` package can actually append (iOS/macOS → CoreML,
+/// Android → NNAPI). On platforms with no usable GPU EP it pins `ortCpu`
+/// (Windows — DirectML is not exposed by the package; ADR-0007 amendment) or
+/// returns null (Linux/other) so the normal chain applies. The result is still
+/// validated by `MlRuntime.probe()` and degrades to the bicubic floor when the
+/// chosen backend is unavailable.
+///
+/// Windows returns `ortCpu` rather than `directmlEp` so `forceGpu` never selects
+/// an EP that can never be available today; revisit if/when a future ORT package
+/// exposes DirectML.
 MlBackend? resolvePreferredOverride(
   AiUpscaleBackendOverride override,
   TargetPlatform platform,
@@ -55,7 +61,7 @@ MlBackend? resolvePreferredOverride(
         case TargetPlatform.android:
           return MlBackend.nnapiEp;
         case TargetPlatform.windows:
-          return MlBackend.directmlEp;
+          return MlBackend.ortCpu;
         case TargetPlatform.linux:
         case TargetPlatform.fuchsia:
           return null;

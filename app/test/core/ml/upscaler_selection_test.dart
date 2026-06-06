@@ -106,12 +106,17 @@ void main() {
         ),
         MlBackend.nnapiEp,
       );
+    });
+
+    test('forceGpu on Windows pins ortCpu (no usable GPU EP, DirectML)', () {
+      // DirectML is not exposed by the onnxruntime package, so forceGpu must
+      // not select directmlEp (it could never be appended); it pins ortCpu.
       expect(
         resolvePreferredOverride(
           AiUpscaleBackendOverride.forceGpu,
           TargetPlatform.windows,
         ),
-        MlBackend.directmlEp,
+        MlBackend.ortCpu,
       );
     });
 
