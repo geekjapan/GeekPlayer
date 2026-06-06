@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -29,6 +30,26 @@ class _FakeDownloader implements ModelDownloader {
   }
 }
 
+/// A [ModelDownloader] that blocks on [gate] before returning, so a test can
+/// hold multiple calls in-flight simultaneously.
+class _GatedDownloader implements ModelDownloader {
+  _GatedDownloader({required this.bytes, required this.gate});
+
+  final Uint8List bytes;
+  final Future<void> gate;
+  int calls = 0;
+
+  @override
+  Future<Uint8List> download(
+    String url, {
+    void Function(int received, int total)? onProgress,
+  }) async {
+    calls++;
+    await gate;
+    return bytes;
+  }
+}
+
 void main() {
   late Directory cacheDir;
   late Uint8List x2Bytes;
@@ -44,7 +65,7 @@ void main() {
     if (cacheDir.existsSync()) await cacheDir.delete(recursive: true);
   });
 
-  ModelRepository repoWith(_FakeDownloader downloader) => ModelRepository(
+  ModelRepository repoWith(ModelDownloader downloader) => ModelRepository(
     downloader: downloader,
     cacheDirProvider: () async => cacheDir,
   );
@@ -63,6 +84,31 @@ void main() {
       expect(await File(path).readAsBytes(), x2Bytes);
       expect(await repo.stateOf(UpscaleModelCatalog.x2), MlModelState.present);
     });
+
+    test(
+      'concurrent ensureModel for the same entry shares one download',
+      () async {
+        // A downloader gated on a Completer so both calls are in-flight before
+        // either resolves; asserts the second call dedups onto the first.
+        final gate = Completer<void>();
+        final downloader = _GatedDownloader(bytes: x2Bytes, gate: gate.future);
+        final repo = repoWith(downloader);
+
+        final Future<String> a = repo.ensureModel(UpscaleModelCatalog.x2);
+        final Future<String> b = repo.ensureModel(UpscaleModelCatalog.x2);
+        // Let both calls reach the in-flight check before releasing the gate.
+        await Future<void>.delayed(Duration.zero);
+        gate.complete();
+
+        final List<String> paths = await Future.wait(<Future<String>>[a, b]);
+        expect(paths[0], paths[1]);
+        expect(downloader.calls, 1, reason: 'second call must dedup');
+        expect(
+          await repo.stateOf(UpscaleModelCatalog.x2),
+          MlModelState.present,
+        );
+      },
+    );
 
     test(
       'hash mismatch → discards part file and throws, stays absent',

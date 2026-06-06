@@ -70,7 +70,11 @@ Future<ImageUpscaler> imageUpscaler(Ref ref) async {
   if (caps.effective != MlBackend.ortCpu) {
     return const CpuImageUpscaler();
   }
-  final settings = await ref.watch(appSettingsProvider.future);
+  // `ref.read` (not `watch`) after an `await`: watching past an await is a
+  // Riverpod foot-gun (the dependency may not register), and the floor branch
+  // above must stay settings/DB-free. Reactivity to `mlRuntimeProvider` is
+  // already covered by the `watch` before the first await.
+  final settings = await ref.read(appSettingsProvider.future);
   final UpscaleModelEntry? entry = UpscaleModelCatalog.forScale(
     settings.aiUpscaleScale,
   );

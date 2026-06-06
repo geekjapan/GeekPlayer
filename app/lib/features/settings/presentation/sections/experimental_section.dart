@@ -74,6 +74,7 @@ class _ExperimentalSectionState extends ConsumerState<ExperimentalSection> {
 
   Future<void> _delete(UpscaleModelEntry entry) async {
     await ref.read(modelRepositoryProvider).delete(entry);
+    if (!mounted) return;
     await _refreshModelState(entry.scale);
   }
 

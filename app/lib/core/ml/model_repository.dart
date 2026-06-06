@@ -83,6 +83,15 @@ class ModelRepository {
 
   static const String _modelFileName = 'model.onnx';
 
+  /// In-flight downloads keyed by `<modelId>/<version>`, so concurrent
+  /// `ensureModel` calls for the same entry (e.g. a double-tapped download
+  /// button, or the upscaler provider racing the settings UI) share a single
+  /// download + write instead of fetching and `rename`-ing twice.
+  final Map<String, Future<String>> _inFlight = <String, Future<String>>{};
+
+  String _entryKey(UpscaleModelEntry entry) =>
+      '${entry.modelId}/${entry.version}';
+
   Future<Directory> _entryDir(UpscaleModelEntry entry) async {
     final Directory base = await cacheDirProvider();
     return Directory(
@@ -111,6 +120,23 @@ class ModelRepository {
     final File? cached = await _presentFile(entry);
     if (cached != null) return cached.path;
 
+    final String key = _entryKey(entry);
+    final Future<String>? existing = _inFlight[key];
+    if (existing != null) return existing;
+
+    final Future<String> op = _downloadAndStore(entry, onProgress: onProgress);
+    _inFlight[key] = op;
+    try {
+      return await op;
+    } finally {
+      _inFlight.remove(key);
+    }
+  }
+
+  Future<String> _downloadAndStore(
+    UpscaleModelEntry entry, {
+    void Function(int received, int total)? onProgress,
+  }) async {
     final Uint8List bytes;
     try {
       bytes = await downloader.download(entry.url, onProgress: onProgress);
