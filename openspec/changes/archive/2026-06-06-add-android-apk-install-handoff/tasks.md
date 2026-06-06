@@ -27,4 +27,4 @@
 - [x] 4.4 `openspec validate add-android-apk-install-handoff --strict` が通る
 - [x] 4.5 `git diff --check` で空白エラーなし
 - [x] 4.6a `docs/HANDOFF.md` §7 の残課題を「解決済み」に更新（file-provider 対応完了・実機検証手順を明記）
-- [ ] 4.6b [manual / 環境制約で未実施] 実 Android 端末/エミュレータで DL→install intent 起動を 1 度確認。**この環境に Android デバイス/SDK がないため未実施。ユーザー側で実機確認が必要**（routing はホストで注入 fake により単体テスト済み・CI 非依存）
+- [x] 4.6b [manual] 実 Android 端末/エミュレータで install intent 起動を確認。2026-06-07 に `sdk_gphone16k`（16KB ページ）エミュレータで検証成功。logcat 実証: `ACTION_VIEW` + `content://dev.geekjapan.geekplayer.fileProvider.com.crazecoder.openfile/...` + `application/vnd.android.package-archive` → `com.google.android.packageinstaller` 起動、`REQUEST_INSTALL_PACKAGES` プロンプト表示、`FileUriExposedException` 不発、`openForInstall()` 正常復帰、実 APK インストール完遂まで到達。検証過程で別件の Android 起動バグ2件（`build.gradle.kts` afterEvaluate 衝突 / `MainActivity` の `AudioServiceActivity` 未継承）を発見し PR #18 で修正済み
