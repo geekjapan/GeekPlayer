@@ -17,6 +17,11 @@ typedef ModelStateResolver = Future<MlModelState> Function();
 /// Resolves whether the experimental AI-upscaling feature is enabled.
 typedef ExperimentalFlagResolver = Future<bool> Function();
 
+/// Resolves a user-forced preferred backend, or null to use the platform
+/// default (ADR-0007 step 4 advanced override). The returned backend is still
+/// validated by the probe chain and degrades to the floor when unavailable.
+typedef PreferredOverrideResolver = Future<MlBackend?> Function();
+
 TargetPlatform _defaultPlatform() => defaultTargetPlatform;
 
 // Floor defaults: nothing is implemented/enabled yet, so probe() resolves to
@@ -24,6 +29,7 @@ TargetPlatform _defaultPlatform() => defaultTargetPlatform;
 Future<bool> _noExecutionProviders(MlBackend _) async => false;
 Future<MlModelState> _modelAbsent() async => MlModelState.absent;
 Future<bool> _experimentalOff() async => false;
+Future<MlBackend?> _noOverride() async => null;
 
 /// Resolves the platform-preferred backend and probes the effective backend
 /// per ADR-0007 (preferred → ortCpu → bicubicCpu, gated by experimental flag
@@ -34,15 +40,18 @@ class MlRuntime {
     ExecutionProviderProbe? executionProviderProbe,
     ModelStateResolver? modelState,
     ExperimentalFlagResolver? experimentalFlag,
+    PreferredOverrideResolver? preferredOverride,
   }) : _platform = platform ?? _defaultPlatform,
        _epProbe = executionProviderProbe ?? _noExecutionProviders,
        _modelState = modelState ?? _modelAbsent,
-       _experimentalFlag = experimentalFlag ?? _experimentalOff;
+       _experimentalFlag = experimentalFlag ?? _experimentalOff,
+       _preferredOverride = preferredOverride ?? _noOverride;
 
   final TargetPlatformResolver _platform;
   final ExecutionProviderProbe _epProbe;
   final ModelStateResolver _modelState;
   final ExperimentalFlagResolver _experimentalFlag;
+  final PreferredOverrideResolver _preferredOverride;
 
   /// The platform-preferred backend (intent only; not necessarily available).
   MlBackend preferredBackend() {
@@ -65,7 +74,10 @@ class MlRuntime {
   ///
   /// Never throws: `bicubicCpu` is always reachable.
   Future<MlCapabilities> probe() async {
-    final MlBackend preferred = preferredBackend();
+    // A non-null override forces the preferred backend (still validated by the
+    // probe chain below); null means use the platform default.
+    final MlBackend? override = await _preferredOverride();
+    final MlBackend preferred = override ?? preferredBackend();
     final bool experimental = await _experimentalFlag();
     final MlModelState model = await _modelState();
 

@@ -3,9 +3,7 @@
 ## Purpose
 
 Establishes the cross-platform ML runtime abstraction (`app/lib/core/ml/`) for on-device AI upscaling: execution-provider-oriented backend enumeration, image upscale value objects, an `ImageUpscaler` interface, a platform-preferred backend plus an effective backend resolved by probing (per ADR-0007), a pure-Dart bicubic CPU floor, and Riverpod wiring. Concrete ONNX Runtime / GPU execution-provider backends and learned models are future changes that plug into this seam.
-
 ## Requirements
-
 ### Requirement: ML backend enumeration
 
 The system SHALL expose an `MlBackend` enum oriented around execution providers (per ADR-0007): `coremlEp`, `nnapiEp`, `directmlEp`, `ortCpu`, and `bicubicCpu`. `bicubicCpu` is the pure-Dart universal floor; the others denote ONNX Runtime execution providers.
@@ -130,7 +128,7 @@ The system SHALL provide a `PassthroughUpscaler` that implements `ImageUpscaler`
 
 ### Requirement: Riverpod providers for the ML runtime
 
-The system SHALL expose Riverpod providers `mlRuntimeProvider` and `imageUpscalerProvider`, both `keepAlive: true`, wired via `@Riverpod` codegen and overridable in tests. In production, `mlRuntimeProvider` SHALL construct its `MlRuntime` with the real injected resolvers rather than the floor defaults: the `ExperimentalFlagResolver` reads the AI-upscaling enable toggle, the `ModelStateResolver` reads the selected model's presence from the `ModelRepository`, and the `ExecutionProviderProbe` is the ONNX Runtime CPU probe (`ortCpuExecutionProviderProbe`). `imageUpscalerProvider` MUST remain overridable in tests; its concrete selection semantics (async resolution from `MlRuntime.probe()` and the model source) are owned by the `ai-image-upscaler` capability.
+The system SHALL expose Riverpod providers `mlRuntimeProvider` and `imageUpscalerProvider`, both `keepAlive: true`, wired via `@Riverpod` codegen and overridable in tests. In production, `mlRuntimeProvider` SHALL construct its `MlRuntime` with the real injected resolvers rather than the floor defaults: the `ExperimentalFlagResolver` reads the AI-upscaling enable toggle, the `ModelStateResolver` reads the selected model's presence from the `ModelRepository`, and the `ExecutionProviderProbe` is the **combined CPU+GPU execution-provider probe** (ORT CPU plus the CoreML / NNAPI GPU EP availability probes, with DirectML always unavailable). `imageUpscalerProvider` MUST remain overridable in tests; its concrete selection semantics (async resolution from `MlRuntime.probe()` and the model source) are owned by the `ai-image-upscaler` capability.
 
 #### Scenario: imageUpscalerProvider is overridable
 
@@ -140,7 +138,7 @@ The system SHALL expose Riverpod providers `mlRuntimeProvider` and `imageUpscale
 #### Scenario: Production mlRuntimeProvider injects real resolvers
 
 - **WHEN** `mlRuntimeProvider` is read in production wiring (no overrides)
-- **THEN** the constructed `MlRuntime` uses the experimental-flag, model-state, and ORT CPU probe resolvers — so `probe()` reflects the actual toggle and model presence rather than the always-floor defaults
+- **THEN** the constructed `MlRuntime` uses the experimental-flag, model-state, and combined CPU+GPU execution-provider probe resolvers — so `probe()` reflects the actual toggle, model presence, and which execution providers are available rather than the always-floor defaults
 
 ### Requirement: No new native or ML dependencies
 
@@ -150,3 +148,4 @@ The `ml-runtime` capability MUST NOT introduce native-bridge dependencies; the r
 
 - **WHEN** `app/pubspec.yaml` is inspected for the ml-runtime layer
 - **THEN** no native ML bridge / FFI dependency is required by it
+

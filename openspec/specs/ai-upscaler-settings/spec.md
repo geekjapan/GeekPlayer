@@ -3,9 +3,7 @@
 ## Purpose
 
 Exposes AI upscaling to users as an opt-in experimental feature in settings: an Experimental section with an enable toggle (default OFF), persisted enable/scale preferences via `AppSettings`, a model management UI delegating to the `ModelRepository`, and a default scale-factor selector. Supplies the `MlRuntime` seam with an `ExperimentalFlagResolver`, and keeps the effective backend probe-driven so it degrades to the bicubic CPU floor. All user-visible strings are localized (ja/en).
-
 ## Requirements
-
 ### Requirement: 実験的機能セクションと有効化トグル
 
 設定画面は、AI アップスケーリングを「実験的機能 (Experimental)」セクション配下に表示しなければならない (SHALL)。有効化トグルの既定値は **OFF** でなければならない (MUST)。セクションは、品質・性能・安定性を保証せず将来仕様変更や削除があり得る旨のローカライズ済み注意書きを表示しなければならない (SHALL)。
@@ -73,7 +71,7 @@ Exposes AI upscaling to users as an opt-in experimental feature in settings: an 
 
 ### Requirement: 実効 backend は probe に従い floor へ劣化する
 
-実効 backend は、ADR-0007 のフォールバック連鎖と `MlRuntime.probe()` の結果に従わなければならない (MUST)。設定で要求された backend が利用不可な場合でも、bicubic CPU floor に劣化し、クラッシュしてはならない (MUST NOT)。上級者向けの preferred backend 上書き UI は本 capability では提供せず、GPU Execution Provider を有効化する step4 (`enable-gpu-execution-providers`) に委ねる。
+実効 backend は、ADR-0007 のフォールバック連鎖と `MlRuntime.probe()` の結果に従わなければならない (MUST)。設定で要求された backend（上級 backend 上書きを含む）が利用不可な場合でも、bicubic CPU floor に劣化し、クラッシュしてはならない (MUST NOT)。
 
 #### Scenario: 利用不可な preferred backend は floor に劣化する
 
@@ -104,3 +102,25 @@ Exposes AI upscaling to users as an opt-in experimental feature in settings: an 
 
 - **WHEN** ロケールが英語で実験的機能セクションを表示する
 - **THEN** すべての文言が英語のローカライズ済みリソースから供給される
+
+### Requirement: 上級 backend 上書き UI
+
+実験的機能セクションは、上級者向けに実行 backend を上書きする手段を提供しなければならない (SHALL): **Auto（既定）/ 強制 CPU / 強制 GPU** の 3 択。`強制 GPU` の具体 EP はプラットフォームから自動決定する（iOS/macOS=CoreML、Android=NNAPI、その他は GPU EP なし）。上書き値は永続化される。上書きしても、実効 backend は `MlRuntime.probe()` のフォールバック連鎖に従い、選んだ backend が利用不可なら bicubic CPU floor へ縮退しなければならない (MUST)。すべての文言はローカライズ済みでなければならない (MUST)。
+
+#### Scenario: 既定は Auto
+
+- **WHEN** 永続化された設定がない初期状態で backend 上書きを参照する
+- **THEN** 既定値は Auto である
+
+#### Scenario: 上書きが永続化される
+
+- **GIVEN** ユーザーが backend 上書きを「強制 CPU」に変更する
+- **WHEN** アプリを再起動して設定を読み込む
+- **THEN** 上書きは「強制 CPU」のまま復元される
+
+#### Scenario: 強制 GPU が利用不可なら floor へ縮退する
+
+- **GIVEN** 上書きが「強制 GPU」だが、当該プラットフォームの GPU EP が利用不可
+- **WHEN** 実効 backend が `MlRuntime.probe()` で解決される
+- **THEN** probe により ORT CPU もしくは bicubic CPU floor に縮退し、クラッシュしない
+

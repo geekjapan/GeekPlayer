@@ -35,12 +35,21 @@ class OnnxUpscaleException implements Exception {
 /// Inference runs synchronously on the calling isolate in this step; moving to
 /// a background isolate ([OrtIsolateSession]) is a tracked follow-up.
 class OnnxImageUpscaler implements ImageUpscaler {
-  OnnxImageUpscaler(this.modelSource);
+  OnnxImageUpscaler(this.modelSource, {this.targetBackend = MlBackend.ortCpu});
 
   final OnnxModelSource modelSource;
 
+  /// The execution provider this upscaler should prefer (ADR-0007 step 4).
+  /// `coremlEp`/`nnapiEp` append the GPU EP (with CPU fallback in the same
+  /// session); anything else runs on the CPU EP. If a GPU EP cannot be appended
+  /// on this host, the upscaler degrades to a CPU-only session.
+  final MlBackend targetBackend;
+
   OrtSession? _session;
   bool _disposed = false;
+
+  /// The EP actually used once the session is created.
+  MlBackend _effectiveBackend = MlBackend.ortCpu;
 
   OrtSession _ensureSession() {
     if (_disposed) {
@@ -52,8 +61,26 @@ class OnnxImageUpscaler implements ImageUpscaler {
       OrtEnv.instance.init();
       final OrtSessionOptions options = OrtSessionOptions()
         ..setIntraOpNumThreads(1)
-        ..setInterOpNumThreads(1)
-        ..appendCPUProvider(CPUFlags.useArena);
+        ..setInterOpNumThreads(1);
+      // Append the requested GPU EP first (so it claims supported nodes), then
+      // always append CPU as the in-session fallback. A GPU append failure is
+      // caught and degrades to CPU-only — never fails the load.
+      MlBackend effective = MlBackend.ortCpu;
+      try {
+        switch (targetBackend) {
+          case MlBackend.coremlEp:
+            options.appendCoreMLProvider(CoreMLFlags.useNone);
+            effective = MlBackend.coremlEp;
+          case MlBackend.nnapiEp:
+            options.appendNnapiProvider(NnapiFlags.useNone);
+            effective = MlBackend.nnapiEp;
+          default:
+            break;
+        }
+      } catch (_) {
+        effective = MlBackend.ortCpu;
+      }
+      options.appendCPUProvider(CPUFlags.useArena);
       final OrtSession created = switch (modelSource) {
         OnnxModelFileSource(:final file) => OrtSession.fromFile(file, options),
         OnnxModelBytesSource(:final bytes) => OrtSession.fromBuffer(
@@ -63,6 +90,7 @@ class OnnxImageUpscaler implements ImageUpscaler {
       };
       options.release();
       _session = created;
+      _effectiveBackend = effective;
       return created;
     } catch (e) {
       throw OnnxUpscaleException('failed to load ONNX model', e);
@@ -95,7 +123,7 @@ class OnnxImageUpscaler implements ImageUpscaler {
         bytes: bytes,
         outWidth: upscaled.width,
         outHeight: upscaled.height,
-        backend: MlBackend.ortCpu,
+        backend: _effectiveBackend,
       );
     } on OnnxUpscaleException {
       rethrow;

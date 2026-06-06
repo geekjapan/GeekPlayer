@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' show ThemeMode;
 
+import 'ai_upscale_backend_override.dart';
 import 'novel_writing_mode.dart';
 
 /// Immutable snapshot of every user-tunable setting in the app.
@@ -29,6 +30,7 @@ class AppSettings {
     required this.novelCacheCapMb,
     required this.aiUpscaleEnabled,
     required this.aiUpscaleScale,
+    required this.aiUpscaleBackendOverride,
   });
 
   /// Spec-mandated defaults. Keep this method in sync with the spec.
@@ -48,6 +50,7 @@ class AppSettings {
     novelCacheCapMb: null,
     aiUpscaleEnabled: false,
     aiUpscaleScale: 2,
+    aiUpscaleBackendOverride: AiUpscaleBackendOverride.auto,
   );
 
   final ThemeMode themeMode;
@@ -73,6 +76,9 @@ class AppSettings {
   /// Default upscale factor used by the manga viewer (2 or 4).
   final int aiUpscaleScale;
 
+  /// Advanced execution-backend override for AI upscaling (ADR-0007 step 4).
+  final AiUpscaleBackendOverride aiUpscaleBackendOverride;
+
   AppSettings copyWith({
     ThemeMode? themeMode,
     double? defaultPlaybackSpeed,
@@ -89,6 +95,7 @@ class AppSettings {
     Object? novelCacheCapMb = _unset,
     bool? aiUpscaleEnabled,
     int? aiUpscaleScale,
+    AiUpscaleBackendOverride? aiUpscaleBackendOverride,
   }) {
     return AppSettings(
       themeMode: themeMode ?? this.themeMode,
@@ -110,6 +117,8 @@ class AppSettings {
           : novelCacheCapMb as int?,
       aiUpscaleEnabled: aiUpscaleEnabled ?? this.aiUpscaleEnabled,
       aiUpscaleScale: aiUpscaleScale ?? this.aiUpscaleScale,
+      aiUpscaleBackendOverride:
+          aiUpscaleBackendOverride ?? this.aiUpscaleBackendOverride,
     );
   }
 
@@ -133,7 +142,8 @@ class AppSettings {
         other.recentItemsCap == recentItemsCap &&
         other.novelCacheCapMb == novelCacheCapMb &&
         other.aiUpscaleEnabled == aiUpscaleEnabled &&
-        other.aiUpscaleScale == aiUpscaleScale;
+        other.aiUpscaleScale == aiUpscaleScale &&
+        other.aiUpscaleBackendOverride == aiUpscaleBackendOverride;
   }
 
   @override
@@ -153,6 +163,7 @@ class AppSettings {
     novelCacheCapMb,
     aiUpscaleEnabled,
     aiUpscaleScale,
+    aiUpscaleBackendOverride,
   );
 
   @override
@@ -167,5 +178,6 @@ class AppSettings {
       '0x${novelBackgroundLight.toRadixString(16)}, novelBackgroundDark: '
       '0x${novelBackgroundDark.toRadixString(16)}, recentItemsCap: '
       '$recentItemsCap, novelCacheCapMb: $novelCacheCapMb, '
-      'aiUpscaleEnabled: $aiUpscaleEnabled, aiUpscaleScale: $aiUpscaleScale)';
+      'aiUpscaleEnabled: $aiUpscaleEnabled, aiUpscaleScale: $aiUpscaleScale, '
+      'aiUpscaleBackendOverride: $aiUpscaleBackendOverride)';
 }

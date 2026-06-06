@@ -8,6 +8,7 @@ import '../../../../core/ml/model_repository.dart';
 import '../../../../core/ml/providers.dart';
 import '../../../../core/ml/upscale_model_catalog.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../domain/ai_upscale_backend_override.dart';
 import '../../domain/app_settings.dart';
 import '../app_settings_notifier.dart';
 import '../settings_screen.dart';
@@ -107,6 +108,17 @@ class _ExperimentalSectionState extends ConsumerState<ExperimentalSection> {
     await _refreshModelState(entry.scale);
   }
 
+  String _backendLabel(AppLocalizations l10n, AiUpscaleBackendOverride o) {
+    switch (o) {
+      case AiUpscaleBackendOverride.auto:
+        return l10n.settingsAiUpscaleBackendAuto;
+      case AiUpscaleBackendOverride.forceCpu:
+        return l10n.settingsAiUpscaleBackendForceCpu;
+      case AiUpscaleBackendOverride.forceGpu:
+        return l10n.settingsAiUpscaleBackendForceGpu;
+    }
+  }
+
   String _formatBytes(int bytes) {
     if (bytes >= 1024 * 1024) {
       return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
@@ -126,6 +138,12 @@ class _ExperimentalSectionState extends ConsumerState<ExperimentalSection> {
     final int scale = ref.watch(
       appSettingsProvider.select(
         (AsyncValue<AppSettings> s) => s.value?.aiUpscaleScale ?? 2,
+      ),
+    );
+    final AiUpscaleBackendOverride backendOverride = ref.watch(
+      appSettingsProvider.select(
+        (AsyncValue<AppSettings> s) =>
+            s.value?.aiUpscaleBackendOverride ?? AiUpscaleBackendOverride.auto,
       ),
     );
     // React to scale changes without an async side-effect inside build():
@@ -200,6 +218,40 @@ class _ExperimentalSectionState extends ConsumerState<ExperimentalSection> {
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
           child: Text(
             l10n.settingsAiUpscaleNextRunHelper,
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: Theme.of(context).hintColor),
+          ),
+        ),
+        ListTile(
+          key: const Key('experimental-ai-upscale-backend'),
+          title: Text(l10n.settingsAiUpscaleBackend),
+          subtitle: Wrap(
+            spacing: 8,
+            children: <Widget>[
+              for (final AiUpscaleBackendOverride o
+                  in AiUpscaleBackendOverride.values)
+                ChoiceChip(
+                  key: Key('experimental-ai-upscale-backend-${o.name}'),
+                  label: Text(_backendLabel(l10n, o)),
+                  selected: backendOverride == o,
+                  onSelected: (bool sel) {
+                    if (!sel) return;
+                    ref
+                        .read(appSettingsProvider.notifier)
+                        .mutate(
+                          (AppSettings st) =>
+                              st.copyWith(aiUpscaleBackendOverride: o),
+                        );
+                  },
+                ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+          child: Text(
+            l10n.settingsAiUpscaleBackendHelper,
             style: Theme.of(
               context,
             ).textTheme.bodySmall?.copyWith(color: Theme.of(context).hintColor),

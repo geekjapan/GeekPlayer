@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' show ThemeMode;
 
+import '../domain/ai_upscale_backend_override.dart';
 import '../domain/novel_writing_mode.dart';
 
 /// Bidirectional string<->T encoder for an individual setting value.
@@ -132,3 +133,5 @@ const SettingCodec<ThemeMode> kThemeModeCodec = EnumCodec<ThemeMode>(
 );
 const SettingCodec<NovelWritingMode> kNovelWritingModeCodec =
     EnumCodec<NovelWritingMode>(NovelWritingMode.values);
+const SettingCodec<AiUpscaleBackendOverride> kAiUpscaleBackendOverrideCodec =
+    EnumCodec<AiUpscaleBackendOverride>(AiUpscaleBackendOverride.values);

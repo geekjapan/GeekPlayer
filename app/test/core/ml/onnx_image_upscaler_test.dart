@@ -88,5 +88,50 @@ void main() async {
       upscaler.dispose();
       expect(upscaler.dispose, returnsNormally);
     }, skip: skipReason);
+
+    test('default target backend reports ortCpu', () async {
+      final Uint8List model = await File(_fixturePath).readAsBytes();
+      final upscaler = OnnxImageUpscaler(OnnxModelSource.bytes(model));
+      addTearDown(upscaler.dispose);
+      final result = await upscaler.upscale(
+        UpscaleRequest(
+          bytes: _makeInputPng(4, 3),
+          srcWidth: 4,
+          srcHeight: 3,
+          scaleFactor: 2,
+        ),
+      );
+      expect(result.backend, MlBackend.ortCpu);
+    }, skip: skipReason);
+
+    test(
+      'GPU target degrades gracefully and produces correct output',
+      () async {
+        // Without the CoreML EP the GPU append is caught and the session runs
+        // on CPU; with it, CoreML is used. Either way the upscale completes
+        // with correct dimensions and never crashes.
+        final Uint8List model = await File(_fixturePath).readAsBytes();
+        final upscaler = OnnxImageUpscaler(
+          OnnxModelSource.bytes(model),
+          targetBackend: MlBackend.coremlEp,
+        );
+        addTearDown(upscaler.dispose);
+        final result = await upscaler.upscale(
+          UpscaleRequest(
+            bytes: _makeInputPng(4, 3),
+            srcWidth: 4,
+            srcHeight: 3,
+            scaleFactor: 2,
+          ),
+        );
+        expect(result.outWidth, 8);
+        expect(result.outHeight, 6);
+        expect(img.decodeImage(result.bytes)!.width, 8);
+        // Effective backend is the requested GPU EP (available) or the ortCpu
+        // floor (degraded) — never a crash.
+        expect(result.backend, anyOf(MlBackend.coremlEp, MlBackend.ortCpu));
+      },
+      skip: skipReason,
+    );
   });
 }
