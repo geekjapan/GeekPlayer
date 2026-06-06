@@ -8,12 +8,18 @@ void main() async {
   final bool ortReady = await ensureOrtLoadable();
 
   group('ortCpuExecutionProviderProbe', () {
-    test('reports ortCpu available when ORT loads', () async {
-      expect(await ortCpuExecutionProviderProbe(MlBackend.ortCpu), isTrue);
-      // GPU EPs stay unavailable until step 4.
-      expect(await ortCpuExecutionProviderProbe(MlBackend.coremlEp), isFalse);
-      expect(await ortCpuExecutionProviderProbe(MlBackend.nnapiEp), isFalse);
-    }, skip: ortReady ? false : 'ONNX Runtime native lib not loadable on test host');
+    test(
+      'reports ortCpu available when ORT loads',
+      () async {
+        expect(await ortCpuExecutionProviderProbe(MlBackend.ortCpu), isTrue);
+        // GPU EPs stay unavailable until step 4.
+        expect(await ortCpuExecutionProviderProbe(MlBackend.coremlEp), isFalse);
+        expect(await ortCpuExecutionProviderProbe(MlBackend.nnapiEp), isFalse);
+      },
+      skip: ortReady
+          ? false
+          : 'ONNX Runtime native lib not loadable on test host',
+    );
 
     test('never throws and always returns a bool', () async {
       // Whether or not ORT is loadable, the probe must resolve, not throw.

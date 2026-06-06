@@ -1189,6 +1189,72 @@ abstract class AppLocalizations {
   /// In ja, this message translates to:
   /// **'高画質化に失敗しました'**
   String get mangaUpscaleError;
+
+  /// No description provided for @settingsSectionExperimental.
+  ///
+  /// In ja, this message translates to:
+  /// **'実験的機能'**
+  String get settingsSectionExperimental;
+
+  /// No description provided for @settingsExperimentalWarning.
+  ///
+  /// In ja, this message translates to:
+  /// **'実験的機能です。品質・性能・安定性は保証されず、将来予告なく変更・削除される場合があります。'**
+  String get settingsExperimentalWarning;
+
+  /// No description provided for @settingsAiUpscaleEnable.
+  ///
+  /// In ja, this message translates to:
+  /// **'AI 高画質化を有効にする'**
+  String get settingsAiUpscaleEnable;
+
+  /// No description provided for @settingsAiUpscaleScale.
+  ///
+  /// In ja, this message translates to:
+  /// **'既定の倍率'**
+  String get settingsAiUpscaleScale;
+
+  /// No description provided for @settingsAiUpscaleNextRunHelper.
+  ///
+  /// In ja, this message translates to:
+  /// **'変更は次回の高画質化から反映されます。'**
+  String get settingsAiUpscaleNextRunHelper;
+
+  /// No description provided for @settingsAiUpscaleModelTitle.
+  ///
+  /// In ja, this message translates to:
+  /// **'アップスケールモデル'**
+  String get settingsAiUpscaleModelTitle;
+
+  /// No description provided for @settingsAiUpscaleModelAbsent.
+  ///
+  /// In ja, this message translates to:
+  /// **'未取得'**
+  String get settingsAiUpscaleModelAbsent;
+
+  /// Subtitle for a downloaded upscale model, showing its on-disk size.
+  ///
+  /// In ja, this message translates to:
+  /// **'取得済み（{size}）'**
+  String settingsAiUpscaleModelPresent(String size);
+
+  /// No description provided for @settingsAiUpscaleModelError.
+  ///
+  /// In ja, this message translates to:
+  /// **'モデルのダウンロードに失敗しました'**
+  String get settingsAiUpscaleModelError;
+
+  /// No description provided for @settingsAiUpscaleDownload.
+  ///
+  /// In ja, this message translates to:
+  /// **'ダウンロード'**
+  String get settingsAiUpscaleDownload;
+
+  /// No description provided for @settingsAiUpscaleDelete.
+  ///
+  /// In ja, this message translates to:
+  /// **'削除'**
+  String get settingsAiUpscaleDelete;
 }
 
 class _AppLocalizationsDelegate

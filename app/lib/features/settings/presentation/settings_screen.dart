@@ -8,6 +8,7 @@ import 'sections/about_section.dart';
 import 'sections/audio_section.dart';
 import 'sections/cache_section.dart';
 import 'sections/display_section.dart';
+import 'sections/experimental_section.dart';
 import 'sections/library_section.dart';
 import 'sections/novel_section.dart';
 import 'sections/online_services_section.dart';
@@ -70,6 +71,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             CacheSection(),
             OnlineServicesSection(),
             R18Section(),
+            ExperimentalSection(),
             AboutSection(),
           ],
         ),

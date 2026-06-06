@@ -242,5 +242,16 @@
   "updateNoCompatibleAsset": "No compatible asset found",
   "mangaUpscaleAction": "Upscale",
   "mangaUpscaleInProgress": "Upscaling…",
-  "mangaUpscaleError": "Upscaling failed"
+  "mangaUpscaleError": "Upscaling failed",
+  "settingsSectionExperimental": "Experimental",
+  "settingsExperimentalWarning": "Experimental feature. Quality, performance, and stability are not guaranteed, and it may change or be removed without notice.",
+  "settingsAiUpscaleEnable": "Enable AI upscaling",
+  "settingsAiUpscaleScale": "Default scale",
+  "settingsAiUpscaleNextRunHelper": "Changes take effect from the next upscale.",
+  "settingsAiUpscaleModelTitle": "Upscale model",
+  "settingsAiUpscaleModelAbsent": "Not downloaded",
+  "settingsAiUpscaleModelPresent": "Downloaded ({size})",
+  "settingsAiUpscaleModelError": "Failed to download the model",
+  "settingsAiUpscaleDownload": "Download",
+  "settingsAiUpscaleDelete": "Delete"
 }

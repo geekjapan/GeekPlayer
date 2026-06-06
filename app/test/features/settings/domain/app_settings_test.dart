@@ -20,6 +20,9 @@ void main() {
       expect(d.novelBackgroundDark, 0xFF1C1B1F);
       expect(d.recentItemsCap, 50);
       expect(d.novelCacheCapMb, isNull);
+      // Experimental AI upscaling defaults OFF at scale 2 (ADR-0007).
+      expect(d.aiUpscaleEnabled, false);
+      expect(d.aiUpscaleScale, 2);
     });
   });
 

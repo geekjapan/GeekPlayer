@@ -19,6 +19,7 @@ GeekPlayer は以下のサードパーティライブラリを利用していま
 | [webfeed_revised](https://pub.dev/packages/webfeed_revised) | MIT | RSS/Atom パース（webfeed のメンテ fork） |
 | [url_launcher](https://pub.dev/packages/url_launcher) | BSD-3-Clause | 外部ブラウザ起動（パーサ失敗時の公式ビューアフォールバック） |
 | [package_info_plus](https://pub.dev/packages/package_info_plus) | BSD-3-Clause | アプリバージョン取得（User-Agent 構築） |
+| [crypto](https://github.com/dart-lang/crypto) | BSD-3-Clause | アップスケールモデルの SHA-256 検証（model-distribution） |
 
 ## libmpv (LGPL) について
 

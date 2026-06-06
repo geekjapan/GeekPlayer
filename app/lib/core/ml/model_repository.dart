@@ -1,0 +1,208 @@
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:crypto/crypto.dart';
+import 'package:dio/dio.dart';
+import 'package:path/path.dart' as p;
+
+import 'ml_model_state.dart';
+import 'onnx_model_source.dart';
+import 'upscale_model_catalog.dart';
+
+/// Fetches the raw bytes of a model URL. Injected so tests stay offline.
+abstract class ModelDownloader {
+  /// Downloads [url], optionally reporting progress. Throws on network/HTTP error.
+  Future<Uint8List> download(
+    String url, {
+    void Function(int received, int total)? onProgress,
+  });
+}
+
+/// Production [ModelDownloader] backed by `dio`, requesting raw bytes over HTTPS.
+class DioModelDownloader implements ModelDownloader {
+  DioModelDownloader(this._dio);
+
+  final Dio _dio;
+
+  @override
+  Future<Uint8List> download(
+    String url, {
+    void Function(int received, int total)? onProgress,
+  }) async {
+    final Response<List<int>> resp = await _dio.get<List<int>>(
+      url,
+      options: Options(responseType: ResponseType.bytes),
+      onReceiveProgress: onProgress,
+    );
+    final List<int>? data = resp.data;
+    if (data == null) {
+      throw const ModelDownloadException('empty response body');
+    }
+    return Uint8List.fromList(data);
+  }
+}
+
+/// Thrown when a model download fails at the network/HTTP/I-O layer. Catchable
+/// so the `ml-runtime` selection seam can fall back to the bicubic CPU floor.
+class ModelDownloadException implements Exception {
+  const ModelDownloadException(this.message, [this.cause]);
+
+  final String message;
+  final Object? cause;
+
+  @override
+  String toString() => cause == null
+      ? 'ModelDownloadException: $message'
+      : 'ModelDownloadException: $message ($cause)';
+}
+
+/// Thrown when a downloaded model's SHA-256 does not match the catalog digest.
+/// Catchable; the partial file is discarded and the model stays absent.
+class ModelVerificationException implements Exception {
+  const ModelVerificationException(this.message);
+
+  final String message;
+
+  @override
+  String toString() => 'ModelVerificationException: $message';
+}
+
+/// Downloads, verifies (SHA-256), caches, and manages on-device upscale models
+/// (ADR-0007 step 3 — capability `upscale-model-distribution`).
+///
+/// Models are opt-in and never bundled. The cache layout is
+/// `<cacheDir>/ml_models/<modelId>/<version>/model.onnx`, so distinct versions
+/// coexist and deleting one never touches another. Confirmation is atomic:
+/// bytes are verified in memory, written to a `.part` sibling, then `rename`d
+/// onto the final path — so a present file is always a fully-verified model.
+class ModelRepository {
+  ModelRepository({required this.downloader, required this.cacheDirProvider});
+
+  final ModelDownloader downloader;
+  final Future<Directory> Function() cacheDirProvider;
+
+  static const String _modelFileName = 'model.onnx';
+
+  /// In-flight downloads keyed by `<modelId>/<version>`, so concurrent
+  /// `ensureModel` calls for the same entry (e.g. a double-tapped download
+  /// button, or the upscaler provider racing the settings UI) share a single
+  /// download + write instead of fetching and `rename`-ing twice.
+  final Map<String, Future<String>> _inFlight = <String, Future<String>>{};
+
+  String _entryKey(UpscaleModelEntry entry) =>
+      '${entry.modelId}/${entry.version}';
+
+  Future<Directory> _entryDir(UpscaleModelEntry entry) async {
+    final Directory base = await cacheDirProvider();
+    return Directory(
+      p.join(base.path, 'ml_models', entry.modelId, entry.version),
+    );
+  }
+
+  Future<File> _entryFile(UpscaleModelEntry entry) async {
+    final Directory dir = await _entryDir(entry);
+    return File(p.join(dir.path, _modelFileName));
+  }
+
+  /// The cached file for [entry] if it is present and non-empty, else `null`.
+  /// Uses async filesystem calls so it never blocks the calling isolate when
+  /// invoked from providers/UI.
+  Future<File?> _presentFile(UpscaleModelEntry entry) async {
+    final File file = await _entryFile(entry);
+    if (await file.exists() && await file.length() > 0) return file;
+    return null;
+  }
+
+  /// Ensures [entry] is present on disk, downloading + verifying if needed, and
+  /// returns its file path. Cached models are returned without any network I/O.
+  Future<String> ensureModel(
+    UpscaleModelEntry entry, {
+    void Function(int received, int total)? onProgress,
+  }) async {
+    final File? cached = await _presentFile(entry);
+    if (cached != null) return cached.path;
+
+    final String key = _entryKey(entry);
+    final Future<String>? existing = _inFlight[key];
+    if (existing != null) return existing;
+
+    final Future<String> op = _downloadAndStore(entry, onProgress: onProgress);
+    _inFlight[key] = op;
+    try {
+      return await op;
+    } finally {
+      _inFlight.remove(key);
+    }
+  }
+
+  Future<String> _downloadAndStore(
+    UpscaleModelEntry entry, {
+    void Function(int received, int total)? onProgress,
+  }) async {
+    // Spec `upscale-model-distribution`: downloads MUST be HTTPS-only. Reject a
+    // non-HTTPS catalog URL early with a catchable error so the selection seam
+    // degrades to the bicubic floor instead of fetching over an insecure scheme.
+    final Uri uri = Uri.tryParse(entry.url) ?? Uri();
+    if (uri.scheme.toLowerCase() != 'https') {
+      throw ModelDownloadException(
+        'refusing non-HTTPS model URL for ${entry.modelId}: ${entry.url}',
+      );
+    }
+
+    final Uint8List bytes;
+    try {
+      bytes = await downloader.download(entry.url, onProgress: onProgress);
+    } catch (e) {
+      throw ModelDownloadException('failed to download ${entry.modelId}', e);
+    }
+
+    final String actual = sha256.convert(bytes).toString();
+    if (actual.toLowerCase() != entry.sha256.toLowerCase()) {
+      throw ModelVerificationException(
+        'SHA-256 mismatch for ${entry.modelId}@${entry.version}: '
+        'expected ${entry.sha256}, got $actual',
+      );
+    }
+
+    final Directory dir = await _entryDir(entry);
+    await dir.create(recursive: true);
+    final File finalFile = File(p.join(dir.path, _modelFileName));
+    final File partFile = File('${finalFile.path}.part');
+    try {
+      await partFile.writeAsBytes(bytes, flush: true);
+      await partFile.rename(finalFile.path);
+    } catch (e) {
+      if (await partFile.exists()) {
+        try {
+          await partFile.delete();
+        } catch (_) {}
+      }
+      throw ModelDownloadException('failed to write ${entry.modelId}', e);
+    }
+    return finalFile.path;
+  }
+
+  /// Whether [entry] is present on disk.
+  Future<MlModelState> stateOf(UpscaleModelEntry entry) async =>
+      (await _presentFile(entry)) != null
+      ? MlModelState.present
+      : MlModelState.absent;
+
+  /// The on-disk size of [entry] in bytes (0 if absent).
+  Future<int> sizeOf(UpscaleModelEntry entry) async {
+    final File? file = await _presentFile(entry);
+    return file == null ? 0 : await file.length();
+  }
+
+  /// An [OnnxModelSource] for [entry] if present, else `null`.
+  Future<OnnxModelSource?> sourceOf(UpscaleModelEntry entry) async {
+    final File? file = await _presentFile(entry);
+    return file == null ? null : OnnxModelSource.file(file.path);
+  }
+
+  /// Deletes [entry] from the cache. Safe no-op if already absent.
+  Future<void> delete(UpscaleModelEntry entry) async {
+    final Directory dir = await _entryDir(entry);
+    if (await dir.exists()) await dir.delete(recursive: true);
+  }
+}

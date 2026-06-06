@@ -823,5 +823,25 @@
   "mangaUpscaleError": "高画質化に失敗しました",
   "@mangaUpscaleError": {
     "description": "SnackBar message shown when upscaling fails in the manga viewer."
-  }
+  },
+  "settingsSectionExperimental": "実験的機能",
+  "settingsExperimentalWarning": "実験的機能です。品質・性能・安定性は保証されず、将来予告なく変更・削除される場合があります。",
+  "settingsAiUpscaleEnable": "AI 高画質化を有効にする",
+  "settingsAiUpscaleScale": "既定の倍率",
+  "settingsAiUpscaleNextRunHelper": "変更は次回の高画質化から反映されます。",
+  "settingsAiUpscaleModelTitle": "アップスケールモデル",
+  "settingsAiUpscaleModelAbsent": "未取得",
+  "settingsAiUpscaleModelPresent": "取得済み（{size}）",
+  "@settingsAiUpscaleModelPresent": {
+    "description": "Subtitle for a downloaded upscale model, showing its on-disk size.",
+    "placeholders": {
+      "size": {
+        "type": "String",
+        "example": "12.3 MB"
+      }
+    }
+  },
+  "settingsAiUpscaleModelError": "モデルのダウンロードに失敗しました",
+  "settingsAiUpscaleDownload": "ダウンロード",
+  "settingsAiUpscaleDelete": "削除"
 }

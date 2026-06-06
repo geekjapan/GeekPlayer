@@ -56,8 +56,10 @@ class OnnxImageUpscaler implements ImageUpscaler {
         ..appendCPUProvider(CPUFlags.useArena);
       final OrtSession created = switch (modelSource) {
         OnnxModelFileSource(:final file) => OrtSession.fromFile(file, options),
-        OnnxModelBytesSource(:final bytes) =>
-          OrtSession.fromBuffer(bytes, options),
+        OnnxModelBytesSource(:final bytes) => OrtSession.fromBuffer(
+          bytes,
+          options,
+        ),
       };
       options.release();
       _session = created;

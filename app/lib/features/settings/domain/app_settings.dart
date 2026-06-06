@@ -27,6 +27,8 @@ class AppSettings {
     required this.novelBackgroundDark,
     required this.recentItemsCap,
     required this.novelCacheCapMb,
+    required this.aiUpscaleEnabled,
+    required this.aiUpscaleScale,
   });
 
   /// Spec-mandated defaults. Keep this method in sync with the spec.
@@ -44,6 +46,8 @@ class AppSettings {
     novelBackgroundDark: 0xFF1C1B1F,
     recentItemsCap: 50,
     novelCacheCapMb: null,
+    aiUpscaleEnabled: false,
+    aiUpscaleScale: 2,
   );
 
   final ThemeMode themeMode;
@@ -62,6 +66,13 @@ class AppSettings {
   /// Null means "無制限" (no cap).
   final int? novelCacheCapMb;
 
+  /// Whether the experimental AI image-upscaling feature is enabled (ADR-0007).
+  /// Default OFF; while OFF the effective backend stays on the bicubic floor.
+  final bool aiUpscaleEnabled;
+
+  /// Default upscale factor used by the manga viewer (2 or 4).
+  final int aiUpscaleScale;
+
   AppSettings copyWith({
     ThemeMode? themeMode,
     double? defaultPlaybackSpeed,
@@ -76,6 +87,8 @@ class AppSettings {
     int? novelBackgroundDark,
     int? recentItemsCap,
     Object? novelCacheCapMb = _unset,
+    bool? aiUpscaleEnabled,
+    int? aiUpscaleScale,
   }) {
     return AppSettings(
       themeMode: themeMode ?? this.themeMode,
@@ -95,6 +108,8 @@ class AppSettings {
       novelCacheCapMb: identical(novelCacheCapMb, _unset)
           ? this.novelCacheCapMb
           : novelCacheCapMb as int?,
+      aiUpscaleEnabled: aiUpscaleEnabled ?? this.aiUpscaleEnabled,
+      aiUpscaleScale: aiUpscaleScale ?? this.aiUpscaleScale,
     );
   }
 
@@ -116,7 +131,9 @@ class AppSettings {
         other.novelBackgroundLight == novelBackgroundLight &&
         other.novelBackgroundDark == novelBackgroundDark &&
         other.recentItemsCap == recentItemsCap &&
-        other.novelCacheCapMb == novelCacheCapMb;
+        other.novelCacheCapMb == novelCacheCapMb &&
+        other.aiUpscaleEnabled == aiUpscaleEnabled &&
+        other.aiUpscaleScale == aiUpscaleScale;
   }
 
   @override
@@ -134,6 +151,8 @@ class AppSettings {
     novelBackgroundDark,
     recentItemsCap,
     novelCacheCapMb,
+    aiUpscaleEnabled,
+    aiUpscaleScale,
   );
 
   @override
@@ -147,5 +166,6 @@ class AppSettings {
       'novelFontFamily: $novelFontFamily, novelBackgroundLight: '
       '0x${novelBackgroundLight.toRadixString(16)}, novelBackgroundDark: '
       '0x${novelBackgroundDark.toRadixString(16)}, recentItemsCap: '
-      '$recentItemsCap, novelCacheCapMb: $novelCacheCapMb)';
+      '$recentItemsCap, novelCacheCapMb: $novelCacheCapMb, '
+      'aiUpscaleEnabled: $aiUpscaleEnabled, aiUpscaleScale: $aiUpscaleScale)';
 }

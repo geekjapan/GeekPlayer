@@ -37,6 +37,10 @@ class SettingKeys {
   // Cache.
   static const String novelCacheCapMb = 'cache.cap_mb';
 
+  // Experimental — AI image upscaling (ADR-0007 step 3).
+  static const String aiUpscaleEnabled = 'experimental.ai_upscale_enabled';
+  static const String aiUpscaleScale = 'experimental.ai_upscale_scale';
+
   /// Every persisted setting key. Order is informational only; the
   /// repository writes only the diff between two snapshots.
   static const List<String> all = <String>[
@@ -53,5 +57,7 @@ class SettingKeys {
     novelBackgroundDark,
     recentItemsCap,
     novelCacheCapMb,
+    aiUpscaleEnabled,
+    aiUpscaleScale,
   ];
 }
