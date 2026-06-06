@@ -178,6 +178,61 @@ void main() {
       expect(upscaler, isA<OnnxImageUpscaler>());
     });
 
+    test(
+      'invalidate re-resolves after model state changes (download)',
+      () async {
+        // Mutable model state: starts absent (floor), flips to present after a
+        // simulated download. The keepAlive provider must re-resolve only when
+        // invalidated — this is the contract ExperimentalSection relies on.
+        MlModelState state = MlModelState.absent;
+        final runtime = MlRuntime(
+          experimentalFlag: () async => true,
+          executionProviderProbe: (b) async => b == MlBackend.ortCpu,
+          modelState: () async => state,
+        );
+        final db = _freshDb();
+        addTearDown(db.close);
+        final dir = await Directory.systemTemp.createTemp('gp_prov_inval_');
+        addTearDown(() => dir.delete(recursive: true));
+        final x2Bytes = await File(
+          'test/fixtures/ml/upscale_x2_nearest.onnx',
+        ).readAsBytes();
+        final repo = await _repoWithPresent(
+          UpscaleModelCatalog.x2,
+          x2Bytes,
+          dir,
+        );
+
+        final container = ProviderContainer(
+          overrides: [
+            mlRuntimeProvider.overrideWithValue(runtime),
+            appDatabaseProvider.overrideWithValue(db),
+            modelRepositoryProvider.overrideWithValue(repo),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        // Absent → floor, and the result is cached.
+        expect(
+          await container.read(imageUpscalerProvider.future),
+          isA<CpuImageUpscaler>(),
+        );
+        // Simulate a completed download; without invalidation the cache stands.
+        state = MlModelState.present;
+        expect(
+          await container.read(imageUpscalerProvider.future),
+          isA<CpuImageUpscaler>(),
+          reason: 'keepAlive cache holds until invalidated',
+        );
+        // After invalidation the upscaler re-resolves to the ONNX path.
+        container.invalidate(imageUpscalerProvider);
+        expect(
+          await container.read(imageUpscalerProvider.future),
+          isA<OnnxImageUpscaler>(),
+        );
+      },
+    );
+
     test('overrideWith substitutes a fake upscaler', () async {
       final fake = _FakeUpscaler();
       final container = ProviderContainer(

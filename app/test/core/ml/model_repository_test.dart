@@ -71,7 +71,7 @@ void main() {
   );
 
   group('ModelRepository.ensureModel', () {
-    test('hash match → confirms to versioned path and returns it', () async {
+    test('hash match → conforms to versioned path and returns it', () async {
       final downloader = _FakeDownloader(bytes: x2Bytes);
       final repo = repoWith(downloader);
 
@@ -129,6 +129,29 @@ void main() {
             .whereType<File>()
             .where((f) => f.path.endsWith('.part'));
         expect(leftovers, isEmpty);
+      },
+    );
+
+    test(
+      'non-HTTPS url → throws ModelDownloadException without downloading',
+      () async {
+        final downloader = _FakeDownloader(bytes: x2Bytes);
+        final repo = repoWith(downloader);
+        const insecure = UpscaleModelEntry(
+          modelId: 'insecure',
+          version: 'v1',
+          url: 'http://example.com/model.onnx',
+          sha256: 'deadbeef',
+          scale: 2,
+          license: 'Apache-2.0',
+        );
+
+        await expectLater(
+          repo.ensureModel(insecure),
+          throwsA(isA<ModelDownloadException>()),
+        );
+        expect(downloader.calls, 0, reason: 'must reject before downloading');
+        expect(await repo.stateOf(insecure), MlModelState.absent);
       },
     );
 

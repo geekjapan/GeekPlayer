@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -33,6 +35,25 @@ class _ExperimentalSectionState extends ConsumerState<ExperimentalSection> {
   int _modelSize = 0;
   int _loadedForScale = -1;
 
+  @override
+  void initState() {
+    super.initState();
+    // Initial model-state load, off the first frame so providers are ready.
+    // Subsequent scale changes are handled reactively via `ref.listen` in
+    // build() — neither path runs an async side-effect inside build().
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final int scale =
+          ref.read(appSettingsProvider).value?.aiUpscaleScale ?? 2;
+      unawaited(_refreshModelState(scale));
+    });
+  }
+
+  /// Drops the cached [imageUpscalerProvider] so the next read re-probes the
+  /// (now changed) toggle / scale / model-state. Without this the `keepAlive`
+  /// upscaler would keep returning a stale instance until app restart.
+  void _invalidateUpscaler() => ref.invalidate(imageUpscalerProvider);
+
   Future<void> _refreshModelState(int scale) async {
     final UpscaleModelEntry? entry = UpscaleModelCatalog.forScale(scale);
     if (entry == null) return;
@@ -60,6 +81,7 @@ class _ExperimentalSectionState extends ConsumerState<ExperimentalSection> {
               setState(() => _progress = received / total);
             },
           );
+      _invalidateUpscaler();
       await _refreshModelState(entry.scale);
     } catch (_) {
       if (mounted) {
@@ -74,6 +96,7 @@ class _ExperimentalSectionState extends ConsumerState<ExperimentalSection> {
 
   Future<void> _delete(UpscaleModelEntry entry) async {
     await ref.read(modelRepositoryProvider).delete(entry);
+    _invalidateUpscaler();
     if (!mounted) return;
     await _refreshModelState(entry.scale);
   }
@@ -99,11 +122,16 @@ class _ExperimentalSectionState extends ConsumerState<ExperimentalSection> {
         (AsyncValue<AppSettings> s) => s.value?.aiUpscaleScale ?? 2,
       ),
     );
-    if (scale != _loadedForScale) {
-      // Lazy (re)load model state when the selected scale changes.
-      // ignore: discarded_futures
-      _refreshModelState(scale);
-    }
+    // React to scale changes without an async side-effect inside build():
+    // refresh the model state for the newly-selected scale.
+    ref.listen<int>(
+      appSettingsProvider.select(
+        (AsyncValue<AppSettings> s) => s.value?.aiUpscaleScale ?? 2,
+      ),
+      (int? prev, int next) {
+        if (next != _loadedForScale) unawaited(_refreshModelState(next));
+      },
+    );
     final UpscaleModelEntry? entry = UpscaleModelCatalog.forScale(scale);
 
     return SettingsSection(
@@ -131,9 +159,12 @@ class _ExperimentalSectionState extends ConsumerState<ExperimentalSection> {
           key: const Key('experimental-ai-upscale-enable'),
           title: Text(l10n.settingsAiUpscaleEnable),
           value: enabled,
-          onChanged: (bool v) => ref
-              .read(appSettingsProvider.notifier)
-              .mutate((AppSettings s) => s.copyWith(aiUpscaleEnabled: v)),
+          onChanged: (bool v) {
+            ref
+                .read(appSettingsProvider.notifier)
+                .mutate((AppSettings s) => s.copyWith(aiUpscaleEnabled: v));
+            _invalidateUpscaler();
+          },
         ),
         ListTile(
           key: const Key('experimental-ai-upscale-scale'),
@@ -153,6 +184,7 @@ class _ExperimentalSectionState extends ConsumerState<ExperimentalSection> {
                         .mutate(
                           (AppSettings st) => st.copyWith(aiUpscaleScale: s),
                         );
+                    _invalidateUpscaler();
                   },
                 ),
             ],

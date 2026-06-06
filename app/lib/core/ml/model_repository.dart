@@ -105,9 +105,11 @@ class ModelRepository {
   }
 
   /// The cached file for [entry] if it is present and non-empty, else `null`.
+  /// Uses async filesystem calls so it never blocks the calling isolate when
+  /// invoked from providers/UI.
   Future<File?> _presentFile(UpscaleModelEntry entry) async {
     final File file = await _entryFile(entry);
-    if (file.existsSync() && file.lengthSync() > 0) return file;
+    if (await file.exists() && await file.length() > 0) return file;
     return null;
   }
 
@@ -137,6 +139,16 @@ class ModelRepository {
     UpscaleModelEntry entry, {
     void Function(int received, int total)? onProgress,
   }) async {
+    // Spec `upscale-model-distribution`: downloads MUST be HTTPS-only. Reject a
+    // non-HTTPS catalog URL early with a catchable error so the selection seam
+    // degrades to the bicubic floor instead of fetching over an insecure scheme.
+    final Uri uri = Uri.tryParse(entry.url) ?? Uri();
+    if (uri.scheme.toLowerCase() != 'https') {
+      throw ModelDownloadException(
+        'refusing non-HTTPS model URL for ${entry.modelId}: ${entry.url}',
+      );
+    }
+
     final Uint8List bytes;
     try {
       bytes = await downloader.download(entry.url, onProgress: onProgress);
@@ -160,7 +172,7 @@ class ModelRepository {
       await partFile.writeAsBytes(bytes, flush: true);
       await partFile.rename(finalFile.path);
     } catch (e) {
-      if (partFile.existsSync()) {
+      if (await partFile.exists()) {
         try {
           await partFile.delete();
         } catch (_) {}
@@ -179,7 +191,7 @@ class ModelRepository {
   /// The on-disk size of [entry] in bytes (0 if absent).
   Future<int> sizeOf(UpscaleModelEntry entry) async {
     final File? file = await _presentFile(entry);
-    return file == null ? 0 : file.lengthSync();
+    return file == null ? 0 : await file.length();
   }
 
   /// An [OnnxModelSource] for [entry] if present, else `null`.
@@ -191,6 +203,6 @@ class ModelRepository {
   /// Deletes [entry] from the cache. Safe no-op if already absent.
   Future<void> delete(UpscaleModelEntry entry) async {
     final Directory dir = await _entryDir(entry);
-    if (dir.existsSync()) await dir.delete(recursive: true);
+    if (await dir.exists()) await dir.delete(recursive: true);
   }
 }

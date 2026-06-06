@@ -9,6 +9,7 @@ import '../../../core/ml/image_upscaler.dart';
 import '../../../core/ml/providers.dart';
 import '../../../core/ml/upscale_request.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../settings/domain/app_settings.dart';
 import '../../settings/presentation/app_settings_notifier.dart';
 import '../data/manga_providers.dart';
 import '../domain/manga_archive.dart';
@@ -154,9 +155,11 @@ class _MangaViewerScreenState extends ConsumerState<MangaViewerScreen> {
       );
       // Decode to get actual dimensions before upscaling.
       final (int w, int h) = _decodeDimensions(raw);
-      // Use the configured experimental scale (2x or 4x); defaults to 2x.
-      final int scale =
-          ref.read(appSettingsProvider).value?.aiUpscaleScale ?? 2;
+      // Use the configured experimental scale (2x or 4x). Await the settings
+      // future so a cold start / still-loading settings does not silently fall
+      // back to 2x.
+      final AppSettings settings = await ref.read(appSettingsProvider.future);
+      final int scale = settings.aiUpscaleScale;
       final UpscaleRequest sized = UpscaleRequest(
         bytes: raw,
         srcWidth: w,
