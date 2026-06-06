@@ -109,6 +109,38 @@ void main() {
     });
   });
 
+  group('AI upscaling settings (ADR-0007 step 3)', () {
+    test('defaults are OFF / scale 2 on an empty table', () async {
+      final AppDatabase db = _freshDb();
+      addTearDown(db.close);
+      final AppSettingsRepository repo = AppSettingsRepository(
+        db.appSettingsDao,
+      );
+      final AppSettings s = await repo.readAll();
+      expect(s.aiUpscaleEnabled, isFalse);
+      expect(s.aiUpscaleScale, 2);
+    });
+
+    test('enable + scale 4 round-trips through readAll', () async {
+      final AppDatabase db = _freshDb();
+      addTearDown(db.close);
+      final AppSettingsRepository repo = AppSettingsRepository(
+        db.appSettingsDao,
+      );
+      final AppSettings before = AppSettings.defaults();
+      final AppSettings after = before.copyWith(
+        aiUpscaleEnabled: true,
+        aiUpscaleScale: 4,
+      );
+      await repo.writeDiff(before, after);
+
+      final reread = await repo.readAll();
+      expect(reread.aiUpscaleEnabled, isTrue);
+      expect(reread.aiUpscaleScale, 4);
+      expect(reread, after);
+    });
+  });
+
   group('writeDiff failure path', () {
     test(
       'throws and leaves the table unchanged when the DB is closed',
@@ -147,7 +179,7 @@ void main() {
         novelCacheCapMb: 500,
       );
       await repo.writeAll(snap);
-      expect((await db.appSettingsDao.getAll()).length, 13);
+      expect((await db.appSettingsDao.getAll()).length, 15);
       expect(await repo.readAll(), snap);
     });
   });

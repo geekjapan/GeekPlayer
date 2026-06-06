@@ -18,6 +18,15 @@ import 'package:geekplayer/l10n/app_localizations.dart';
 
 class _MockUpscaler extends Mock implements ImageUpscaler {}
 
+const MangaArchive _emptyArchive = MangaArchive(
+  uri: 'test://manga.zip',
+  path: '/nonexistent/manga.zip',
+  title: 'Test Manga',
+  format: 'zip',
+  pageCount: 0,
+  pages: [],
+);
+
 void main() {
   setUpAll(() {
     registerFallbackValue(
@@ -33,26 +42,18 @@ void main() {
   Widget buildViewer({
     required AppDatabase db,
     required ImageUpscaler upscaler,
+    MangaArchive archive = _emptyArchive,
   }) {
-    const MangaArchive archive = MangaArchive(
-      uri: 'test://manga.zip',
-      path: '/nonexistent/manga.zip',
-      title: 'Test Manga',
-      format: 'zip',
-      pageCount: 0,
-      pages: [],
-    );
-
     return ProviderScope(
       overrides: [
         appDatabaseProvider.overrideWith((Ref ref) {
           ref.onDispose(db.close);
           return db;
         }),
-        imageUpscalerProvider.overrideWithValue(upscaler),
+        imageUpscalerProvider.overrideWith((ref) async => upscaler),
       ],
-      child: const MaterialApp(
-        locale: Locale('ja'),
+      child: MaterialApp(
+        locale: const Locale('ja'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: MangaViewerScreen(archive: archive),

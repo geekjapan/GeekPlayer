@@ -619,4 +619,41 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mangaUpscaleError => 'Upscaling failed';
+
+  @override
+  String get settingsSectionExperimental => 'Experimental';
+
+  @override
+  String get settingsExperimentalWarning =>
+      'Experimental feature. Quality, performance, and stability are not guaranteed, and it may change or be removed without notice.';
+
+  @override
+  String get settingsAiUpscaleEnable => 'Enable AI upscaling';
+
+  @override
+  String get settingsAiUpscaleScale => 'Default scale';
+
+  @override
+  String get settingsAiUpscaleNextRunHelper =>
+      'Changes take effect from the next upscale.';
+
+  @override
+  String get settingsAiUpscaleModelTitle => 'Upscale model';
+
+  @override
+  String get settingsAiUpscaleModelAbsent => 'Not downloaded';
+
+  @override
+  String settingsAiUpscaleModelPresent(String size) {
+    return 'Downloaded ($size)';
+  }
+
+  @override
+  String get settingsAiUpscaleModelError => 'Failed to download the model';
+
+  @override
+  String get settingsAiUpscaleDownload => 'Download';
+
+  @override
+  String get settingsAiUpscaleDelete => 'Delete';
 }

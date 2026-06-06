@@ -251,9 +251,9 @@ v0.1 はリリース済み、**v0.2 の主要スコープ（§5 の 7 changes）
 
 1. **v1.0 AI 高画質化（[ADR-0007](adr/0007-ai-upscaling-runtime-strategy.md) のシーケンス）** — ランタイム戦略は ADR-0007 で **accepted**（ONNX Runtime + Execution Provider 一本化、preferred/effective backend 分離、bicubic CPU を floor、**画像のみ・当面 Experimental 既定 OFF**、モデルは opt-in 初回 DL）。後続 change:
    1. ✅ `refactor-ml-runtime-effective-backend` — `MlRuntime` を preferred/effective + 非同期 `probe()` + フォールバック（preferred EP → ortCpu → bicubicCpu）へ再構成済み。`MlBackend` は EP 志向（coremlEp/nnapiEp/directmlEp/ortCpu/bicubicCpu）。実験フラグ OFF / モデル未取得時は bicubicCpu。
-   2. `add-onnx-upscaler-runtime` — ORT 統合 + CPU EP の `OnnxImageUpscaler`（軽量モデルで CI 検証、要 ORT パッケージ全 OS ビルド spike）。
-   3. `add-upscale-model-distribution` — `ModelRepository`（初回 DL/SHA 検証/キャッシュ）+ 設定 UI。
-   4. `enable-gpu-execution-providers` — CoreML/NNAPI/DirectML EP の段階有効化。
+   2. ✅ `add-onnx-upscaler-runtime` — ORT 統合 + CPU EP の `OnnxImageUpscaler`（軽量モデルで CI 検証）。
+   3. ✅ `add-upscale-model-distribution` — `ModelRepository`（初回 DL/SHA-256 検証/原子的キャッシュ/削除、`crypto`+`dio`+`path_provider`）+ Experimental 設定 UI（有効化トグル既定 OFF・2x/4x スケール・モデル管理）+ async `imageUpscalerProvider` 配線 + manga viewer 移行。**フィクスチャモデル（2x/4x nearest ONNX）で配線完成・実モデル選定/URL/SHA は follow-up**（grill Q1=A）。drift schema 据え置き（設定は既存 key/value）。
+   4. `enable-gpu-execution-providers` — CoreML/NNAPI/DirectML EP の段階有効化。上級 backend 上書き UI もここで（本 change から送り、grill Q3=A）。
 2. **動画 AI**（Anime4K リアルタイム / Real-ESRGAN オフライン / RIFE 補間）— `ImageUpscaler` 対象外の別トラック・別 ADR。
 3. **iOS 配布の本番化** — 署名証明書/プロビジョニング整備（ビルド + CI smoke は `add-platform-ios` で完了）。
 4. **auto-update の Android file-provider 対応** — Android で `file://` install handoff に AndroidManifest の file-provider 宣言が必要（既知の残課題、§7 参照）。

@@ -114,6 +114,18 @@ class AppSettingsRepository {
         kNullableIntCodec,
         d.novelCacheCapMb,
       ),
+      aiUpscaleEnabled: _decode<bool>(
+        map,
+        SettingKeys.aiUpscaleEnabled,
+        kBoolCodec,
+        d.aiUpscaleEnabled,
+      ),
+      aiUpscaleScale: _decode<int>(
+        map,
+        SettingKeys.aiUpscaleScale,
+        kIntCodec,
+        d.aiUpscaleScale,
+      ),
     );
   }
 
@@ -211,6 +223,12 @@ class AppSettingsRepository {
         n.novelCacheCapMb,
       );
     }
+    if (o.aiUpscaleEnabled != n.aiUpscaleEnabled) {
+      out[SettingKeys.aiUpscaleEnabled] = kBoolCodec.encode(n.aiUpscaleEnabled);
+    }
+    if (o.aiUpscaleScale != n.aiUpscaleScale) {
+      out[SettingKeys.aiUpscaleScale] = kIntCodec.encode(n.aiUpscaleScale);
+    }
     return out;
   }
 
@@ -241,6 +259,8 @@ class AppSettingsRepository {
       novelCacheCapMb: s.novelCacheCapMb == null
           ? 0
           : (s.novelCacheCapMb! + 1) * -1 - 1,
+      aiUpscaleEnabled: !s.aiUpscaleEnabled,
+      aiUpscaleScale: -s.aiUpscaleScale - 1,
     );
   }
 }

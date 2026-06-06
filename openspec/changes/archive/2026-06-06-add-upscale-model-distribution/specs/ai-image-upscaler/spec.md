@@ -1,24 +1,4 @@
-# ai-image-upscaler Specification
-
-## Purpose
-
-Lands the first concrete AI-upscaling increment on top of the `ml-runtime` abstraction: a real CPU bicubic `ImageUpscaler` implementation (`CpuImageUpscaler`) as the shipped default, plus a localized "高画質化 / Upscale" action in the manga viewer. GPU/native backends (CoreML/NNAPI/ONNX/TensorRT) and learned models (Real-ESRGAN/waifu2x) remain future changes that plug into the same `ImageUpscaler` seam.
-
-## Requirements
-
-### Requirement: CPU bicubic upscaling
-
-The system SHALL provide a `CpuImageUpscaler` class that implements the `ImageUpscaler` interface using genuine bicubic pixel interpolation. It SHALL decode the input bytes, resize using bicubic interpolation at the requested `scaleFactor`, and return the re-encoded output bytes with correct `outWidth` and `outHeight`. It SHALL report `MlBackend.cpu` as the backend.
-
-#### Scenario: 2x upscale returns doubled dimensions
-
-- **WHEN** `upscale` is called with `scaleFactor: 2`, `srcWidth: 100`, `srcHeight: 80`
-- **THEN** the returned `UpscaleResult` has `outWidth: 200`, `outHeight: 160`, `backend: MlBackend.cpu`, and `bytes` that differ from the input (real interpolation occurred)
-
-#### Scenario: 1x upscale returns identity dimensions
-
-- **WHEN** `upscale` is called with `scaleFactor: 1`, `srcWidth: 50`, `srcHeight: 50`
-- **THEN** the returned `UpscaleResult` has `outWidth: 50`, `outHeight: 50` and non-null bytes
+## MODIFIED Requirements
 
 ### Requirement: CpuImageUpscaler is the default provider
 
@@ -59,17 +39,3 @@ The manga viewer SHALL display a "高画質化 / Upscale" icon button in the App
 
 - **WHEN** the resolved upscaler throws during upscaling
 - **THEN** a localized error message is shown and the original page remains viewable
-
-### Requirement: Localization for upscale UI
-
-The system SHALL provide localized strings for the upscale action label, progress indicator label, and error message in both `ja` and `en` locales. Keys: `mangaUpscaleAction`, `mangaUpscaleInProgress`, `mangaUpscaleError`.
-
-#### Scenario: Japanese locale upscale action label
-
-- **WHEN** locale is `ja` and the upscale icon button tooltip is rendered
-- **THEN** the tooltip reads "高画質化"
-
-#### Scenario: English locale upscale action label
-
-- **WHEN** locale is `en` and the upscale icon button tooltip is rendered
-- **THEN** the tooltip reads "Upscale"

@@ -5,9 +5,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/manga/archive_inspector.dart';
+import '../../../core/ml/image_upscaler.dart';
 import '../../../core/ml/providers.dart';
 import '../../../core/ml/upscale_request.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../settings/presentation/app_settings_notifier.dart';
 import '../data/manga_providers.dart';
 import '../domain/manga_archive.dart';
 import '../domain/manga_bookmark.dart';
@@ -152,13 +154,21 @@ class _MangaViewerScreenState extends ConsumerState<MangaViewerScreen> {
       );
       // Decode to get actual dimensions before upscaling.
       final (int w, int h) = _decodeDimensions(raw);
+      // Use the configured experimental scale (2x or 4x); defaults to 2x.
+      final int scale =
+          ref.read(appSettingsProvider).value?.aiUpscaleScale ?? 2;
       final UpscaleRequest sized = UpscaleRequest(
         bytes: raw,
         srcWidth: w,
         srcHeight: h,
-        scaleFactor: 2,
+        scaleFactor: scale,
       );
-      final result = await ref.read(imageUpscalerProvider).upscale(sized);
+      // Resolve the effective upscaler asynchronously (ADR-0007 step 3): floors
+      // to bicubic CPU unless experimental is ON and a model is present.
+      final ImageUpscaler upscaler = await ref.read(
+        imageUpscalerProvider.future,
+      );
+      final result = await upscaler.upscale(sized);
       if (mounted) {
         setState(() {
           _upscaledBytes = result.bytes;

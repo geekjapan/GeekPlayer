@@ -598,4 +598,40 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get mangaUpscaleError => '高画質化に失敗しました';
+
+  @override
+  String get settingsSectionExperimental => '実験的機能';
+
+  @override
+  String get settingsExperimentalWarning =>
+      '実験的機能です。品質・性能・安定性は保証されず、将来予告なく変更・削除される場合があります。';
+
+  @override
+  String get settingsAiUpscaleEnable => 'AI 高画質化を有効にする';
+
+  @override
+  String get settingsAiUpscaleScale => '既定の倍率';
+
+  @override
+  String get settingsAiUpscaleNextRunHelper => '変更は次回の高画質化から反映されます。';
+
+  @override
+  String get settingsAiUpscaleModelTitle => 'アップスケールモデル';
+
+  @override
+  String get settingsAiUpscaleModelAbsent => '未取得';
+
+  @override
+  String settingsAiUpscaleModelPresent(String size) {
+    return '取得済み（$size）';
+  }
+
+  @override
+  String get settingsAiUpscaleModelError => 'モデルのダウンロードに失敗しました';
+
+  @override
+  String get settingsAiUpscaleDownload => 'ダウンロード';
+
+  @override
+  String get settingsAiUpscaleDelete => '削除';
 }

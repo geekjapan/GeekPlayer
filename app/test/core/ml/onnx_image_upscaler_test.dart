@@ -25,8 +25,9 @@ Uint8List _makeInputPng(int w, int h) {
 
 void main() async {
   final bool ortReady = await ensureOrtLoadable();
-  final Object skipReason =
-      ortReady ? false : 'ONNX Runtime native lib not loadable on test host';
+  final Object skipReason = ortReady
+      ? false
+      : 'ONNX Runtime native lib not loadable on test host';
 
   group('OnnxImageUpscaler (ORT CPU EP)', () {
     test('fixture upscales 2x and reports ortCpu backend', () async {

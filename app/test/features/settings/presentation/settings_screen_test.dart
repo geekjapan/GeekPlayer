@@ -26,7 +26,7 @@ AppDatabase _freshDb() {
 }
 
 void main() {
-  testWidgets('renders all 10 sections in the declared order', (
+  testWidgets('renders all 11 sections in the declared order', (
     WidgetTester tester,
   ) async {
     // Stretch the surface so the entire ListView builds without scroll.
@@ -50,6 +50,7 @@ void main() {
       'cache',
       'online-services',
       'r18',
+      'experimental',
       'about',
     ];
     for (final String id in ids) {
