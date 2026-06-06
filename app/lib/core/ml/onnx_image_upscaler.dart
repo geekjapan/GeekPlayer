@@ -127,12 +127,13 @@ class OnnxImageUpscaler implements ImageUpscaler {
       if (out == null) {
         throw const OnnxUpscaleException('model produced no output tensor');
       }
-      final Uint8List bytes = _fromOutputTensor(out);
-      final img.Image upscaled = img.decodeImage(bytes)!;
+      final (Uint8List bytes, int outWidth, int outHeight) = _fromOutputTensor(
+        out,
+      );
       return UpscaleResult(
         bytes: bytes,
-        outWidth: upscaled.width,
-        outHeight: upscaled.height,
+        outWidth: outWidth,
+        outHeight: outHeight,
         backend: _effectiveBackend,
       );
     } on OnnxUpscaleException {
@@ -165,8 +166,9 @@ class OnnxImageUpscaler implements ImageUpscaler {
     return OrtValueTensor.createTensorWithDataList(data, [1, 3, h, w]);
   }
 
-  /// `[1, 3, outH, outW]` float in `[0, 1]` → encoded PNG bytes.
-  Uint8List _fromOutputTensor(OrtValue out) {
+  /// `[1, 3, outH, outW]` float in `[0, 1]` → encoded PNG bytes plus the output
+  /// dimensions, so callers avoid a redundant decode just to read width/height.
+  (Uint8List bytes, int width, int height) _fromOutputTensor(OrtValue out) {
     final Object? value = out.value;
     if (value is! List<dynamic> || value.isEmpty) {
       throw const OnnxUpscaleException('unexpected output tensor shape');
@@ -196,7 +198,7 @@ class OnnxImageUpscaler implements ImageUpscaler {
         );
       }
     }
-    return Uint8List.fromList(img.encodePng(result));
+    return (Uint8List.fromList(img.encodePng(result)), outW, outH);
   }
 
   static int _to8bit(num normalized) =>

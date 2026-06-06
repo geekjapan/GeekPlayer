@@ -243,6 +243,7 @@ class _ExperimentalSectionState extends ConsumerState<ExperimentalSection> {
                           (AppSettings st) =>
                               st.copyWith(aiUpscaleBackendOverride: o),
                         );
+                    _invalidateUpscaler();
                   },
                 ),
             ],
