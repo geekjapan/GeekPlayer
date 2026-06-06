@@ -34,7 +34,8 @@ Future<bool> _defaultLaunchFileUrl(Uri uri) =>
     launchUrl(uri, mode: LaunchMode.externalApplication);
 
 /// Default Android handoff: `open_filex` builds a `FileProvider` content URI
-/// (authority `${applicationId}.fileProvider`, registered by the package) and
+/// (authority `${applicationId}.fileProvider.com.crazecoder.openfile`,
+/// registered by the package's bundled manifest via manifest merge) and
 /// launches `ACTION_VIEW` with the apk mime, which resolves to the system
 /// installer. A non-`done` result is treated as a failure.
 Future<void> _defaultAndroidInstall(String filePath) async {
@@ -79,7 +80,7 @@ final class LaunchUrlUpdateInstaller implements UpdateInstaller {
     final Uri uri = Uri.file(filePath);
     final bool launched = await _launchFileUrl(uri);
     if (!launched) {
-      throw Exception('launchUrl could not open $filePath');
+      throw Exception('OS handoff could not open $filePath');
     }
   }
 }

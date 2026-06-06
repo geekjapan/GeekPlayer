@@ -16,7 +16,7 @@
 
 - [x] 3.1 `android/app/src/main/AndroidManifest.xml` に `REQUEST_INSTALL_PACKAGES` `uses-permission` を追加
 - [x] 3.2 `<queries>` に install 用 `ACTION_VIEW` + apk mime（`application/vnd.android.package-archive`）を追加し、Android 11+ の package visibility を満たす
-- [x] 3.3 自前 `<provider>` は宣言しない（`open_filex` 同梱の FileProvider authority `${applicationId}.fileProvider` を利用、`res/xml/file_paths.xml` も追加しない）。authority 衝突回避のため二重宣言しないことを確認
+- [x] 3.3 自前 `<provider>` は宣言しない（`open_filex` 同梱の FileProvider authority `${applicationId}.fileProvider.com.crazecoder.openfile` を利用、`res/xml/file_paths.xml` も追加しない）。authority 衝突回避のため二重宣言しないことを確認
 - [x] 3.4 `pubspec.yaml` に `open_filex` を追加し `flutter pub get`。ライセンス（BSD-3）と非 Android ビルド非影響を確認
 
 ## 4. 検証

@@ -18,8 +18,9 @@
     <!-- In-app update install handoff (add-android-apk-install-handoff):
          launch the system package installer for a downloaded .apk. The
          FileProvider that exposes the content:// URI is registered by the
-         open_filex package (authority ${applicationId}.fileProvider); we do
-         not declare our own provider to avoid an authority collision. -->
+         open_filex package via manifest merge (authority
+         ${applicationId}.fileProvider.com.crazecoder.openfile); we do not
+         declare our own provider to avoid an authority collision. -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <application

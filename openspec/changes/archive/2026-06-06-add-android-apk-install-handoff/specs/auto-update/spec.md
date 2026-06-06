@@ -4,7 +4,7 @@
 
 After a successful download, the app SHALL hand the downloaded file off to the OS for installation in a platform-appropriate way:
 
-- On **Android**, the app SHALL launch the system package-installer intent for the downloaded `.apk` using a `FileProvider` `content://` URI (authority `${applicationId}.fileprovider`) with mime type `application/vnd.android.package-archive`, declaring the `REQUEST_INSTALL_PACKAGES` permission. The app SHALL NOT pass a `file://` URI to the installer on Android (it raises `FileUriExposedException` on Android 7+).
+- On **Android**, the app SHALL launch the system package-installer intent for the downloaded `.apk` using a `FileProvider` `content://` URI (provided by the bundled `open_filex` package, authority `${applicationId}.fileProvider.com.crazecoder.openfile`) with mime type `application/vnd.android.package-archive`, declaring the `REQUEST_INSTALL_PACKAGES` permission. The app SHALL NOT pass a `file://` URI to the installer on Android (it raises `FileUriExposedException` on Android 7+).
 - On **macOS, Windows, and Linux**, the app SHALL retain the existing behavior of calling `launchUrl` with a `file://` URI pointing to the downloaded file, handing off to the OS installer/file manager.
 
 When the OS handoff cannot be performed (no installer, permission denied, or launch failure), the installer SHALL surface the failure to the caller so the banner can revert to its idle/error state.

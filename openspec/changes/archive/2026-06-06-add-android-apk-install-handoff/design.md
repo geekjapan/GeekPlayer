@@ -69,7 +69,8 @@ with the file's mime; for an `.apk` this resolves to the system installer. It re
 
 - Used **Android-only** — the live installer calls `OpenFilex.open(path)` only in the Android
   branch; macOS/Windows/Linux keep `launchUrl(Uri.file(path))` unchanged.
-- **Rely on the package's bundled `FileProvider`** (authority `${applicationId}.fileProvider`,
+- **Rely on the package's bundled `FileProvider`** (authority
+  `${applicationId}.fileProvider.com.crazecoder.openfile`,
   registered by `open_filex`'s own manifest). We therefore do **not** hand-declare a `<provider>`
   (doing so would collide on the merged manifest). We still add `REQUEST_INSTALL_PACKAGES` and a
   `<queries>` entry ourselves, and no `res/xml/file_paths.xml` is needed (the package ships one
@@ -90,7 +91,7 @@ The app declares in `android/app/src/main/AndroidManifest.xml`:
   resolve the installer.
 
 We do **not** declare our own `<provider>` and do **not** add `res/xml/file_paths.xml`:
-`open_filex` registers its own `FileProvider` (authority `${applicationId}.fileProvider`) and
+`open_filex` registers its own `FileProvider` (authority `${applicationId}.fileProvider.com.crazecoder.openfile`) and
 ships a `file_paths` covering the cache dir. Declaring a second provider with a clashing
 authority would fail the manifest merge.
 
