@@ -84,6 +84,7 @@ v0.2 の change は次の順に apply した。順序には実装上の依存が
 - [ ] **localization**：新規ユーザー可視文字列はすべて `AppLocalizations` 経由（日英）で、生リテラルを置かない
 - [ ] **settings 伝播モデル**：`AppSettings` 値を追加/参照する場合、新規セッションのみ反映か、アクティブセッションへ即時反映かを明記
 - [ ] **R18 / consent**：R18 やサイト同意の挙動を変える場合、consent の所有先（`site_consents` か別永続化か）・policyVersion・取消時のキャッシュ方針を参照
+- [ ] **Android 16 KB ページ互換**：新規ネイティブ依存（`.so` 同梱プラグイン）を追加する場合、`lib/arm64-v8a/*.so` が 16 KB ELF アラインメント（`p_align >= 0x4000`）を満たすか `tool/check_so_alignment.py` で監査する（`add-android-16kb-page-support`）
 - [ ] **検証コマンド**：`dart format` / `flutter analyze --fatal-infos` / `flutter test` / `openspec validate --all --strict` / `git diff --check` を tasks に含めている
 
 ## v1.0
@@ -108,6 +109,7 @@ v0.2 の change は次の順に apply した。順序には実装上の依存が
    - ✅ ORT CPU EP の `OnnxImageUpscaler` + `ModelRepository`（初回 DL/検証/キャッシュ）+ Experimental 設定 UI（既定 OFF・2x/4x）
    - ✅ GPU EP 有効化（step4 `enable-gpu-execution-providers`）: CoreML EP〔iOS/macOS〕・NNAPI EP〔Android〕で推論、上級 backend 上書き UI。**DirectML は `onnxruntime` 1.4.1 非公開 → Windows は ORT CPU 縮退**（ADR-0007 amendment）
    - ⏳ Real-ESRGAN / waifu2x の実モデル選定・配置（follow-up）
+   - ⚠️ **Android 16 KB ページ互換の残課題**（`add-android-16kb-page-support`）: 同梱 `.so` のうち `libonnxruntime.so`（`onnxruntime: ^1.4.1`）だけが 16 KB アラインメント非対応（LOAD `p_align=0x1000`）。他（flutter/mpv/pdfium/sqlite/dartjni）は対応済み。`onnxruntime` pub は最新が 1.4.1 で 16 KB 対応版が無いため、**方針 A（監査＋CI ゲートを整備し上流対応を待機）**を採用。実害は 16 KB デバイスでの互換性警告のみ（AI upscale は Experimental・default-OFF・opt-in、配布は GitHub Releases でストア要件に非該当）。CI `build-android-debug` は `tool/check_so_alignment.py` で他ライブラリの回帰を検出し、onnxruntime は既知 warning として許容。上流が 16 KB 対応 ORT を出したら依存更新→例外撤去→strict 化、必要なら AAR 差し替え（方針 B）へ昇格。
 2. **動画リアルタイム**:
    - Anime4K をレンダリングパスに組み込む（GPU シェーダ）
 3. **動画オフライン書き出し**:
