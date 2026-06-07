@@ -7,6 +7,7 @@ import 'ml_backend.dart';
 import 'onnx_model_source.dart';
 import 'upscale_request.dart';
 import 'upscale_result.dart';
+import 'upscale_tiling.dart';
 
 /// Thrown when ONNX upscaling fails (bad model, decode, or inference error).
 ///
@@ -39,8 +40,22 @@ class OnnxUpscaleException implements Exception {
 ///
 /// Inference runs synchronously on the calling isolate in this step; moving to
 /// a background isolate ([OrtIsolateSession]) is a tracked follow-up.
+///
+/// Fixed-shape models (real Real-ESRGAN / waifu2x exports) require a fixed
+/// square input edge — NNAPI rejects dynamic shapes and CoreML prefers fixed
+/// ones (ADR-0007). For those, pass [tileSize] (the model's input edge, carried
+/// by `UpscaleModelEntry.tileSize`): the image is split into uniform tiles via
+/// [planTiles], each run through the model, and stitched back with [stitchTiles]
+/// (cropping the [overlap] context border). When [tileSize] is `null`
+/// (dynamic-input models such as the nearest-neighbor fixtures), the whole image
+/// is run in a single pass.
 class OnnxImageUpscaler implements ImageUpscaler {
-  OnnxImageUpscaler(this.modelSource, {this.targetBackend = MlBackend.ortCpu});
+  OnnxImageUpscaler(
+    this.modelSource, {
+    this.targetBackend = MlBackend.ortCpu,
+    this.tileSize,
+    this.overlap = 10,
+  });
 
   final OnnxModelSource modelSource;
 
@@ -49,6 +64,15 @@ class OnnxImageUpscaler implements ImageUpscaler {
   /// session); anything else runs on the CPU EP. If a GPU EP cannot be appended
   /// on this host, the upscaler degrades to a CPU-only session.
   final MlBackend targetBackend;
+
+  /// Fixed model input edge (px). When non-null, inference is tiled to this
+  /// size; when null, the whole image is run in one pass. Supplied from
+  /// `UpscaleModelEntry.tileSize` (ADR-0007 design D7).
+  final int? tileSize;
+
+  /// Context border (px) replicated around each tile and cropped back off the
+  /// scaled output. Only used on the tiled path.
+  final int overlap;
 
   OrtSession? _session;
   bool _disposed = false;
@@ -116,7 +140,54 @@ class OnnxImageUpscaler implements ImageUpscaler {
       throw const OnnxUpscaleException('failed to decode input image');
     }
 
-    final OrtValueTensor input = _toInputTensor(decoded);
+    try {
+      final img.Image result = tileSize == null
+          ? _runImage(session, decoded)
+          : _runTiled(session, decoded, tileSize!);
+      return UpscaleResult(
+        bytes: Uint8List.fromList(img.encodePng(result)),
+        outWidth: result.width,
+        outHeight: result.height,
+        backend: _effectiveBackend,
+      );
+    } on OnnxUpscaleException {
+      rethrow;
+    } catch (e) {
+      throw OnnxUpscaleException('inference failed', e);
+    }
+  }
+
+  /// Splits [src] into fixed [tile]-size tiles, runs each through the model, and
+  /// stitches the scaled tiles back into a seamless image (ADR-0007 design D7).
+  img.Image _runTiled(OrtSession session, img.Image src, int tile) {
+    final List<UpscaleTile> tiles = planTiles(
+      src,
+      tileSize: tile,
+      overlap: overlap,
+    );
+    int scale = 1;
+    final List<ScaledTile> scaled = <ScaledTile>[];
+    for (final UpscaleTile t in tiles) {
+      final img.Image outTile = _runImage(session, t.input);
+      // Derive the integer scale from the first tile (fixed-shape model).
+      scale = outTile.width ~/ t.input.width;
+      if (scale <= 0 || outTile.width != t.input.width * scale) {
+        throw const OnnxUpscaleException('non-integer model scale on tile');
+      }
+      scaled.add(ScaledTile(tile: t, scaled: outTile));
+    }
+    return stitchTiles(
+      scaled,
+      srcWidth: src.width,
+      srcHeight: src.height,
+      scale: scale,
+    );
+  }
+
+  /// Runs one image (whole image or a single tile) through the ORT session and
+  /// returns the scaled RGB image.
+  img.Image _runImage(OrtSession session, img.Image image) {
+    final OrtValueTensor input = _toInputTensor(image);
     final OrtRunOptions runOptions = OrtRunOptions();
     List<OrtValue?>? outputs;
     try {
@@ -127,19 +198,7 @@ class OnnxImageUpscaler implements ImageUpscaler {
       if (out == null) {
         throw const OnnxUpscaleException('model produced no output tensor');
       }
-      final (Uint8List bytes, int outWidth, int outHeight) = _fromOutputTensor(
-        out,
-      );
-      return UpscaleResult(
-        bytes: bytes,
-        outWidth: outWidth,
-        outHeight: outHeight,
-        backend: _effectiveBackend,
-      );
-    } on OnnxUpscaleException {
-      rethrow;
-    } catch (e) {
-      throw OnnxUpscaleException('inference failed', e);
+      return _fromOutputTensor(out);
     } finally {
       input.release();
       runOptions.release();
@@ -166,9 +225,8 @@ class OnnxImageUpscaler implements ImageUpscaler {
     return OrtValueTensor.createTensorWithDataList(data, [1, 3, h, w]);
   }
 
-  /// `[1, 3, outH, outW]` float in `[0, 1]` → encoded PNG bytes plus the output
-  /// dimensions, so callers avoid a redundant decode just to read width/height.
-  (Uint8List bytes, int width, int height) _fromOutputTensor(OrtValue out) {
+  /// `[1, 3, outH, outW]` float in `[0, 1]` → decoded RGB [img.Image].
+  img.Image _fromOutputTensor(OrtValue out) {
     final Object? value = out.value;
     if (value is! List<dynamic> || value.isEmpty) {
       throw const OnnxUpscaleException('unexpected output tensor shape');
@@ -198,7 +256,7 @@ class OnnxImageUpscaler implements ImageUpscaler {
         );
       }
     }
-    return (Uint8List.fromList(img.encodePng(result)), outW, outH);
+    return result;
   }
 
   static int _to8bit(num normalized) =>

@@ -17,9 +17,14 @@ import 'onnx_model_source.dart';
 ImageUpscaler resolveImageUpscaler({
   required MlBackend effective,
   OnnxModelSource? model,
+  int? tileSize,
 }) {
   if (model != null && _isOnnxBackend(effective)) {
-    return OnnxImageUpscaler(model, targetBackend: effective);
+    return OnnxImageUpscaler(
+      model,
+      targetBackend: effective,
+      tileSize: tileSize,
+    );
   }
   return const CpuImageUpscaler();
 }
