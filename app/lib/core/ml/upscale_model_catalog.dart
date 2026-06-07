@@ -18,6 +18,7 @@ class UpscaleModelEntry {
     required this.sha256,
     required this.scale,
     required this.license,
+    this.tileSize,
   });
 
   /// Stable identifier of the model family (kebab-case).
@@ -38,6 +39,12 @@ class UpscaleModelEntry {
   /// SPDX-style license identifier of the model weights.
   final String license;
 
+  /// Fixed model input edge (px) for fixed-shape models that require tiled
+  /// inference (real Real-ESRGAN / waifu2x exports). `null` for dynamic-input
+  /// models (e.g. the nearest-neighbor fixtures), which are run whole-image.
+  /// Must satisfy the scale's divisibility (see [tileSizeSatisfiesScale]).
+  final int? tileSize;
+
   /// Cache-key segment: `<modelId>/<version>`.
   String get cacheKey => '$modelId/$version';
 
@@ -51,11 +58,12 @@ class UpscaleModelEntry {
           url == other.url &&
           sha256 == other.sha256 &&
           scale == other.scale &&
-          license == other.license;
+          license == other.license &&
+          tileSize == other.tileSize;
 
   @override
   int get hashCode =>
-      Object.hash(modelId, version, url, sha256, scale, license);
+      Object.hash(modelId, version, url, sha256, scale, license, tileSize);
 
   @override
   String toString() =>

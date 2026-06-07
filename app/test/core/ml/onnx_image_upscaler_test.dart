@@ -104,6 +104,52 @@ void main() async {
       expect(result.backend, MlBackend.ortCpu);
     }, skip: skipReason);
 
+    test('tiled path matches whole-image upscale (forced tileSize)', () async {
+      // The nearest fixture has a dynamic input shape, so forcing tileSize
+      // exercises the tiling branch: split → per-tile run → stitch must equal
+      // the single-pass whole-image result. (Nearest is local, so overlap
+      // cropping is exact.)
+      final Uint8List model = await File(_fixturePath).readAsBytes();
+      final Uint8List input = _makeInputPng(10, 7);
+      final req = UpscaleRequest(
+        bytes: input,
+        srcWidth: 10,
+        srcHeight: 7,
+        scaleFactor: 2,
+      );
+
+      final whole = OnnxImageUpscaler(OnnxModelSource.bytes(model));
+      addTearDown(whole.dispose);
+      final tiled = OnnxImageUpscaler(
+        OnnxModelSource.bytes(model),
+        tileSize: 8,
+        overlap: 2,
+      );
+      addTearDown(tiled.dispose);
+
+      final wholeResult = await whole.upscale(req);
+      final tiledResult = await tiled.upscale(req);
+
+      expect(tiledResult.outWidth, wholeResult.outWidth);
+      expect(tiledResult.outHeight, wholeResult.outHeight);
+      expect(tiledResult.outWidth, 20);
+      expect(tiledResult.outHeight, 14);
+
+      final img.Image a = img.decodeImage(wholeResult.bytes)!;
+      final img.Image b = img.decodeImage(tiledResult.bytes)!;
+      for (int y = 0; y < a.height; y++) {
+        for (int x = 0; x < a.width; x++) {
+          final pa = a.getPixel(x, y);
+          final pb = b.getPixel(x, y);
+          expect(
+            pb.r == pa.r && pb.g == pa.g && pb.b == pa.b,
+            isTrue,
+            reason: 'tiled vs whole differ at ($x,$y)',
+          );
+        }
+      }
+    }, skip: skipReason);
+
     test(
       'GPU target degrades gracefully and produces correct output',
       () async {
