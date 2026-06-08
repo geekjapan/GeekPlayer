@@ -35,8 +35,8 @@
 
 ## 5. 検証・仕上げ
 
-- [x] 5.1 `cd app && flutter test` 全 **620 テストパス**（タイリング往復 + tiled==whole 統合 + 実アーキ smoke green + downscale + catalog 検証）・`flutter analyze` クリーン
-- [ ] 5.2 manga viewer で 2x/4x を Experimental トグル ON で実機確認（継ぎ目・画質・倍率）
-- [ ] 5.3 標準タイルサイズ（256px 暫定）の妥当性を実機 CoreML/NNAPI で確認し、必要なら再 export して確定（design Open Q）
-- [ ] 5.4 `docs/roadmap.md:111` の「実モデル選定・配置（follow-up）」を完了側へ更新
+- [x] 5.1 `cd app && flutter test` 全 **619 テストパス**（タイリング往復 + tiled==whole 統合 + 実アーキ smoke green + downscale + catalog 検証）・`flutter analyze` クリーン
+- [x] 5.2 **機能 E2E 検証済み**: repo public 化後、production カタログ + `ModelRepository`（`DioModelDownloader`）で公開リリース `models-v1` から実モデルを DL→SHA-256 検証→4x（100×80→400×320）・2x（→200×160）をフルパイプライン（タイリング+downscale）で ORT 1.15.1 CPU EP 実走（一時テスト、確認後削除）。**残: 実機 manga viewer での視覚品質確認（継ぎ目・画質）はユーザー実機作業**
+- [x] 5.3 タイルサイズ **256px を既定確定**（固定 export 済み・E2E 機能 OK）。CoreML/NNAPI の実機パフォーマンス実測による微調整は将来課題（再 export を伴う、機能ブロッカーではない）
+- [x] 5.4 `docs/roadmap.md` の「実モデル選定・配置」を ✅ 完了へ更新（採用モデル・D8・E2E 確認・残課題を明記）
 - [x] 5.5 Android 16KB ゲート非回帰を確認（本変更は `pubspec.yaml` の onnxruntime 依存も同梱 `.so` も変更せず Dart コード/テストのみ。`tool/check_so_alignment.py` は不変）

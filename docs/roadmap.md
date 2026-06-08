@@ -108,7 +108,7 @@ v0.2 の change は次の順に apply した。順序には実装上の依存が
    - ✅ CPU bicubic アップスケーラ（`CpuImageUpscaler`、`image` パッケージ）を既定実装として提供
    - ✅ ORT CPU EP の `OnnxImageUpscaler` + `ModelRepository`（初回 DL/検証/キャッシュ）+ Experimental 設定 UI（既定 OFF・2x/4x）
    - ✅ GPU EP 有効化（step4 `enable-gpu-execution-providers`）: CoreML EP〔iOS/macOS〕・NNAPI EP〔Android〕で推論、上級 backend 上書き UI。**DirectML は `onnxruntime` 1.4.1 非公開 → Windows は ORT CPU 縮退**（ADR-0007 amendment）
-   - ⏳ Real-ESRGAN / waifu2x の実モデル選定・配置（follow-up）
+   - ✅ 実モデル選定・配置（`add-upscale-model-selection`）: **Real-ESRGAN x4plus_anime_6B**（BSD-3-Clause）を opset 17・IR 9・固定 256px タイルで ONNX 化し GitHub Release `models-v1` にホスト。固定形状タイリング（外周/内側 padding・継ぎ目なし再合成）と CPU-EP smoke を実装。**2x は同 4x モデルを native 実行し ×0.5 縮小**（`modelScale`/`downscaleFactor`、ADR-0007 design D8）— waifu2x は opset20/動的形状/offset16 で不適合のため不採用。公開リリースからの実 DL→検証→2x/4x 推論を E2E で確認済み。残: 実機 manga viewer での視覚確認・タイルサイズ実測（256 暫定既定）
    - ⚠️ **Android 16 KB ページ互換の残課題**（`add-android-16kb-page-support`）: 同梱 `.so` のうち `libonnxruntime.so`（`onnxruntime: ^1.4.1`）だけが 16 KB アラインメント非対応（LOAD `p_align=0x1000`）。他（flutter/mpv/pdfium/sqlite/dartjni）は対応済み。`onnxruntime` pub は最新が 1.4.1 で 16 KB 対応版が無いため、**方針 A（監査＋CI ゲートを整備し上流対応を待機）**を採用。実害は 16 KB デバイスでの互換性警告のみ（AI upscale は Experimental・default-OFF・opt-in、配布は GitHub Releases でストア要件に非該当）。CI `build-android-debug` は `tool/check_so_alignment.py` で他ライブラリの回帰を検出し、onnxruntime は既知 warning として許容。上流が 16 KB 対応 ORT を出したら依存更新→例外撤去→strict 化、必要なら AAR 差し替え（方針 B）へ昇格。
 2. **動画リアルタイム**:
    - Anime4K をレンダリングパスに組み込む（GPU シェーダ）
