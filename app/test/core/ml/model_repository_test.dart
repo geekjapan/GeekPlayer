@@ -123,10 +123,7 @@ void main() {
         final List<String> paths = await Future.wait(<Future<String>>[a, b]);
         expect(paths[0], paths[1]);
         expect(downloader.calls, 1, reason: 'second call must dedup');
-        expect(
-          await repo.stateOf(_fx2),
-          MlModelState.present,
-        );
+        expect(await repo.stateOf(_fx2), MlModelState.present);
       },
     );
 

@@ -70,7 +70,9 @@ List<UpscaleTile> planTiles(
   }
   final int core = tileSize - 2 * overlap;
   if (core <= 0) {
-    throw ArgumentError('tileSize ($tileSize) must exceed 2*overlap ($overlap)');
+    throw ArgumentError(
+      'tileSize ($tileSize) must exceed 2*overlap ($overlap)',
+    );
   }
 
   final int tilesX = (src.width + core - 1) ~/ core;
@@ -138,7 +140,10 @@ img.Image stitchTiles(
   if (scale <= 0) {
     throw ArgumentError.value(scale, 'scale', 'must be > 0');
   }
-  final img.Image out = img.Image(width: srcWidth * scale, height: srcHeight * scale);
+  final img.Image out = img.Image(
+    width: srcWidth * scale,
+    height: srcHeight * scale,
+  );
   for (final ScaledTile r in results) {
     final UpscaleTile t = r.tile;
     final int expected = t.input.width * scale;
