@@ -21,7 +21,10 @@ List<ScaledTile> _identity(List<UpscaleTile> tiles) =>
 /// Nearest-neighbor ×scale of [src] (asymmetric floor), the reference a tiled
 /// nearest upscale must reproduce.
 img.Image _nearest(img.Image src, int scale) {
-  final img.Image out = img.Image(width: src.width * scale, height: src.height * scale);
+  final img.Image out = img.Image(
+    width: src.width * scale,
+    height: src.height * scale,
+  );
   for (int y = 0; y < out.height; y++) {
     for (int x = 0; x < out.width; x++) {
       final p = src.getPixel(x ~/ scale, y ~/ scale);
@@ -39,8 +42,10 @@ void _expectEqualImages(img.Image a, img.Image b) {
       final pa = a.getPixel(x, y);
       final pb = b.getPixel(x, y);
       if (pa.r != pb.r || pa.g != pb.g || pa.b != pb.b) {
-        fail('pixel ($x,$y) differs: '
-            '(${pa.r},${pa.g},${pa.b}) vs (${pb.r},${pb.g},${pb.b})');
+        fail(
+          'pixel ($x,$y) differs: '
+          '(${pa.r},${pa.g},${pa.b}) vs (${pb.r},${pb.g},${pb.b})',
+        );
       }
     }
   }
@@ -69,7 +74,10 @@ void main() {
       expect(tiles.last.validX0, 8);
       expect(tiles.last.validW, 2); // 10 - 8
       // All tile inputs are still exactly tileSize (edge-replicated).
-      expect(tiles.every((t) => t.input.width == 8 && t.input.height == 8), isTrue);
+      expect(
+        tiles.every((t) => t.input.width == 8 && t.input.height == 8),
+        isTrue,
+      );
     });
 
     test('overlap 0 yields core == tileSize', () {
@@ -90,14 +98,24 @@ void main() {
     test('identity scale=1 reconstructs the source exactly (with overlap)', () {
       final img.Image src = _makeImage(10, 7);
       final tiles = planTiles(src, tileSize: 8, overlap: 2);
-      final out = stitchTiles(_identity(tiles), srcWidth: 10, srcHeight: 7, scale: 1);
+      final out = stitchTiles(
+        _identity(tiles),
+        srcWidth: 10,
+        srcHeight: 7,
+        scale: 1,
+      );
       _expectEqualImages(out, src);
     });
 
     test('identity reconstructs with overlap 0', () {
       final img.Image src = _makeImage(9, 5);
       final tiles = planTiles(src, tileSize: 4, overlap: 0);
-      final out = stitchTiles(_identity(tiles), srcWidth: 9, srcHeight: 5, scale: 1);
+      final out = stitchTiles(
+        _identity(tiles),
+        srcWidth: 9,
+        srcHeight: 5,
+        scale: 1,
+      );
       _expectEqualImages(out, src);
     });
 
@@ -123,7 +141,9 @@ void main() {
 
     test('stitch rejects a wrongly-sized scaled tile', () {
       final tiles = planTiles(_makeImage(4, 4), tileSize: 4, overlap: 0);
-      final bad = [ScaledTile(tile: tiles.first, scaled: img.Image(width: 5, height: 5))];
+      final bad = [
+        ScaledTile(tile: tiles.first, scaled: img.Image(width: 5, height: 5)),
+      ];
       expect(
         () => stitchTiles(bad, srcWidth: 4, srcHeight: 4, scale: 2),
         throwsArgumentError,

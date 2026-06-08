@@ -51,7 +51,12 @@ void main() async {
       final upscaler = OnnxImageUpscaler(OnnxModelSource.bytes(model));
       addTearDown(upscaler.dispose);
       final result = await upscaler.upscale(
-        UpscaleRequest(bytes: _tilePng(), srcWidth: _tile, srcHeight: _tile, scaleFactor: 4),
+        UpscaleRequest(
+          bytes: _tilePng(),
+          srcWidth: _tile,
+          srcHeight: _tile,
+          scaleFactor: 4,
+        ),
       );
       expect(result.backend, MlBackend.ortCpu);
       expect(result.outWidth, _tile * 4);

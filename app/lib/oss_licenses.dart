@@ -228,7 +228,8 @@ const dependencies = <Package>[
   _flutter_html,
   _archive,
   _image,
-  _onnxruntime
+  _onnxruntime,
+  _crypto
 ];
 
 /// Direct `dev_dependencies`.
@@ -5549,7 +5550,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.''',
     isMarkdown: false,
     isSdk: false,
     dependencies: [PackageRef('ffi')],
-    devDependencies: [],
+    devDependencies: [PackageRef('flutter_lints')],
   );
 
 /// package_config 2.2.0
@@ -8989,7 +8990,7 @@ const _geekplayer = Package(
     version: '0.1.0+1',
     isMarkdown: false,
     isSdk: false,
-    dependencies: [PackageRef('cupertino_icons'), PackageRef('flutter_riverpod'), PackageRef('riverpod_annotation'), PackageRef('media_kit'), PackageRef('media_kit_libs_video'), PackageRef('media_kit_video'), PackageRef('just_audio'), PackageRef('audio_service'), PackageRef('audio_metadata_reader'), PackageRef('drift'), PackageRef('drift_flutter'), PackageRef('dio'), PackageRef('html'), PackageRef('webfeed_revised'), PackageRef('intl'), PackageRef('logger'), PackageRef('path'), PackageRef('path_provider'), PackageRef('file_picker'), PackageRef('package_info_plus'), PackageRef('xml'), PackageRef('collection'), PackageRef('html_unescape'), PackageRef('url_launcher'), PackageRef('open_filex'), PackageRef('pdfrx'), PackageRef('flutter_html'), PackageRef('archive'), PackageRef('image'), PackageRef('onnxruntime')],
+    dependencies: [PackageRef('cupertino_icons'), PackageRef('flutter_riverpod'), PackageRef('riverpod_annotation'), PackageRef('media_kit'), PackageRef('media_kit_libs_video'), PackageRef('media_kit_video'), PackageRef('just_audio'), PackageRef('audio_service'), PackageRef('audio_metadata_reader'), PackageRef('drift'), PackageRef('drift_flutter'), PackageRef('dio'), PackageRef('html'), PackageRef('webfeed_revised'), PackageRef('intl'), PackageRef('logger'), PackageRef('path'), PackageRef('path_provider'), PackageRef('file_picker'), PackageRef('package_info_plus'), PackageRef('xml'), PackageRef('collection'), PackageRef('html_unescape'), PackageRef('url_launcher'), PackageRef('open_filex'), PackageRef('pdfrx'), PackageRef('flutter_html'), PackageRef('archive'), PackageRef('image'), PackageRef('onnxruntime'), PackageRef('crypto')],
     devDependencies: [PackageRef('flutter_lints'), PackageRef('mocktail'), PackageRef('build_runner'), PackageRef('drift_dev'), PackageRef('riverpod_generator'), PackageRef('fake_async'), PackageRef('sqlite3'), PackageRef('flutter_oss_licenses')],
   );
 
