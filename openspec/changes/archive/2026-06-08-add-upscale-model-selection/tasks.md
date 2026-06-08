@@ -36,7 +36,8 @@
 ## 5. 検証・仕上げ
 
 - [x] 5.1 `cd app && flutter test` 全 **619 テストパス**（タイリング往復 + tiled==whole 統合 + 実アーキ smoke green + downscale + catalog 検証）・`flutter analyze` クリーン
-- [x] 5.2 **機能 E2E 検証済み**: repo public 化後、production カタログ + `ModelRepository`（`DioModelDownloader`）で公開リリース `models-v1` から実モデルを DL→SHA-256 検証→4x（100×80→400×320）・2x（→200×160）をフルパイプライン（タイリング+downscale）で ORT 1.15.1 CPU EP 実走（一時テスト、確認後削除）。**残: 実機 manga viewer での視覚品質確認（継ぎ目・画質）はユーザー実機作業**
+- [x] 5.2 **機能 E2E 検証済み**: repo public 化後、production カタログ + `ModelRepository`（`DioModelDownloader`）で公開リリース `models-v1` から実モデルを DL→SHA-256 検証→4x（100×80→400×320）・2x（→200×160）をフルパイプライン（タイリング+downscale）で ORT 1.15.1 CPU EP 実走（一時テスト、確認後削除）。**Android 実機（Pixel_10 emulator, API 37）on-device 検証済み（2026-06-08）**: Settings の Enable AI upscaling トグル ON → Upscale model を端末上で DL（"Downloaded (17.6 MB)" = 18,404,340 bytes, SHA 一致）→ test CBZ を Local Manga に import → viewer で Upscale 実行。**CPU EP（Force CPU）で実 RRDBNet がタイリング込みで端末上完走しアップスケール後ページを描画（クラッシュ・エラー無し）**。**残: 実機の物理デバイスでの視覚品質微評価（継ぎ目・画質）はユーザー作業**
+- [x] 5.2a **NNAPI EP の emulator 制約を確認**: Auto backend だと NNAPI EP が実 RRDBNet を partition/compile（199–201/276–278 node を NNAPI 化、"compilation finished successfully on nnapi-reference"）するが、**emulator の `nnapi-reference` ドライバは実行時に `CONV_2D` で `ANEURALNETWORKS_OP_FAILED`** を返す（emulator 固有の reference 実装制約、モデル/アプリ欠陥ではない）。app はクラッシュせず、Settings の **Force CPU 上書きで CPU EP 経路が正常完走**することを実証（ADR-0007 の preferred/effective backend 分離・CPU floor が機能）。実機 vendor NNAPI / CoreML での実行時挙動・perf は §5.3 の将来課題のまま
 - [x] 5.3 タイルサイズ **256px を既定確定**（固定 export 済み・E2E 機能 OK）。CoreML/NNAPI の実機パフォーマンス実測による微調整は将来課題（再 export を伴う、機能ブロッカーではない）
 - [x] 5.4 `docs/roadmap.md` の「実モデル選定・配置」を ✅ 完了へ更新（採用モデル・D8・E2E 確認・残課題を明記）
 - [x] 5.5 Android 16KB ゲート非回帰を確認（本変更は `pubspec.yaml` の onnxruntime 依存も同梱 `.so` も変更せず Dart コード/テストのみ。`tool/check_so_alignment.py` は不変）
