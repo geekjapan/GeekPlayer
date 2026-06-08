@@ -16,10 +16,25 @@
 
 ### Requirement: 採用モデルの出所とライセンスの追跡可能性
 
-カタログの各恒久エントリについて、システムは採用モデルの**出所（upstream）とライセンス根拠**を変更成果物に記録しなければならない (MUST)。2x は waifu2x (nagadomi/nunif, MIT)、4x は RealESRGAN_x4plus_anime_6B (xinntao/Real-ESRGAN, BSD-3-Clause) を既定採用とし、ホスト前に upstream リポジトリの LICENSE を直接確認しなければならない (MUST)。
+カタログの各恒久エントリについて、システムは採用モデルの**出所（upstream）とライセンス根拠**を変更成果物に記録しなければならない (MUST)。2x・4x の両スロットは **RealESRGAN_x4plus_anime_6B**（xinntao/Real-ESRGAN, BSD-3-Clause）を採用し、ホスト前に upstream リポジトリの LICENSE を直接確認しなければならない (MUST)。2x スロットは別モデルを持たず、4x モデルを native 4x で実行し ×0.5 縮小して得る（`modelScale`/`downscaleFactor`、design D8）。
 
 #### Scenario: ライセンス根拠が確認済みである
 
 - **GIVEN** カタログに登録予定の採用モデル
 - **WHEN** GitHub Release にホストする前
 - **THEN** upstream リポジトリの LICENSE を直接確認した記録があり、license フィールドがそれと一致する
+
+#### Scenario: 2x は 4x モデルの downscale で供給する
+
+- **WHEN** 2x スロットのエントリを参照する
+- **THEN** `modelScale` は 4、`scale` は 2、`downscaleFactor` は 2 であり、4x スロットと同一のモデル（同一 URL・SHA-256）を指す
+
+### Requirement: target scale への downscale
+
+native scale（`modelScale`）が target `scale` を上回るエントリについて、システムは、モデルを native scale で実行した出力を `modelScale / scale` で縮小し、最終出力が入力 × `scale` の寸法になるようにしなければならない (MUST)。縮小はエイリアシングを抑える補間（average 等）で行う。
+
+#### Scenario: 4x モデルで 2x 出力を得る
+
+- **GIVEN** `modelScale=4`・`scale=2` のエントリと寸法 W×H の入力
+- **WHEN** アップスケールを実行する
+- **THEN** モデルは 4x で推論し、出力は ×0.5 縮小されて (W·2)×(H·2) になる

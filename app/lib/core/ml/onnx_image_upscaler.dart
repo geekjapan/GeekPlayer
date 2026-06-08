@@ -55,7 +55,8 @@ class OnnxImageUpscaler implements ImageUpscaler {
     this.targetBackend = MlBackend.ortCpu,
     this.tileSize,
     this.overlap = 10,
-  });
+    this.downscale = 1,
+  }) : assert(downscale >= 1, 'downscale must be >= 1');
 
   final OnnxModelSource modelSource;
 
@@ -73,6 +74,11 @@ class OnnxImageUpscaler implements ImageUpscaler {
   /// Context border (px) replicated around each tile and cropped back off the
   /// scaled output. Only used on the tiled path.
   final int overlap;
+
+  /// Divisor applied to the native model output to reach the target scale
+  /// (`modelScale / scale`; 1 = no downscale). Lets a single 4x model serve the
+  /// 2x slot by averaging its output ×0.5 (design D8 / `UpscaleModelEntry`).
+  final int downscale;
 
   OrtSession? _session;
   bool _disposed = false;
@@ -141,9 +147,19 @@ class OnnxImageUpscaler implements ImageUpscaler {
     }
 
     try {
-      final img.Image result = tileSize == null
+      img.Image result = tileSize == null
           ? _runImage(session, decoded)
           : _runTiled(session, decoded, tileSize!);
+      if (downscale > 1) {
+        // Bicubic-average downscale of the native (e.g. 4x) output to the target
+        // scale (e.g. 2x). `average` anti-aliases, suiting integer downsampling.
+        result = img.copyResize(
+          result,
+          width: result.width ~/ downscale,
+          height: result.height ~/ downscale,
+          interpolation: img.Interpolation.average,
+        );
+      }
       return UpscaleResult(
         bytes: Uint8List.fromList(img.encodePng(result)),
         outWidth: result.width,

@@ -150,6 +150,32 @@ void main() async {
       }
     }, skip: skipReason);
 
+    test('downscale runs native model then shrinks to target scale', () async {
+      // The x4 fixture upscales 4x; with downscale=2 the net effect is 2x
+      // (4x then average-downscale ×0.5) — the 2x-via-4x catalog mechanism.
+      final Uint8List model = await File(
+        'test/fixtures/ml/upscale_x4_nearest.onnx',
+      ).readAsBytes();
+      final upscaler = OnnxImageUpscaler(
+        OnnxModelSource.bytes(model),
+        downscale: 2,
+      );
+      addTearDown(upscaler.dispose);
+
+      final result = await upscaler.upscale(
+        UpscaleRequest(
+          bytes: _makeInputPng(8, 6),
+          srcWidth: 8,
+          srcHeight: 6,
+          scaleFactor: 2,
+        ),
+      );
+      // 8x6 → model 4x = 32x24 → downscale 2 → 16x12 (net 2x).
+      expect(result.outWidth, 16);
+      expect(result.outHeight, 12);
+      expect(img.decodeImage(result.bytes)!.width, 16);
+    }, skip: skipReason);
+
     test(
       'GPU target degrades gracefully and produces correct output',
       () async {

@@ -18,12 +18,14 @@ ImageUpscaler resolveImageUpscaler({
   required MlBackend effective,
   OnnxModelSource? model,
   int? tileSize,
+  int downscale = 1,
 }) {
   if (model != null && _isOnnxBackend(effective)) {
     return OnnxImageUpscaler(
       model,
       targetBackend: effective,
       tileSize: tileSize,
+      downscale: downscale,
     );
   }
   return const CpuImageUpscaler();

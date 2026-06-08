@@ -2,7 +2,7 @@
 
 ### Requirement: 実アーキテクチャ・固定形状の CPU-EP smoke
 
-既存の fixture smoke に加え、システムは、**採用モデルと同一の op 種別**（Conv / LeakyReLU / PixelShuffle または Resize / Concat 等）を含み、**同一 opset 17・固定タイル形状**で export した**縮小アーキ**の ONNX（4x は block/channel を縮小した RRDBNet、2x は最小構成 swin_unet）が、同梱ネイティブ ONNX Runtime 1.15.1 の CPU EP でロードでき、1 タイルの推論を未対応 op なく完走できることを検証しなければならない (MUST)。検証目的は op 種別と opset の互換実証であり、パラメータ数の忠実性は要求しない。実モデルのフル重み（~18MB 等）をリポジトリに同梱してはならない (MUST NOT)。
+既存の fixture smoke に加え、システムは、**採用モデルと同一の op 種別**（Conv / LeakyReLU / PixelShuffle / residual add / Resize 等）を含み、**同一 opset 17・固定タイル形状**で export した**縮小アーキ**の ONNX（block/channel を縮小した RRDBNet）が、同梱ネイティブ ONNX Runtime 1.15.1 の CPU EP でロードでき、1 タイルの推論を未対応 op なく完走できることを検証しなければならない (MUST)。採用モデルは 2x・4x いずれも Real-ESRGAN RRDBNet（design D8、2x は 4x の downscale）であり、RRDBNet の op 種別が対象である。検証目的は op 種別と opset の互換実証であり、パラメータ数の忠実性は要求しない。実モデルのフル重み（~18MB 等）をリポジトリに同梱してはならない (MUST NOT)。
 
 #### Scenario: 縮小アーキ ONNX が CPU EP でロード・推論できる
 

@@ -13,14 +13,15 @@ import 'ort_test_support.dart';
 /// Real-architecture CPU-EP smoke (add-upscale-model-selection §1.4 / spec
 /// onnx-upscaler-runtime "実アーキテクチャ・固定形状の CPU-EP smoke").
 ///
-/// These reduced-architecture fixtures share the real models' op families
+/// This reduced-architecture fixture shares the real model's op families
 /// (Conv / LeakyReLU / PixelShuffle / residual add) at opset 17 and a fixed
 /// 64×64 tile, proving those ops load and run on the bundled ONNX Runtime
-/// 1.15.1 CPU EP — without shipping ~18 MB of real weights. Generate them with
+/// 1.15.1 CPU EP — without shipping ~18 MB of real weights. Per design D8 both
+/// the 2x and 4x slots run the Real-ESRGAN RRDBNet model, so this RRDBNet op
+/// family is the only one to cover. Generate it with
 /// `python tool/export_smoke_fixtures.py --out test/fixtures/ml`; until then
-/// these tests skip (the fixtures are intentionally not committed binaries).
+/// this test skips (the fixture is intentionally not a committed binary).
 const String _rrdbX4 = 'test/fixtures/ml/smoke_realesrgan_x4_arch.onnx';
-const String _waifuX2 = 'test/fixtures/ml/smoke_waifu2x_x2_arch.onnx';
 const int _tile = 64;
 
 Uint8List _tilePng() {
@@ -56,17 +57,5 @@ void main() async {
       expect(result.outWidth, _tile * 4);
       expect(result.outHeight, _tile * 4);
     }, skip: skipFor(_rrdbX4));
-
-    test('reduced waifu2x x2 loads and runs one tile', () async {
-      final model = await File(_waifuX2).readAsBytes();
-      final upscaler = OnnxImageUpscaler(OnnxModelSource.bytes(model));
-      addTearDown(upscaler.dispose);
-      final result = await upscaler.upscale(
-        UpscaleRequest(bytes: _tilePng(), srcWidth: _tile, srcHeight: _tile, scaleFactor: 2),
-      );
-      expect(result.backend, MlBackend.ortCpu);
-      expect(result.outWidth, _tile * 2);
-      expect(result.outHeight, _tile * 2);
-    }, skip: skipFor(_waifuX2));
   });
 }

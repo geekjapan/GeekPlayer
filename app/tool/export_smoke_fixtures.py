@@ -15,9 +15,9 @@ real parameter count and file size). It builds *minimal* variants:
 - ``smoke_realesrgan_x4_arch.onnx`` — a reduced RRDBNet-style x4 net using the
   same op families as Real-ESRGAN (Conv2d, LeakyReLU, residual add, PixelShuffle
   upsampling). num_feat / num_block are minimised → a few hundred KB.
-- ``smoke_waifu2x_x2_arch.onnx`` — a reduced conv x2 net (Conv2d, LeakyReLU,
-  PixelShuffle). This is a lightweight stand-in; for a faithful swin_unet op
-  check, also export a small-tile model from nagadomi/nunif (tasks §3.4-3.6).
+
+Per design D8 the 2x slot also runs the Real-ESRGAN 4x model (downscaled), so the
+RRDBNet op family is the only one shipped — there is no waifu2x/swin_unet path.
 
 Both take NCHW float32 RGB in [0,1], shape ``[1, 3, TILE, TILE]``, and emit
 ``[1, 3, TILE*scale, TILE*scale]`` — matching `OnnxImageUpscaler`'s tensor
@@ -35,10 +35,17 @@ from __future__ import annotations
 import argparse
 import os
 
+import onnx
 import torch
 import torch.nn as nn
 
 OPSET = 17
+# ONNX Runtime 1.15.1 (bundled by the Dart `onnxruntime` 1.4.1 package) supports
+# ONNX IR version <= 9. Newer torch/onnx default to IR 10, which ORT 1.15.1
+# rejects with "Unsupported model IR version: 10". opset 17 is compatible with
+# IR 9, so we clamp the IR version down after export. The SAME clamp is required
+# for the real Real-ESRGAN / waifu2x exports (tasks §3.3 / §3.5).
+MAX_IR_VERSION = 9
 TILE = 64  # small fixed tile; product models use 256 (design D3)
 
 
@@ -72,24 +79,6 @@ class ReducedRRDB(nn.Module):
         return self.conv_last(feat)
 
 
-class ReducedConvSR(nn.Module):
-    """Minimal conv x2 net (Conv2d, LeakyReLU, PixelShuffle) — waifu2x stand-in."""
-
-    def __init__(self, num_feat: int = 8, scale: int = 2):
-        super().__init__()
-        self.conv_first = nn.Conv2d(3, num_feat, 3, 1, 1)
-        self.conv_mid = nn.Conv2d(num_feat, num_feat, 3, 1, 1)
-        self.lrelu = nn.LeakyReLU(negative_slope=0.1, inplace=True)
-        self.up_conv = nn.Conv2d(num_feat, num_feat * scale * scale, 3, 1, 1)
-        self.shuffle = nn.PixelShuffle(scale)
-        self.conv_last = nn.Conv2d(num_feat, 3, 3, 1, 1)
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        feat = self.lrelu(self.conv_first(x))
-        feat = self.lrelu(self.conv_mid(feat))
-        feat = self.shuffle(self.up_conv(feat))
-        return self.conv_last(feat)
-
 
 def _export(model: nn.Module, path: str) -> None:
     model.eval()
@@ -103,8 +92,28 @@ def _export(model: nn.Module, path: str) -> None:
         output_names=["output"],
         do_constant_folding=True,
     )
+    # Clamp the ONNX IR version down to what ORT 1.15.1 accepts (<= 9) and
+    # inline all weights so the .onnx is self-contained (no .onnx.data sidecar,
+    # which `OnnxModelSource.bytes` would not load). torch's exporter may emit an
+    # external-data sidecar; re-saving without external data inlines it — then we
+    # remove the now-orphaned sidecar.
+    m = onnx.load(path)  # loads external data if present
+    if m.ir_version > MAX_IR_VERSION:
+        m.ir_version = MAX_IR_VERSION
+    onnx.save_model(m, path, save_as_external_data=False)
+    sidecar = path + ".data"
+    if os.path.exists(sidecar):
+        os.remove(sidecar)
+    # Soft well-formedness check. Non-fatal: onnx's checker can raise spurious
+    # version-converter errors (e.g. "No Adapter To Version 17 for Resize") on
+    # models that nonetheless load and run on ORT 1.15.1 — the authoritative
+    # check is the Dart CPU-EP smoke (onnx_real_arch_smoke_test.dart).
+    try:
+        onnx.checker.check_model(path)
+    except Exception as e:  # noqa: BLE001
+        print(f"  NOTE: onnx.checker reported (non-fatal): {e}")
     size = os.path.getsize(path)
-    print(f"wrote {path} ({size} bytes, opset {OPSET}, tile {TILE})")
+    print(f"wrote {path} ({size} bytes, opset {OPSET}, IR {m.ir_version}, tile {TILE})")
     if size > 2_000_000:
         print(f"  WARNING: {path} is larger than expected for a smoke fixture")
 
@@ -115,8 +124,9 @@ def main() -> None:
     args = ap.parse_args()
     os.makedirs(args.out, exist_ok=True)
     torch.manual_seed(0)
+    # Only the Real-ESRGAN RRDBNet op family is needed: per design D8 the 2x slot
+    # also runs the 4x RRDB model (downscaled), so there is no swin_unet path.
     _export(ReducedRRDB(scale=4), os.path.join(args.out, "smoke_realesrgan_x4_arch.onnx"))
-    _export(ReducedConvSR(scale=2), os.path.join(args.out, "smoke_waifu2x_x2_arch.onnx"))
 
 
 if __name__ == "__main__":

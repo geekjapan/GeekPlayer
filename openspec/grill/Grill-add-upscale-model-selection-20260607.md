@@ -26,7 +26,7 @@ self-grill で技術論点はインライン解消済み（design.md / tasks.md 
 - **検討した選択肢**: noise0（ノイズ除去なし・最も保守的）/ noise1（軽度）/ noise2（中）/ noise3（強）
 - **推奨案**: **noise1**。一般的な漫画スキャン/Web 配信画像の軽い JPEG ノイズに対しディテール保持とのバランスが良い既定。実機評価（§5.2）で必要なら変更。
 - **不足インプット**: 対象コンテンツの典型ノイズ量の想定（保守的 noise0 か、積極的除去か）。
-- **Status**: Resolved — noise1（軽度）を既定。実機評価（§5.2）で必要なら変更（tasks 3.5 に既定 noise1 を明記）
+- **Status**: Resolved — noise1（軽度）を既定。**ただし apply 中の実証で D8 により supersede**: 2x は waifu2x ではなく Real-ESRGAN 4x モデルの ×0.5 縮小で供給することになり（nunif swin は opset20・動的形状・offset=16 で不適合）、waifu2x noise level の選択自体が moot になった（design D8 参照）
 
 ### Q3. product/export タイルサイズの確定値（256px 暫定）
 - **対象**: design D3 / D7、tasks 5.3
