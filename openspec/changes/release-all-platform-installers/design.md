@@ -56,6 +56,9 @@ on:
 ### D5: 共通メタデータと命名
 各新ジョブにも既存と同じ「Set artifact metadata」ステップ（タグ→`<tag>` / 他→`run-<run_number>`）を置き、`GeekPlayer-<platform>-<suffix>.<ext>` 命名を統一する。
 
+### D6: 全 build ジョブをネイティブ資産リトライで包む
+release-artifacts.yaml は harden-ci-native-downloads 以前の作りで Windows/macOS の build にリトライが無く、media_kit libmpv 7z の integrity 失敗で flaky に落ちる。Windows/macOS/Android/Linux の全 `flutter build` を ci.yaml と同型の bash `until`（max 3, 20s backoff, 第三者 action 非依存）で包む。Windows は windows-latest 既定 pwsh を `shell: bash` に統一。
+
 ## Risks / Trade-offs
 
 - [AppImage に libmpv が同梱されず実行時に欠落] → media_kit はシステム libmpv 前提（既知問題）。案B を採れば `linuxdeploy -l` で libmpv.so.2 を明示同梱して緩和。案A の場合はホスト libmpv 依存が残り、bundling は follow-up。いずれも CI（ヘッドレス）では GUI 起動確認できないため **同梱の網羅性は初回タグ Release 後に実機検証**（tasks 5.4）。

@@ -46,8 +46,16 @@ jobs:
         run: dart run build_runner build --delete-conflicting-outputs
 
       - name: Build Windows release
-        shell: pwsh
-        run: flutter build windows --release --dart-define=GIT_SHA=$env:GIT_SHA
+        # Retry to absorb transient media_kit libmpv 7z integrity failures.
+        # windows-latest defaults to pwsh, so force bash for the retry idiom.
+        shell: bash
+        run: |
+          n=0; max=3
+          until flutter build windows --release --dart-define=GIT_SHA="$GIT_SHA"; do
+            n=$((n+1))
+            if [ "$n" -ge "$max" ]; then echo "::error::flutter build windows failed after $max attempts"; exit 1; fi
+            echo "::warning::flutter build windows attempt $n failed; retrying in 20s"; sleep 20
+          done
 
       - name: Package Windows release
         shell: pwsh
@@ -99,7 +107,14 @@ jobs:
         run: dart run build_runner build --delete-conflicting-outputs
 
       - name: Build macOS release
-        run: flutter build macos --release --dart-define=GIT_SHA="$GIT_SHA"
+        # Retry to absorb transient native download/integrity failures.
+        run: |
+          n=0; max=3
+          until flutter build macos --release --dart-define=GIT_SHA="$GIT_SHA"; do
+            n=$((n+1))
+            if [ "$n" -ge "$max" ]; then echo "::error::flutter build macos failed after $max attempts"; exit 1; fi
+            echo "::warning::flutter build macos attempt $n failed; retrying in 20s"; sleep 20
+          done
 
       - name: Package unsigned macOS dmg
         run: |
