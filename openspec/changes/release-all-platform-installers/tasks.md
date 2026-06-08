@@ -23,6 +23,6 @@
 ## 5. 検証
 
 - [x] 5.1 `python3 -c "import yaml; yaml.safe_load(open('.github/workflows/release-artifacts.yaml'))"` で YAML 構文を確認
-- [ ] 5.2 PR を作成し `workflow_dispatch`（非タグ）で Windows/macOS/Android/Linux の 4 ビルドジョブが green（Release 未作成）を確認
+- [x] 5.2 PR を作成し `workflow_dispatch`（非タグ）で Windows/macOS/Android/Linux の 4 ビルドジョブが green（Release 未作成）を確認
 - [ ] 5.3 （main マージ後）`vX.Y.Z` タグで実起動 → 4 資産添付とリリースノート自動生成を確認
 - [ ] 5.4 （follow-up）Linux 実機で AppImage を起動し libmpv 等の同梱欠落がないか確認、欠落あれば linuxdeploy の `--library` 指定を追補
