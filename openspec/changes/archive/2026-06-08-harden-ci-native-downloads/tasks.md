@@ -17,4 +17,4 @@
 - [x] 3.2 各 build/test ステップにリトライループ（`until`/`max`/`exit 1`）が入り、ビルドコマンド本体・runner・成果物設定・Flutter pin・16KB ゲートが不変であることを diff で確認
 - [x] 3.3 `build-macos` に `--no-enable-swift-package-manager` が pub get 前に存在すること、`build-windows-release` のリトライ build ステップに `shell: bash` が付与されていることを確認
 - [x] 3.4 `openspec validate --all --strict` パス
-- [ ] 3.5 **マージ後フォローアップ**: main への push で自動 run を実行し、（a）transient 失敗がリトライで吸収され、（b）`analyze-and-test` および build smoke が安定して green に近づくことを `gh run view` で確認（恒久障害が無い限り）
+- [x] 3.5 **検証済み（2026-06-08, PR #29 run 27121570608）**: リトライ機構が設計通り動作（attempt 1→2→3 + 20s backoff、上限後 `::error` で exit 1）。初回で 4/6 ジョブが green（前回 1–2/6 から改善、build-ios/windows がリトライ無しでは落ちていたものが green 化）。残った build-android（Gradle distribution の `gradle-9.1.0-all.zip` に 504）と build-macos（pdfrx の PDFium xcframework hash 不一致。SPM 無効化は奏功し SPM エラーは消失、同一 run の build-ios は同じ PDFium を CocoaPods 経由で取得成功 → macOS 失敗は corrupted/partial DL の transient）を `gh run rerun --failed` したところ**6 ジョブ全て green**。transient 失敗がリトライ＋再実行で吸収されることを実証。恒久的に長い CDN 障害向けの追加耐性（Gradle distribution キャッシュ・試行回数増）は将来の任意改善
