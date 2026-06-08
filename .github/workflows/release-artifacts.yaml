@@ -245,9 +245,11 @@ jobs:
         run: |
           curl -fL -o linuxdeploy \
             https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+          # The gtk plugin is a script shipped in the repo (no release asset).
           curl -fL -o linuxdeploy-plugin-gtk \
-            https://github.com/linuxdeploy/linuxdeploy-plugin-gtk/releases/download/continuous/linuxdeploy-plugin-gtk.sh
+            https://raw.githubusercontent.com/linuxdeploy/linuxdeploy-plugin-gtk/master/linuxdeploy-plugin-gtk.sh
           chmod +x linuxdeploy linuxdeploy-plugin-gtk
+          export PATH="$PWD:$PATH"
           libmpv="$(ldconfig -p | awk '/libmpv\.so\.2/{print $NF; exit}')"
           if [ -z "$libmpv" ]; then libmpv="$(ldconfig -p | awk '/libmpv\.so/{print $NF; exit}')"; fi
           if [ -z "$libmpv" ]; then echo "::error::libmpv.so not found via ldconfig"; exit 1; fi
