@@ -35,10 +35,17 @@ from __future__ import annotations
 import argparse
 import os
 
+import onnx
 import torch
 import torch.nn as nn
 
 OPSET = 17
+# ONNX Runtime 1.15.1 (bundled by the Dart `onnxruntime` 1.4.1 package) supports
+# ONNX IR version <= 9. Newer torch/onnx default to IR 10, which ORT 1.15.1
+# rejects with "Unsupported model IR version: 10". opset 17 is compatible with
+# IR 9, so we clamp the IR version down after export. The SAME clamp is required
+# for the real Real-ESRGAN / waifu2x exports (tasks §3.3 / §3.5).
+MAX_IR_VERSION = 9
 TILE = 64  # small fixed tile; product models use 256 (design D3)
 
 
@@ -103,8 +110,20 @@ def _export(model: nn.Module, path: str) -> None:
         output_names=["output"],
         do_constant_folding=True,
     )
+    # Clamp the ONNX IR version down to what ORT 1.15.1 accepts (<= 9) and
+    # inline all weights so the .onnx is self-contained (no .onnx.data sidecar,
+    # which `OnnxModelSource.bytes` would not load). torch's exporter may emit an
+    # external-data sidecar; re-saving without external data inlines it — then we
+    # remove the now-orphaned sidecar.
+    m = onnx.load(path)  # loads external data if present
+    if m.ir_version > MAX_IR_VERSION:
+        m.ir_version = MAX_IR_VERSION
+    onnx.save(m, path, save_as_external_data=False)
+    sidecar = path + ".data"
+    if os.path.exists(sidecar):
+        os.remove(sidecar)
     size = os.path.getsize(path)
-    print(f"wrote {path} ({size} bytes, opset {OPSET}, tile {TILE})")
+    print(f"wrote {path} ({size} bytes, opset {OPSET}, IR {m.ir_version}, tile {TILE})")
     if size > 2_000_000:
         print(f"  WARNING: {path} is larger than expected for a smoke fixture")
 

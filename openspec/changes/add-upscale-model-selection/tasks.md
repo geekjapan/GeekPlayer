@@ -2,9 +2,9 @@
 
 - [x] 1.1 **縮小** RRDBNet（`num_block=1`・`num_feat` 縮小、小タイル 64×64、実モデルと同一 op 種別）をランダム初期化し opset 17 で export する fixture 生成スクリプトを `app/tool/export_smoke_fixtures.py` に用意（要ローカル PyTorch 実行・CI 不可）
 - [x] 1.2 **縮小** swin_unet stand-in（conv x2、最小構成・小タイル）も同スクリプトで export（数百 KB 以下。faithful な swin op 検証は §3.4-3.6 の実 export で補完）
-- [ ] 1.3 生成した小型 ONNX を `test/fixtures/ml/` に配置（実 weights 非同梱）← **要ローカル PyTorch 実行**
-- [ ] 1.4 smoke テスト（`test/core/ml/onnx_real_arch_smoke_test.dart`）追加済み（fixture/ORT 不在時 skip）。§1.3 後に green 化し未対応 op がないことを確認 ← **§1.3 待ち**
-- [ ] 1.5 未対応 op が出た場合に opset/アーキを調整（必要なら 4x を waifu2x scale4x へ寄せる）→ design D1/D2 の判断を確定 ← **§1.4 結果待ち**
+- [x] 1.3 生成した小型 ONNX（`smoke_realesrgan_x4_arch.onnx` 24.7KB / `smoke_waifu2x_x2_arch.onnx` 15.0KB）を `test/fixtures/ml/` に配置・commit（実 weights 非同梱）
+- [x] 1.4 smoke（`onnx_real_arch_smoke_test.dart`）が **ORT 1.15.1 CPU EP で両 fixture をロード・1 タイル推論** green（opset17・IR9）。未対応 op なし
+- [x] 1.5 **発見: ORT 1.15.1 は ONNX IR version ≤9 のみ対応**（torch 2.12/onnx は IR10 を吐き "Unsupported model IR version: 10" で失敗）。export 後に `ir_version=9` へクランプして解決（opset は 17 のまま不変）。op 種別の調整は不要 → design D1/D2 の picks 維持
 
 ## 2. タイリング前処理/後処理（新規 capability `upscale-image-tiling`）
 
@@ -20,9 +20,9 @@
 
 - [ ] 3.1 PyTorch 環境を用意（torchvision ≥0.15）
 - [ ] 3.2 【4x】xinntao/Real-ESRGAN から `RealESRGAN_x4plus_anime_6B.pth` 取得し repo の LICENSE を直接確認（BSD-3-Clause であること）
-- [ ] 3.3 【4x】`num_block=6` RRDBNet を再構成し opset 17・固定タイル形状で `.onnx` を export
+- [ ] 3.3 【4x】`num_block=6` RRDBNet を再構成し opset 17・固定タイル形状で `.onnx` を export。**export 後に `ir_version=9` へクランプ必須**（ORT 1.15.1 は IR≤9。§1.5 の発見。`tool/export_smoke_fixtures.py` の `_export` と同手順）
 - [ ] 3.4 【2x】nagadomi/nunif を clone し LICENSE（MIT）確認、事前学習 swin_unet `.pth` を取得
-- [ ] 3.5 【2x】`waifu2x/export_onnx.py` で `noise1_scale2x.onnx` を opset 17・固定タイル形状で export（既定 noise level = **noise1**、grill Q2 確定）
+- [ ] 3.5 【2x】`waifu2x/export_onnx.py` で `noise1_scale2x.onnx` を opset 17・固定タイル形状で export（既定 noise level = **noise1**、grill Q2 確定）。**export 後に `ir_version=9` へクランプ必須**（§1.5）
 - [ ] 3.6 export 済み実 `.onnx` を §1.4 と同じ CPU-EP smoke 経路でロード・推論できることを手元確認
 - [ ] 3.7 `geekjapan/GeekPlayer` の GitHub Release（例 tag `models-v1`）に実 `.onnx` を添付
 - [ ] 3.8 各ファイルの SHA-256 を算出（`shasum -a 256 *.onnx`）・実ファイルサイズを記録

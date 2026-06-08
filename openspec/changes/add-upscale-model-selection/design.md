@@ -28,9 +28,10 @@ ADR-0007 の AI アップスケール基盤は配線済みで、画像経路は 
 - **理由**: 両者とも anime-tuned で寛容ライセンス（MIT / BSD-3-Clause）、ORT 1.15.1 互換 opset へ export 可能。既製 ONNX が使えない（Qualcomm=NPU/ORT1.25.0、AMD=RAIL）ため自前 export が唯一の経路。
 - **代替案**: ① 既製 Qualcomm/AMD ONNX をそのまま採用 → ランタイム不整合/ライセンス不可で却下。② 単一モデルで 2x/4x 兼用 → 品質と固定形状要件の両立が難しく却下。③ waifu2x の scale4x を 4x にも使う → 候補として残すが、既定 4x は Real-ESRGAN の方がイラスト復元で評価が高いため第一候補。
 
-### D2: エクスポート opset = 17、固定タイル入力形状
+### D2: エクスポート opset = 17、IR version ≤9、固定タイル入力形状
 
 - **理由**: ORT 1.15.1 は opset≤19 対応。17 は PyTorch 2.x 既定で保守的かつ十分。NNAPI 非対応・CoreML 選好より、動的形状を避け固定タイル形状で export。
+- **apply 中の発見（§1.5）**: opset とは別に **ONNX IR version の上限がある**。ORT 1.15.1 は **IR version ≤9**。torch 2.12 / onnx 1.21 は既定で IR 10 を書き出し、ロード時に `Unsupported model IR version: 10, max supported IR version: 9` で失敗する。**対策: export 後に `onnx.load` → `model.ir_version = 9` → `onnx.save`**（opset 17 は IR 9 と互換なので不変）。smoke fixtures・実モデル export（§3.3/§3.5）の双方で必須。`tool/export_smoke_fixtures.py` に実装済み。
 - **代替案**: 動的形状 export → CPU フォールバックで加速されず、NNAPI で未対応ノード化リスク。却下（floor は bicubic CPU が別途担保）。
 
 ### D3: 標準タイルサイズ = 256px（暫定既定、実測で確定）
