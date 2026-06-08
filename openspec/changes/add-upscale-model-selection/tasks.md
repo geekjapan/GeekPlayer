@@ -1,7 +1,7 @@
 ## 1. ランタイム互換 smoke 先行（コード、ホスト前に実施・最優先リスク潰し）
 
 - [x] 1.1 **縮小** RRDBNet（`num_block=1`・`num_feat` 縮小、小タイル 64×64、実モデルと同一 op 種別）をランダム初期化し opset 17 で export する fixture 生成スクリプトを `app/tool/export_smoke_fixtures.py` に用意（要ローカル PyTorch 実行・CI 不可）
-- [x] 1.2 **縮小** swin_unet stand-in（conv x2、最小構成・小タイル）も同スクリプトで export（数百 KB 以下。faithful な swin op 検証は §3.4-3.6 の実 export で補完）
+- [x] 1.2 ~~縮小 swin_unet stand-in~~ → **D8 で不要化**: 2x も Real-ESRGAN RRDBNet（4x downscale）になり swin 経路が無くなったため、conv stand-in fixture（`smoke_waifu2x_x2_arch.onnx`）は撤去。RRDBNet fixture が採用 op 種別を網羅する
 - [x] 1.3 生成した小型 ONNX（`smoke_realesrgan_x4_arch.onnx` 24.7KB / `smoke_waifu2x_x2_arch.onnx` 15.0KB）を `test/fixtures/ml/` に配置・commit（実 weights 非同梱）
 - [x] 1.4 smoke（`onnx_real_arch_smoke_test.dart`）が **ORT 1.15.1 CPU EP で両 fixture をロード・1 タイル推論** green（opset17・IR9）。未対応 op なし
 - [x] 1.5 **発見: ORT 1.15.1 は ONNX IR version ≤9 のみ対応**（torch 2.12/onnx は IR10 を吐き "Unsupported model IR version: 10" で失敗）。export 後に `ir_version=9` へクランプして解決（opset は 17 のまま不変）。op 種別の調整は不要 → design D1/D2 の picks 維持
@@ -24,7 +24,7 @@
 - [x] 3.4 ~~【2x】nunif clone / swin_unet .pth 取得~~ → **D8 で supersede**: 2x は 4x モデルの downscale で供給（nunif swin は opset20・動的形状・offset=16 で不適合と実証）
 - [x] 3.5 ~~【2x】waifu2x export~~ → **D8 で supersede**（2x = 4x downscale、waifu2x 不採用）
 - [x] 3.6 export 済み実 4x `.onnx` を ORT 1.15.1 CPU EP で **256→1024 推論完走を実機確認**（一時テスト、確認後削除）
-- [ ] 3.7 `geekjapan/GeekPlayer` の GitHub Release（tag `models-v1`）に `realesrgan_x4plus_anime_6b_t256.onnx` を添付 ← **ユーザー操作**（ファイルは `/tmp/gp-models/` に生成済み）
+- [x] 3.7 GitHub Release `models-v1` に `realesrgan_x4plus_anime_6b_t256.onnx` を添付（認証 DL の SHA-256 = カタログ値一致を検証）。**⚠️ caveat: repo が private のため未認証 DL は 404。アプリの実行時 DL を機能させるには repo の public 化（OSS 方針）か public ホストが必要。それまでは fail-safe で bicubic に degrade（AI は Experimental・既定 OFF）**
 - [x] 3.8 SHA-256 算出済み: `3f224bc597aaf484e387789790d4339053efa7272c01758173b8a1796193c3ee`（18,404,340 bytes）。カタログに反映済み
 
 ## 4. カタログ確定（`upscale-model-distribution`）

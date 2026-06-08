@@ -119,10 +119,17 @@ def main() -> None:
     m = onnx.load(args.out)
     if m.ir_version > MAX_IR_VERSION:
         m.ir_version = MAX_IR_VERSION
-    onnx.save(m, args.out, save_as_external_data=False)
+    onnx.save_model(m, args.out, save_as_external_data=False)
     sidecar = args.out + ".data"
     if os.path.exists(sidecar):
         os.remove(sidecar)
+    # Soft well-formedness check (non-fatal; onnx's checker can raise spurious
+    # version-converter errors on Resize for models that still load+run on ORT
+    # 1.15.1 — the authoritative check is the Dart CPU-EP smoke / temp verify).
+    try:
+        onnx.checker.check_model(args.out)
+    except Exception as e:  # noqa: BLE001
+        print(f"  NOTE: onnx.checker reported (non-fatal): {e}")
     size = os.path.getsize(args.out)
     print(f"wrote {args.out} ({size} bytes, opset {OPSET}, IR {m.ir_version}, tile {args.tile}x4)")
 
