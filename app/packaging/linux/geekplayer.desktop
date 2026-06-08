@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=GeekPlayer
+GenericName=Media Player
+Comment=Cross-platform multimedia player
+Exec=geekplayer
+Icon=geekplayer
+Categories=AudioVideo;Player;Video;
+Terminal=false
