@@ -60,7 +60,16 @@ jobs:
         run: flutter analyze --fatal-infos
 
       - name: Run tests
-        run: flutter test
+        # Retry to absorb transient native-asset download failures (e.g.
+        # package:sqlite3's libsqlite3 download hash mismatch). Persistent
+        # failures still fail after the attempt cap. (harden-ci-native-downloads)
+        run: |
+          n=0; max=3
+          until flutter test; do
+            n=$((n+1))
+            if [ "$n" -ge "$max" ]; then echo "::error::flutter test failed after $max attempts"; exit 1; fi
+            echo "::warning::flutter test attempt $n failed; retrying in 20s"; sleep 20
+          done
 
   build-android-debug:
     runs-on: ubuntu-latest
@@ -83,7 +92,15 @@ jobs:
         run: dart run build_runner build --delete-conflicting-outputs
 
       - name: Build Android debug APK
-        run: flutter build apk --debug
+        # Retry to absorb transient media_kit native download failures
+        # (e.g. HTTP 504 on libmpv jars). (harden-ci-native-downloads)
+        run: |
+          n=0; max=3
+          until flutter build apk --debug; do
+            n=$((n+1))
+            if [ "$n" -ge "$max" ]; then echo "::error::flutter build apk failed after $max attempts"; exit 1; fi
+            echo "::warning::flutter build apk attempt $n failed; retrying in 20s"; sleep 20
+          done
 
       # 16 KB page-size ELF alignment gate (OpenSpec add-android-16kb-page-support).
       # Non-strict: libonnxruntime.so is a tolerated known-warning while upstream
@@ -120,7 +137,17 @@ jobs:
         run: dart run build_runner build --delete-conflicting-outputs
 
       - name: Build Windows release
-        run: flutter build windows --release
+        # Retry to absorb transient media_kit native download/integrity
+        # failures. windows-latest defaults to pwsh, so force bash (Git Bash
+        # is preinstalled) for the retry idiom. (harden-ci-native-downloads)
+        shell: bash
+        run: |
+          n=0; max=3
+          until flutter build windows --release; do
+            n=$((n+1))
+            if [ "$n" -ge "$max" ]; then echo "::error::flutter build windows failed after $max attempts"; exit 1; fi
+            echo "::warning::flutter build windows attempt $n failed; retrying in 20s"; sleep 20
+          done
 
       - name: Package Windows release
         shell: pwsh
@@ -155,6 +182,12 @@ jobs:
           flutter-version: '3.44.0'
           cache: true
 
+      # SPM resolution of the PDFium xcframework corrupts its artifact cache
+      # ("already exists in file system"); force CocoaPods like build-ios.
+      # (harden-ci-native-downloads)
+      - name: Use CocoaPods for plugin resolution
+        run: flutter config --no-enable-swift-package-manager
+
       - name: Install dependencies
         run: flutter pub get
 
@@ -162,7 +195,15 @@ jobs:
         run: dart run build_runner build --delete-conflicting-outputs
 
       - name: Build macOS release (smoke)
-        run: flutter build macos --release --dart-define=GIT_SHA=${{ github.sha }}
+        # Retry to absorb transient native download/integrity failures.
+        # (harden-ci-native-downloads)
+        run: |
+          n=0; max=3
+          until flutter build macos --release --dart-define=GIT_SHA=${{ github.sha }}; do
+            n=$((n+1))
+            if [ "$n" -ge "$max" ]; then echo "::error::flutter build macos failed after $max attempts"; exit 1; fi
+            echo "::warning::flutter build macos attempt $n failed; retrying in 20s"; sleep 20
+          done
 
   build-linux:
     runs-on: ubuntu-latest
@@ -188,7 +229,15 @@ jobs:
         run: dart run build_runner build --delete-conflicting-outputs
 
       - name: Build Linux release (smoke)
-        run: flutter build linux --release --dart-define=GIT_SHA=${{ github.sha }}
+        # Retry to absorb transient media_kit native download/integrity
+        # failures (e.g. mimalloc tarball integrity). (harden-ci-native-downloads)
+        run: |
+          n=0; max=3
+          until flutter build linux --release --dart-define=GIT_SHA=${{ github.sha }}; do
+            n=$((n+1))
+            if [ "$n" -ge "$max" ]; then echo "::error::flutter build linux failed after $max attempts"; exit 1; fi
+            echo "::warning::flutter build linux attempt $n failed; retrying in 20s"; sleep 20
+          done
 
   build-ios:
     runs-on: macos-latest
@@ -216,4 +265,12 @@ jobs:
         run: dart run build_runner build --delete-conflicting-outputs
 
       - name: Build iOS release (smoke, no codesign)
-        run: flutter build ios --release --no-codesign --dart-define=GIT_SHA=${{ github.sha }}
+        # Retry to absorb transient CocoaPods native download failures
+        # (libmpv / PDFium tarballs). (harden-ci-native-downloads)
+        run: |
+          n=0; max=3
+          until flutter build ios --release --no-codesign --dart-define=GIT_SHA=${{ github.sha }}; do
+            n=$((n+1))
+            if [ "$n" -ge "$max" ]; then echo "::error::flutter build ios failed after $max attempts"; exit 1; fi
+            echo "::warning::flutter build ios attempt $n failed; retrying in 20s"; sleep 20
+          done
