@@ -16,26 +16,26 @@
 - [x] 2.6 `OnnxImageUpscaler.upscale()` を `tileSize != null` のとき「decode → タイル分割 → タイル毎 run → 再合成」へ分岐（null は従来の全画像 1-run を保存）
 - [x] 2.7 固定タイル寸法は `UpscaleModelEntry.tileSize` 経由で注入（ONNX API が入力 shape 非公開のため design D7 を反転）。`resolveImageUpscaler`/`providers` に配線。nearest fixture で tiled==whole 一致を統合テストで実証（ORT 1.15.1 CPU EP 実走）
 
-## 3. 実モデル export・ホスト（ユーザー側手動）
+## 3. 実モデル export・ホスト
 
-- [ ] 3.1 PyTorch 環境を用意（torchvision ≥0.15）
-- [ ] 3.2 【4x】xinntao/Real-ESRGAN から `RealESRGAN_x4plus_anime_6B.pth` 取得し repo の LICENSE を直接確認（BSD-3-Clause であること）
-- [ ] 3.3 【4x】`num_block=6` RRDBNet を再構成し opset 17・固定タイル形状で `.onnx` を export。**export 後に `ir_version=9` へクランプ必須**（ORT 1.15.1 は IR≤9。§1.5 の発見。`tool/export_smoke_fixtures.py` の `_export` と同手順）
-- [ ] 3.4 【2x】nagadomi/nunif を clone し LICENSE（MIT）確認、事前学習 swin_unet `.pth` を取得
-- [ ] 3.5 【2x】`waifu2x/export_onnx.py` で `noise1_scale2x.onnx` を opset 17・固定タイル形状で export（既定 noise level = **noise1**、grill Q2 確定）。**export 後に `ir_version=9` へクランプ必須**（§1.5）
-- [ ] 3.6 export 済み実 `.onnx` を §1.4 と同じ CPU-EP smoke 経路でロード・推論できることを手元確認
-- [ ] 3.7 `geekjapan/GeekPlayer` の GitHub Release（例 tag `models-v1`）に実 `.onnx` を添付
-- [ ] 3.8 各ファイルの SHA-256 を算出（`shasum -a 256 *.onnx`）・実ファイルサイズを記録
+- [x] 3.1 PyTorch 環境を用意（隔離 venv: torch 2.12 CPU + onnx + onnxscript）
+- [x] 3.2 【4x】xinntao/Real-ESRGAN から `RealESRGAN_x4plus_anime_6B.pth`（17,938,799 bytes）取得、repo LICENSE を直接確認 = **BSD 3-Clause, Copyright (c) 2021 Xintao Wang**（grill Q1 弱証拠リスク解消）
+- [x] 3.3 【4x】`num_block=6` RRDBNet を self-contained 実装（`tool/export_real_realesrgan_x4.py`）で state_dict ロード（strict=True 成功）→ opset 17・固定 256 タイル・**IR9 クランプ**で `.onnx` export（18,404,340 bytes, self-contained）
+- [x] 3.4 ~~【2x】nunif clone / swin_unet .pth 取得~~ → **D8 で supersede**: 2x は 4x モデルの downscale で供給（nunif swin は opset20・動的形状・offset=16 で不適合と実証）
+- [x] 3.5 ~~【2x】waifu2x export~~ → **D8 で supersede**（2x = 4x downscale、waifu2x 不採用）
+- [x] 3.6 export 済み実 4x `.onnx` を ORT 1.15.1 CPU EP で **256→1024 推論完走を実機確認**（一時テスト、確認後削除）
+- [ ] 3.7 `geekjapan/GeekPlayer` の GitHub Release（tag `models-v1`）に `realesrgan_x4plus_anime_6b_t256.onnx` を添付 ← **ユーザー操作**（ファイルは `/tmp/gp-models/` に生成済み）
+- [x] 3.8 SHA-256 算出済み: `3f224bc597aaf484e387789790d4339053efa7272c01758173b8a1796193c3ee`（18,404,340 bytes）。カタログに反映済み
 
 ## 4. カタログ確定（`upscale-model-distribution`）
 
-- [ ] 4.1 `app/lib/core/ml/upscale_model_catalog.dart:75-94` の `x2`/`x4` を実 `modelId`/`version`/`url`/`sha256`/`scale`/`license` に差し替え（配線・公開 API 不変）
-- [ ] 4.2 fixture が恒久エントリに残っていないこと、license フィールドが upstream LICENSE と一致することを確認（`upscale-model-distribution` の選定基準・追跡可能性要件）
-- [ ] 4.3 採用モデルの出所・ライセンス根拠を変更成果物（design もしくは本 tasks の脚注）に記録
+- [x] 4.1 `upscale_model_catalog.dart` の `x2`/`x4` を実モデルに差し替え（両スロット `realesrgan-x4plus-anime-6b` / 実 URL `models-v1` / 実 SHA-256 / tileSize 256 / `modelScale` 4。x2 は `downscaleFactor` 2。配線・公開 API 不変）
+- [x] 4.2 fixture が恒久エントリに不在・license=BSD-3-Clause を `upscale_model_catalog_test.dart` で検証（選定基準・追跡可能性要件）。repo/provider テストはローカル fixture entry / 直接ステージへ退避
+- [x] 4.3 出所・ライセンス根拠を design D1/D8・spec・本 tasks に記録
 
 ## 5. 検証・仕上げ
 
-- [ ] 5.1 `cd app && flutter test` 全 611 テストパス済み（タイリング往復 + tiled==whole 統合を含む）。実アーキ smoke は §1.3 の fixture 生成後に green 化 ← **smoke の green は §1.3 待ち**
+- [x] 5.1 `cd app && flutter test` 全 **620 テストパス**（タイリング往復 + tiled==whole 統合 + 実アーキ smoke green + downscale + catalog 検証）・`flutter analyze` クリーン
 - [ ] 5.2 manga viewer で 2x/4x を Experimental トグル ON で実機確認（継ぎ目・画質・倍率）
 - [ ] 5.3 標準タイルサイズ（256px 暫定）の妥当性を実機 CoreML/NNAPI で確認し、必要なら再 export して確定（design Open Q）
 - [ ] 5.4 `docs/roadmap.md:111` の「実モデル選定・配置（follow-up）」を完了側へ更新

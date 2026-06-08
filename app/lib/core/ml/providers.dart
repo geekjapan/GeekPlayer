@@ -101,6 +101,7 @@ Future<ImageUpscaler> imageUpscaler(Ref ref) async {
     effective: caps.effective,
     model: model,
     tileSize: entry?.tileSize,
+    downscale: entry?.downscaleFactor ?? 1,
   );
   // An ONNX upscaler holds a native ORT session once it runs; release it when
   // this keepAlive provider is invalidated (e.g. after a model delete or scale

@@ -49,18 +49,29 @@ class _Downloader implements ModelDownloader {
 AppDatabase _freshDb() =>
     AppDatabase.forTesting(DatabaseConnection(NativeDatabase.memory()));
 
-/// A real [ModelRepository] over a temp dir, with [entry] pre-fetched present.
+/// A real [ModelRepository] over a temp dir, with [entry] staged present.
+///
+/// Writes [bytes] directly to the entry's cache path
+/// (`<dir>/ml_models/<modelId>/<version>/model.onnx`, matching ModelRepository's
+/// scheme), bypassing SHA-256 verification — these tests exercise provider
+/// wiring (model present → which upscaler), not download/verify (covered by
+/// model_repository_test). This lets a tiny fixture stand in for the real
+/// catalog model without matching its production digest, and the upscaler's
+/// type/backend is asserted without ever running inference.
 Future<ModelRepository> _repoWithPresent(
   UpscaleModelEntry entry,
   Uint8List bytes,
   Directory dir,
 ) async {
-  final repo = ModelRepository(
+  final File f = File(
+    '${dir.path}/ml_models/${entry.modelId}/${entry.version}/model.onnx',
+  );
+  await f.parent.create(recursive: true);
+  await f.writeAsBytes(bytes);
+  return ModelRepository(
     downloader: _Downloader(bytes),
     cacheDirProvider: () async => dir,
   );
-  await repo.ensureModel(entry);
-  return repo;
 }
 
 void main() {

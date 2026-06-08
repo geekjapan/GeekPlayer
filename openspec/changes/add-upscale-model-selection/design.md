@@ -34,6 +34,14 @@ ADR-0007 の AI アップスケール基盤は配線済みで、画像経路は 
 - **apply 中の発見（§1.5）**: opset とは別に **ONNX IR version の上限がある**。ORT 1.15.1 は **IR version ≤9**。torch 2.12 / onnx 1.21 は既定で IR 10 を書き出し、ロード時に `Unsupported model IR version: 10, max supported IR version: 9` で失敗する。**対策: export 後に `onnx.load` → `model.ir_version = 9` → `onnx.save`**（opset 17 は IR 9 と互換なので不変）。smoke fixtures・実モデル export（§3.3/§3.5）の双方で必須。`tool/export_smoke_fixtures.py` に実装済み。
 - **代替案**: 動的形状 export → CPU フォールバックで加速されず、NNAPI で未対応ノード化リスク。却下（floor は bicubic CPU が別途担保）。
 
+### D8: 2x は waifu2x ではなく「Real-ESRGAN 4x モデル + ×0.5 縮小」で実装（D1 の 2x を supersede）
+
+- **apply 中の実証で方針変更**: nunif swin_unet 2x を実際に export して検査した結果、(1) torch 2.12 dynamo exporter が **opset 20**（ORT 1.15.1 は ≤19）かつ動的形状で出力、(2) `SwinUNet2x` は **offset=16**（入力256→出力480、出力≠input×scale）で、`OnnxImageUpscaler` に offset 対応タイリング拡張が必要、と判明。waifu2x 2x は「export して差し替え」では収まらない多段作業＋アプリ拡張になる。
+- **決定**: 2x スロットも **採用済みの Real-ESRGAN x4 モデル**を使い、native 4x 出力を `img` の average 補間で **×0.5 縮小**して 2x を得る。`UpscaleModelEntry.modelScale`（native=4）と `downscaleFactor`（=modelScale/scale）で表現し、`OnnxImageUpscaler(downscale:)` が native 出力後に縮小する。
+- **利点**: 新モデル・nunif 依存・offset 対応が一切不要。検証済みの単一モデル（opset17/IR9/固定256）が 2x/4x 双方を担う。ホストするファイルも 1 つ。ライセンスは両スロット BSD-3-Clause に統一。
+- **コスト/トレードオフ**: 2x も 4x ネットを走らせるため計算量は 4x と同等（Experimental・既定 OFF・opt-in なので許容）。画質は「4x 出力の高品質ダウンサンプル」で良好。
+- **D1 への影響**: D1 の「2x = waifu2x swin_unet（MIT）」は本決定で **supersede**。grill Q2（waifu2x noise level）は moot。
+
 ### D3: 標準タイルサイズ = 256px（暫定既定、実測で確定）
 
 - **理由**: 128 は継ぎ目/オーバーヘッド過多、512 は 4x 出力（2048px）でモバイルメモリ負荷大。256px を暫定既定とし、CoreML/NNAPI 加速・メモリ・品質の実測で確定する。export 時にタイルサイズが固定化されるため、サイズ変更は再 export を伴う。

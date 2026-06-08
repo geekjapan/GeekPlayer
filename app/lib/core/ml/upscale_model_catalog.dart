@@ -19,7 +19,8 @@ class UpscaleModelEntry {
     required this.scale,
     required this.license,
     this.tileSize,
-  });
+    int? modelScale,
+  }) : modelScale = modelScale ?? scale;
 
   /// Stable identifier of the model family (kebab-case).
   final String modelId;
@@ -33,8 +34,14 @@ class UpscaleModelEntry {
   /// Expected lowercase-hex SHA-256 digest of the downloaded bytes.
   final String sha256;
 
-  /// Integer upscale factor (2 or 4).
+  /// User-facing integer upscale factor (2 or 4).
   final int scale;
+
+  /// The ONNX model's *native* integer scale. When it exceeds [scale], the
+  /// upscaler runs the model at its native scale and downscales the result by
+  /// [downscaleFactor] — so a single 4x model serves both the 4x and 2x slots
+  /// (2x = 4x output bicubic-averaged ×0.5), avoiding a second model/runtime.
+  final int modelScale;
 
   /// SPDX-style license identifier of the model weights.
   final String license;
@@ -48,6 +55,10 @@ class UpscaleModelEntry {
   /// Cache-key segment: `<modelId>/<version>`.
   String get cacheKey => '$modelId/$version';
 
+  /// How much to downscale the native model output to reach [scale]
+  /// (`modelScale / scale`; 1 when the model is already at the target scale).
+  int get downscaleFactor => modelScale ~/ scale;
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -59,11 +70,20 @@ class UpscaleModelEntry {
           sha256 == other.sha256 &&
           scale == other.scale &&
           license == other.license &&
-          tileSize == other.tileSize;
+          tileSize == other.tileSize &&
+          modelScale == other.modelScale;
 
   @override
-  int get hashCode =>
-      Object.hash(modelId, version, url, sha256, scale, license, tileSize);
+  int get hashCode => Object.hash(
+    modelId,
+    version,
+    url,
+    sha256,
+    scale,
+    license,
+    tileSize,
+    modelScale,
+  );
 
   @override
   String toString() =>
@@ -73,32 +93,46 @@ class UpscaleModelEntry {
 /// The static, app-bundled catalog of distributable upscale models (ADR-0007).
 ///
 /// Selection is by scale factor: [forScale] maps the configured 2x/4x to the
-/// catalog entry to download and run. The `https://github.com/.../models-fixture`
-/// URLs are placeholders for the fixture phase (grill Q1=A); a follow-up change
-/// swaps in real model URLs/digests without touching the wiring.
+/// catalog entry to download and run. Both slots reference the SAME anime-tuned
+/// Real-ESRGAN x4 ONNX (RealESRGAN_x4plus_anime_6B, BSD-3-Clause); the 2x slot
+/// runs it at its native 4x and downscales ×0.5 ([UpscaleModelEntry.modelScale]
+/// / `downscaleFactor`), so a single hosted model serves both — no waifu2x
+/// dependency and no fixed-shape offset handling (design D8). The model is
+/// exported at opset 17 / IR 9 with a fixed 256px tile (tool/export_real_realesrgan_x4.py)
+/// and hosted on a GitHub Release; [sha256] is the digest of that exact file.
 class UpscaleModelCatalog {
   const UpscaleModelCatalog._();
 
-  /// 2x fixture (nearest-neighbor Resize ONNX, Apache-2.0, GeekPlayer-authored).
+  /// Hosting location of the exported Real-ESRGAN x4 ONNX (GitHub Release).
+  static const String _x4Url =
+      'https://github.com/geekjapan/GeekPlayer/releases/download/models-v1/realesrgan_x4plus_anime_6b_t256.onnx';
+
+  /// SHA-256 of `realesrgan_x4plus_anime_6b_t256.onnx` (opset 17, IR 9, 256px).
+  static const String _x4Sha256 =
+      '3f224bc597aaf484e387789790d4339053efa7272c01758173b8a1796193c3ee';
+
+  /// 2x slot: the Real-ESRGAN x4 model run natively then downscaled ×0.5.
   static const UpscaleModelEntry x2 = UpscaleModelEntry(
-    modelId: 'fixture-nearest',
-    version: 'x2-2026.06',
-    url:
-        'https://github.com/geekjapan/GeekPlayer/releases/download/models-fixture/upscale_x2_nearest.onnx',
-    sha256: '68eddb443e4a48ed80566a4968bccc3ba47b4241bfeddad959a230ee70946927',
+    modelId: 'realesrgan-x4plus-anime-6b',
+    version: 'v1-2026.06',
+    url: _x4Url,
+    sha256: _x4Sha256,
     scale: 2,
-    license: 'Apache-2.0',
+    modelScale: 4,
+    tileSize: 256,
+    license: 'BSD-3-Clause',
   );
 
-  /// 4x fixture (nearest-neighbor Resize ONNX, Apache-2.0, GeekPlayer-authored).
+  /// 4x slot: the Real-ESRGAN x4 model at its native scale.
   static const UpscaleModelEntry x4 = UpscaleModelEntry(
-    modelId: 'fixture-nearest',
-    version: 'x4-2026.06',
-    url:
-        'https://github.com/geekjapan/GeekPlayer/releases/download/models-fixture/upscale_x4_nearest.onnx',
-    sha256: 'f5ea497c286ec2df5e787f9c41030f8a7f2ad819fc250895da9d61af2b20d60e',
+    modelId: 'realesrgan-x4plus-anime-6b',
+    version: 'v1-2026.06',
+    url: _x4Url,
+    sha256: _x4Sha256,
     scale: 4,
-    license: 'Apache-2.0',
+    modelScale: 4,
+    tileSize: 256,
+    license: 'BSD-3-Clause',
   );
 
   /// All catalog entries.
