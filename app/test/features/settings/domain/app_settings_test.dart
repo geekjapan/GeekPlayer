@@ -64,7 +64,7 @@ void main() {
 
     test('differing field breaks equality', () {
       final AppSettings a = AppSettings.defaults();
-      final AppSettings b = a.copyWith(themeMode: ThemeMode.dark);
+      final AppSettings b = a.copyWith(themeMode: ThemeMode.light);
       expect(a == b, isFalse);
     });
   });

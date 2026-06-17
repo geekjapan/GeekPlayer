@@ -56,13 +56,13 @@ void main() {
       );
 
       final AppSettings before = AppSettings.defaults();
-      final AppSettings after = before.copyWith(themeMode: ThemeMode.dark);
+      final AppSettings after = before.copyWith(themeMode: ThemeMode.light);
       await repo.writeDiff(before, after);
 
       final rows = await db.appSettingsDao.getAll();
       expect(rows.length, 1);
       expect(rows.single.key, SettingKeys.themeMode);
-      expect(rows.single.value, 'dark');
+      expect(rows.single.value, 'light');
     });
 
     test('no-op diff issues no writes', () async {
@@ -186,7 +186,7 @@ void main() {
         // fails synchronously inside drift.
         await repo.writeDiff(
           AppSettings.defaults(),
-          AppSettings.defaults().copyWith(themeMode: ThemeMode.dark),
+          AppSettings.defaults().copyWith(themeMode: ThemeMode.light),
         );
         await db.close();
 

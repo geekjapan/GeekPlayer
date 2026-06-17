@@ -44,11 +44,11 @@ void main() {
 
       c
           .read(appSettingsProvider.notifier)
-          .mutate((AppSettings s) => s.copyWith(themeMode: ThemeMode.dark));
+          .mutate((AppSettings s) => s.copyWith(themeMode: ThemeMode.light));
 
       // State updates immediately.
       final AsyncValue<AppSettings> live = c.read(appSettingsProvider);
-      expect(live.value!.themeMode, ThemeMode.dark);
+      expect(live.value!.themeMode, ThemeMode.light);
 
       // Repository hasn't seen the write yet — confirm by reading the DB.
       expect((await db.appSettingsDao.getAll()), isEmpty);
@@ -60,7 +60,7 @@ void main() {
       final rows = await db.appSettingsDao.getAll();
       expect(rows.length, 1);
       expect(rows.single.key, 'theme.mode');
-      expect(rows.single.value, 'dark');
+      expect(rows.single.value, 'light');
     },
   );
 
@@ -138,7 +138,7 @@ void main() {
 
     c
         .read(appSettingsProvider.notifier)
-        .mutate((AppSettings s) => s.copyWith(themeMode: ThemeMode.dark));
+        .mutate((AppSettings s) => s.copyWith(themeMode: ThemeMode.light));
 
     await Future<void>.delayed(
       kAppSettingsWriteDebounce + const Duration(milliseconds: 50),
