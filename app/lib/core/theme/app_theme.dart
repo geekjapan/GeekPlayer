@@ -22,9 +22,7 @@ ThemeData buildAppTheme(Brightness brightness) {
   return ThemeData(
     colorScheme: colorScheme,
     useMaterial3: true,
-    snackBarTheme: const SnackBarThemeData(
-      behavior: SnackBarBehavior.floating,
-    ),
+    snackBarTheme: const SnackBarThemeData(behavior: SnackBarBehavior.floating),
     appBarTheme: const AppBarTheme(centerTitle: false),
     cardTheme: const CardThemeData(
       elevation: 1,
@@ -33,9 +31,7 @@ ThemeData buildAppTheme(Brightness brightness) {
         borderRadius: BorderRadius.all(Radius.circular(AppRadius.md)),
       ),
     ),
-    listTileTheme: const ListTileThemeData(
-      minVerticalPadding: AppSpacing.sm,
-    ),
+    listTileTheme: const ListTileThemeData(minVerticalPadding: AppSpacing.sm),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
         minimumSize: const Size(0, AppSizes.minTouchTarget),

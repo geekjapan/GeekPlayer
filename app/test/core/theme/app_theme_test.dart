@@ -21,7 +21,10 @@ void main() {
         brightness: Brightness.dark,
       );
 
-      expect(buildAppTheme(Brightness.dark).colorScheme.primary, expected.primary);
+      expect(
+        buildAppTheme(Brightness.dark).colorScheme.primary,
+        expected.primary,
+      );
     });
 
     test('uses floating snack bars', () {
