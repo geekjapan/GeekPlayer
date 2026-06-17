@@ -8982,12 +8982,12 @@ SOFTWARE.''',
     devDependencies: [PackageRef('path'), PackageRef('test')],
   );
 
-/// geekplayer 0.1.0+1
+/// geekplayer 0.1.1+2
 const _geekplayer = Package(
     name: 'geekplayer',
     description: 'Cross-platform multimedia player for videos, music, books, manga and online novels.',
     authors: [],
-    version: '0.1.0+1',
+    version: '0.1.1+2',
     isMarkdown: false,
     isSdk: false,
     dependencies: [PackageRef('cupertino_icons'), PackageRef('flutter_riverpod'), PackageRef('riverpod_annotation'), PackageRef('media_kit'), PackageRef('media_kit_libs_video'), PackageRef('media_kit_video'), PackageRef('just_audio'), PackageRef('audio_service'), PackageRef('audio_metadata_reader'), PackageRef('drift'), PackageRef('drift_flutter'), PackageRef('dio'), PackageRef('html'), PackageRef('webfeed_revised'), PackageRef('intl'), PackageRef('logger'), PackageRef('path'), PackageRef('path_provider'), PackageRef('file_picker'), PackageRef('package_info_plus'), PackageRef('xml'), PackageRef('collection'), PackageRef('html_unescape'), PackageRef('url_launcher'), PackageRef('open_filex'), PackageRef('pdfrx'), PackageRef('flutter_html'), PackageRef('archive'), PackageRef('image'), PackageRef('onnxruntime'), PackageRef('crypto')],
