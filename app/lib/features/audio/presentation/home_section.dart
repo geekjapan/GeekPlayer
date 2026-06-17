@@ -172,7 +172,7 @@ class _ErrorRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 16),
       child: Row(
         children: <Widget>[
-          const Icon(Icons.error_outline, color: Colors.redAccent),
+          Icon(Icons.error_outline, color: Theme.of(context).colorScheme.error),
           const SizedBox(width: 8),
           Expanded(child: Text(message)),
         ],
