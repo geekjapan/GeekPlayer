@@ -68,7 +68,7 @@ The system SHALL provide a ranking screen at `app/lib/features/novel_narou/prese
 
 ### Requirement: Work detail screen with metadata and episode list
 
-The system SHALL provide a work detail screen at `app/lib/features/novel_narou/presentation/work_detail_screen.dart` that displays the work title, author, synopsis, tags, total character count, total episode count, last-updated timestamp, and the full episode list. The screen MUST expose a "Library に追加" button that calls into the shared `LibraryRepository`. The screen MUST resolve and render any narou-specific ruby markup (`|漢字《かんじ》`) in the synopsis.
+The system SHALL provide a work detail screen at `app/lib/features/novel_narou/presentation/work_detail_screen.dart` that displays the work title, author, synopsis, tags, total character count, total episode count, last-updated timestamp, and the full episode list. The screen MUST expose a "Library に追加" button that calls into the shared `LibraryRepository`. The screen MUST resolve and render any narou-specific ruby markup (`|漢字《かんじ》`) in the synopsis. Each episode row MUST show 第N話 as its primary (title) text.
 
 #### Scenario: Metadata fields are populated from the API
 
@@ -79,7 +79,13 @@ The system SHALL provide a work detail screen at `app/lib/features/novel_narou/p
 
 - **GIVEN** a serialized work with 47 episodes
 - **WHEN** the detail screen renders
-- **THEN** the episode list shows 47 rows numbered 第1話 through 第47話, each row showing the chapter title (if any) and the per-episode update date
+- **THEN** the episode list shows 47 rows numbered 第1話 through 第47話, each row showing 第N話 as its title
+
+#### Scenario: Short work shows a single episode
+
+- **GIVEN** a 短編 work where the API reports `generalAllNo == 0` (`isShort == true`)
+- **WHEN** the detail screen renders
+- **THEN** the episode list shows exactly one row, 第1話, rather than an empty list
 
 #### Scenario: Library 追加 triggers the active cache
 

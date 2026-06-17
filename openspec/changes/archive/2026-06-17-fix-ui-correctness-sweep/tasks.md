@@ -13,5 +13,5 @@
 
 ## 4. 検証
 
-- [ ] 4.1 `openspec validate fix-ui-correctness-sweep --strict` が通る
-- [ ] 4.2 PR 作成し CI（`analyze --fatal-infos` + `test` + 6 ビルド）green を確認
+- [x] 4.1 `openspec validate fix-ui-correctness-sweep --strict` が通る
+- [x] 4.2 PR 作成し CI（`analyze --fatal-infos` + `test` + 6 ビルド）green を確認
