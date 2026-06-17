@@ -20,5 +20,5 @@
 - [x] 4.1 既存リトライループ（全 `until ...` ステップ）が変更されず残っていることを確認
 - [x] 4.2 `python3 -c "import yaml; yaml.safe_load(open('.github/workflows/ci.yaml'))"` 等で YAML 構文の妥当性を確認
 - [x] 4.3 PR を作成し CI 自動 run でキャッシュ save（初回 miss）が完走することを確認 — PR #31 run（`refs/pull/31/merge`, 2026-06-08 09:14–09:18Z）で 4 キャッシュキー（Linux-pub / Windows-pub / macOS-pub-pods / Linux-gradle）が新規作成（`created==last_accessed`）＝miss→save 完走を Actions Cache API で確認
-- [ ] 4.4 同一 `pubspec.lock` での 2 回目 run（再 push もしくは rerun）でキャッシュ hit（"Cache restored from key"）をログで確認
+- [x] 4.4 同一 `pubspec.lock` での 2 回目 run（再 push もしくは rerun）でキャッシュ hit（"Cache restored from key"）をログで確認 — PR #33 run 27663414639（`refs/pull/33/merge`, pubspec.lock 不変）が main スコープのキャッシュを復元: 全 4 キー（Linux-pub / Linux-gradle / macOS-pub-pods / Windows-pub）で "Cache restored from key" をログ確認
 - [x] 4.5 `openspec/specs/ci-build-matrix/spec.md` へキャッシュ要件を sync（delta の ADDED「CI ジョブは外部ネイティブ資産の取得をキャッシュする」+4 シナリオを本体 spec 末尾に追記、`openspec validate --strict` 通過）
