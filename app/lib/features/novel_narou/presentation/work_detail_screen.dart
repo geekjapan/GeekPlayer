@@ -23,6 +23,8 @@ class NarouWorkDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final ThemeData theme = Theme.of(context);
     final NarouRubyParser ruby = const NarouRubyParser();
+    // Short works report generalAllNo == 0 but still have one episode.
+    final int episodeCount = summary.isShort ? 1 : summary.generalAllNo;
 
     return Scaffold(
       appBar: AppBar(
@@ -92,11 +94,11 @@ class NarouWorkDetailScreen extends ConsumerWidget {
               ],
             ),
           ),
-          for (int i = 1; i <= summary.generalAllNo; i++)
+          for (int i = 1; i <= episodeCount; i++)
             ListTile(
               key: ValueKey<String>('narou-episode-row-$i'),
-              leading: Text('第$i話'),
-              title: const Text(''),
+              title: Text('第$i話'),
+              trailing: const Icon(Icons.chevron_right),
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute<void>(
@@ -107,7 +109,7 @@ class NarouWorkDetailScreen extends ConsumerWidget {
                       ),
                       initialEpisode: EpisodeId(i),
                       title: summary.title,
-                      totalEpisodes: summary.isShort ? 1 : summary.generalAllNo,
+                      totalEpisodes: episodeCount,
                     ),
                   ),
                 );
