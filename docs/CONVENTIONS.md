@@ -3,7 +3,7 @@
 並列 Wave 実装で merge conflict を最小化するための共通規約。各 change の `tasks.md`
 からこのドキュメントを参照してください。
 
-最終更新: 2026-05-27（Wave 0 整備）
+最終更新: 2026-06-17（drift v6 追加）
 
 ## 1. ホーム画面のセクション追加
 
@@ -53,6 +53,7 @@ drift schema version の単調増加を守ること:
 | v3 | `add-app-settings`（`app_settings`） |
 | v4 | `add-pdf-epub-reader`（`book_metadata`, `book_bookmarks`） |
 | v5 | `add-manga-zip-viewer`（`manga_metadata`, `manga_bookmarks`） |
+| v6 | `add-media-library`（`media_index`, `watch_history`, `favorites`, `playlists`, `playlist_items`） |
 
 各 change は **自分が bump するバージョンの `onUpgrade` migration を必ず書く**こと
 （pre-release でも CI で in-memory DB の migration テストを走らせるため、
