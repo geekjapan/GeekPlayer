@@ -24,5 +24,5 @@
 
 - [x] 5.1 `python3 -c "import yaml; yaml.safe_load(open('.github/workflows/release-artifacts.yaml'))"` で YAML 構文を確認
 - [x] 5.2 PR を作成し `workflow_dispatch`（非タグ）で Windows/macOS/Android/Linux の 4 ビルドジョブが green（Release 未作成）を確認
-- [ ] 5.3 （main マージ後）`vX.Y.Z` タグで実起動 → 4 資産添付とリリースノート自動生成を確認
-- [ ] 5.4 （follow-up）Linux 実機で AppImage を起動し libmpv 等の同梱欠落がないか確認、欠落あれば linuxdeploy の `--library` 指定を追補
+- [x] 5.3 （main マージ後）`vX.Y.Z` タグで実起動 → 4 資産添付とリリースノート自動生成を確認 — `v0.1.1` タグの run 27664504896（全 5 ジョブ success）が公開 Release `v0.1.1`（非ドラフト）を生成。4 資産添付確認: `GeekPlayer-windows-v0.1.1.zip` / `GeekPlayer-macos-v0.1.1-unsigned.dmg` / `GeekPlayer-android-v0.1.1.apk` / `GeekPlayer-linux-v0.1.1.AppImage`。`generate_release_notes: true` でリリースノート自動生成（4862 字）も確認
+- [ ] 5.4 （follow-up）Linux 実機で AppImage を起動し libmpv 等の同梱欠落がないか確認、欠落あれば linuxdeploy の `--library` 指定を追補 — CI 側で AppImage への libmpv 同梱は確認済み（run 27664504896: `Bundling libmpv: /lib/x86_64-linux-gnu/libmpv.so.2` → `libmpv bundled OK`）。残るは実機起動での動作確認のみ（物理 Linux 環境が必要なため未実施）
