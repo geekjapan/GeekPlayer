@@ -18,4 +18,4 @@
 
 - [x] 4.1 `app/test/core/theme/app_theme_test.dart` を追加: `buildAppTheme` が M3・両 brightness・SnackBar floating を満たし、トークンが文書化された値であることを検証
 - [x] 4.2 `openspec validate add-design-system-foundation --strict` が通ることを確認
-- [ ] 4.3 PR を作成し CI（`analyze --fatal-infos` + `test` + 6 ビルド）が green を確認
+- [x] 4.3 PR を作成し CI（`analyze --fatal-infos` + `test` + 6 ビルド）が green を確認 — PR #38（squash `a8f0a21`）で全6ジョブ green を確認

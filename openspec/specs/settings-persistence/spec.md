@@ -64,7 +64,7 @@ The system SHALL define an immutable `AppSettings` value object in
 `app/lib/features/settings/domain/app_settings.dart` with the following typed
 fields and default values:
 
-- `themeMode: ThemeMode.system`
+- `themeMode: ThemeMode.dark`
 - `defaultPlaybackSpeed: 1.0` (double)
 - `subtitlesByDefault: false`
 - `audioBackgroundPlayback: true`
@@ -77,6 +77,11 @@ fields and default values:
 - `novelBackgroundDark: 0xFF1C1B1F`
 - `recentItemsCap: 50`
 - `novelCacheCapMb: null` (null = 無制限)
+
+`themeMode` defaults to `ThemeMode.dark` so a fresh install opens in the dark,
+content-forward theme (a media player is predominantly used in dim conditions
+and the video/manga surfaces are already dark); users MAY switch to `system`
+or `light` in settings.
 
 `AppSettings` MUST expose a `.defaults()` constructor returning the above
 values, and a `.copyWith(...)` that returns a new instance with the requested
