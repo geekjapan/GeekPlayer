@@ -4,6 +4,7 @@
 /// These are plain compile-time constants (no `ThemeExtension` yet): later
 /// widget work references them instead of magic numbers so the app keeps a
 /// consistent rhythm. See spec `ui-design-system`.
+library;
 
 /// Spacing scale in logical pixels (4dp base).
 abstract final class AppSpacing {
