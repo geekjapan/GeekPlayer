@@ -8,7 +8,7 @@ void main() {
   group('AppSettings.defaults()', () {
     test('matches the spec-documented default values', () {
       final AppSettings d = AppSettings.defaults();
-      expect(d.themeMode, ThemeMode.system);
+      expect(d.themeMode, ThemeMode.dark);
       expect(d.defaultPlaybackSpeed, 1.0);
       expect(d.subtitlesByDefault, false);
       expect(d.audioBackgroundPlayback, true);

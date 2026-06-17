@@ -35,7 +35,7 @@ class AppSettings {
 
   /// Spec-mandated defaults. Keep this method in sync with the spec.
   factory AppSettings.defaults() => const AppSettings(
-    themeMode: ThemeMode.system,
+    themeMode: ThemeMode.dark,
     defaultPlaybackSpeed: 1.0,
     subtitlesByDefault: false,
     audioBackgroundPlayback: true,

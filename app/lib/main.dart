@@ -7,6 +7,7 @@ import 'core/errors/error_boundary.dart';
 import 'core/errors/scaffold_messenger_key.dart';
 import 'core/media/audio_handler.dart';
 import 'core/media/audio_providers.dart';
+import 'core/theme/app_theme.dart';
 import 'features/library/home_screen.dart';
 import 'features/novel/data/consent_repository.dart';
 import 'features/novel/presentation/consent_dialog.dart';
@@ -48,22 +49,13 @@ class GeekPlayerApp extends ConsumerWidget {
     final messengerKey = ref.watch(scaffoldMessengerKeyProvider);
     final ThemeMode themeMode = ref.watch(
       appSettingsProvider.select(
-        (AsyncValue<AppSettings> s) => s.value?.themeMode ?? ThemeMode.system,
+        (AsyncValue<AppSettings> s) => s.value?.themeMode ?? ThemeMode.dark,
       ),
     );
     return MaterialApp(
       title: 'GeekPlayer',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
-        useMaterial3: true,
-      ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.indigo,
-          brightness: Brightness.dark,
-        ),
-        useMaterial3: true,
-      ),
+      theme: buildAppTheme(Brightness.light),
+      darkTheme: buildAppTheme(Brightness.dark),
       themeMode: themeMode,
       scaffoldMessengerKey: messengerKey,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
