@@ -115,6 +115,7 @@
   "novelHomeSectionSettingsTooltip": "Online Novel Settings",
   "novelLibraryEmpty": "No novels in Library yet.",
   "novelConsentDisabledBanner": "Consent disabled — re-consent in Settings",
+  "novelDateUnknown": "Unknown",
   "siteFilterAll": "All",
   "bookHomeSectionTitle": "Local Books",
   "bookHomeSectionEmpty": "No books yet. Tap + to open a PDF or EPUB.",

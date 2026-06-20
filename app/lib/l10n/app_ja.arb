@@ -508,6 +508,10 @@
   "@novelConsentDisabledBanner": {
     "description": "Chip label shown in the library grid when consent for a site is disabled."
   },
+  "novelDateUnknown": "不明",
+  "@novelDateUnknown": {
+    "description": "Fallback text shown when a novel publication date is unavailable."
+  },
   "siteFilterAll": "すべて",
   "@siteFilterAll": {
     "description": "Label for the 'All sites' filter chip in the novel library."

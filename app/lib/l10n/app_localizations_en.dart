@@ -396,6 +396,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Consent disabled — re-consent in Settings';
 
   @override
+  String get novelDateUnknown => 'Unknown';
+
+  @override
   String get siteFilterAll => 'All';
 
   @override

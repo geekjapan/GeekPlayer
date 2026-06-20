@@ -788,6 +788,12 @@ abstract class AppLocalizations {
   /// **'同意が無効化されています — 設定で再同意'**
   String get novelConsentDisabledBanner;
 
+  /// Fallback text shown when a novel publication date is unavailable.
+  ///
+  /// In ja, this message translates to:
+  /// **'不明'**
+  String get novelDateUnknown;
+
   /// Label for the 'All sites' filter chip in the novel library.
   ///
   /// In ja, this message translates to:

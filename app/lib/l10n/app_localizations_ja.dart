@@ -383,6 +383,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get novelConsentDisabledBanner => '同意が無効化されています — 設定で再同意';
 
   @override
+  String get novelDateUnknown => '不明';
+
+  @override
   String get siteFilterAll => 'すべて';
 
   @override
