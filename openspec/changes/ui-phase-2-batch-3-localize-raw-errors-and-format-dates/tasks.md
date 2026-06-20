@@ -15,13 +15,13 @@
 
 ## 4. エラー表示 call site の修正（ErrorMessages.localize + UnknownError ラップ）
 
-- [ ] 4.1 `app/lib/features/video/presentation/home_section.dart:47` の `'読み込みに失敗しました: $e'` を `ErrorMessages.localize(UnknownError(e), context)` に置換する
-- [ ] 4.2 `app/lib/features/audio/presentation/home_section.dart:58` の `'読み込みに失敗しました: $e'` を `ErrorMessages.localize(UnknownError(e), context)` に置換する
-- [ ] 4.3 `app/lib/features/novel_narou/presentation/work_detail_screen.dart:168` の `'追加に失敗しました: $e'`（SnackBar）を `ErrorMessages.localize(UnknownError(e), context)` に置換する
+- [x] 4.1 `app/lib/features/video/presentation/home_section.dart:47` の `'読み込みに失敗しました: $e'` を `ErrorMessages.localize(UnknownError(e), context)` に置換する
+- [x] 4.2 `app/lib/features/audio/presentation/home_section.dart:58` の `'読み込みに失敗しました: $e'` を `ErrorMessages.localize(UnknownError(e), context)` に置換する
+- [x] 4.3 `app/lib/features/novel_narou/presentation/work_detail_screen.dart:168` の `'追加に失敗しました: $e'`（SnackBar）を `ErrorMessages.localize(UnknownError(e), context)` に置換する
 - [x] 4.4 `app/lib/features/novel_kakuyomu/presentation/work_detail_screen.dart:92` の `'追加に失敗: $e'`（SnackBar）を `ErrorMessages.localize(UnknownError(e), context)` に置換する
 - [x] 4.5 `app/lib/features/novel_kakuyomu/presentation/work_detail_screen.dart:129` の `Text('エラー: $err')` を `Text(ErrorMessages.localize(UnknownError(err), context))` に置換する
-- [ ] 4.6 `app/lib/features/novel_kakuyomu/presentation/reader_screen.dart:94` の `Text('エラー: $err')` を `Text(ErrorMessages.localize(UnknownError(err), context))` に置換する
-- [ ] 4.7 `app/lib/features/novel_kakuyomu/presentation/search_screen.dart:145` の `'エラーが発生しました: $err'` を `ErrorMessages.localize(UnknownError(err), context)` に置換する
+- [x] 4.6 `app/lib/features/novel_kakuyomu/presentation/reader_screen.dart:94` の `Text('エラー: $err')` を `Text(ErrorMessages.localize(UnknownError(err), context))` に置換する
+- [x] 4.7 `app/lib/features/novel_kakuyomu/presentation/search_screen.dart:145` の `'エラーが発生しました: $err'` を `ErrorMessages.localize(UnknownError(err), context)` に置換する
 
 ## 5. CI 検証
 

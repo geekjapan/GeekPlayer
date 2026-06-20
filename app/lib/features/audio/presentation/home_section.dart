@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/errors/app_error.dart';
+import '../../../core/errors/error_messages.dart';
 import '../data/audio_providers.dart';
 import '../data/audio_repository.dart';
 import '../domain/audio_track.dart';
@@ -54,8 +56,9 @@ class AudioHomeSectionBody extends ConsumerWidget {
                 padding: EdgeInsets.symmetric(vertical: 24),
                 child: Center(child: CircularProgressIndicator()),
               ),
-              error: (Object e, StackTrace st) =>
-                  _ErrorRow(message: '読み込みに失敗しました: $e'),
+              error: (Object e, StackTrace st) => _ErrorRow(
+                message: ErrorMessages.localize(UnknownError(e), context),
+              ),
               data: (List<AudioTrack> items) {
                 if (items.isEmpty) {
                   return const Padding(
