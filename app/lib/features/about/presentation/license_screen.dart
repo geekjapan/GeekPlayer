@@ -82,11 +82,12 @@ class _ApacheNoticeCard extends StatelessWidget {
             const SizedBox(height: 4),
             SelectableText(l10n.ossLicensesApacheNoticeBody),
             const SizedBox(height: 8),
-            Align(
-              alignment: Alignment.centerLeft,
+            SizedBox(
+              width: double.infinity,
               child: TextButton.icon(
                 key: const Key('apache-license-link'),
                 style: TextButton.styleFrom(
+                  alignment: Alignment.centerLeft,
                   minimumSize: const Size(0, AppSizes.minTouchTarget),
                   padding: EdgeInsets.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -102,7 +103,7 @@ class _ApacheNoticeCard extends StatelessWidget {
                   );
                 },
                 icon: const Icon(Icons.chevron_right, size: 18),
-                label: Text(l10n.aboutLinkLicense),
+                label: Text(l10n.aboutLinkLicense, softWrap: true),
               ),
             ),
           ],

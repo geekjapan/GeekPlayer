@@ -95,6 +95,22 @@ void main() {
     }
   });
 
+  testWidgets('notice links render on narrow screens without layout errors', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(280, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.byKey(const Key('lgpl-third-party-link')), findsOneWidget);
+    expect(find.byKey(const Key('apache-license-link')), findsOneWidget);
+  });
+
   testWidgets('bundled notice license links keep detail navigation', (
     WidgetTester tester,
   ) async {

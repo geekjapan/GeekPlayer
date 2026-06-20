@@ -39,7 +39,9 @@ class LgplNoticeSection extends StatelessWidget {
               children: <Widget>[
                 Icon(Icons.gavel, color: accent),
                 const SizedBox(width: 8),
-                Text(l10n.lgplNoticeTitle, style: t.titleMedium),
+                Flexible(
+                  child: Text(l10n.lgplNoticeTitle, style: t.titleMedium),
+                ),
               ],
             ),
             const SizedBox(height: 8),
@@ -123,18 +125,19 @@ class _InlineLink extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerLeft,
+    return SizedBox(
+      width: double.infinity,
       child: TextButton.icon(
         key: buttonKey,
         style: TextButton.styleFrom(
+          alignment: Alignment.centerLeft,
           minimumSize: const Size(0, AppSizes.minTouchTarget),
           padding: EdgeInsets.zero,
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
         onPressed: onTap,
         icon: Icon(icon, size: 18),
-        label: Text(label),
+        label: Text(label, softWrap: true),
       ),
     );
   }
