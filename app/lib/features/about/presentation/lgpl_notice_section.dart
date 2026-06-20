@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../core/theme/tokens.dart';
 import '../../../l10n/app_localizations.dart';
 import 'license_detail_screen.dart';
 
@@ -38,7 +39,9 @@ class LgplNoticeSection extends StatelessWidget {
               children: <Widget>[
                 Icon(Icons.gavel, color: accent),
                 const SizedBox(width: 8),
-                Text(l10n.lgplNoticeTitle, style: t.titleMedium),
+                Flexible(
+                  child: Text(l10n.lgplNoticeTitle, style: t.titleMedium),
+                ),
               ],
             ),
             const SizedBox(height: 8),
@@ -51,19 +54,19 @@ class LgplNoticeSection extends StatelessWidget {
             SelectableText(l10n.lgplNoticeReplacementBody),
             const SizedBox(height: 8),
             _InlineLink(
-              key: const Key('lgpl-upstream-link'),
+              buttonKey: const Key('lgpl-upstream-link'),
               label: l10n.lgplUpstreamLink,
               icon: Icons.open_in_new,
               onTap: () => _launch(context, _upstreamUrl),
             ),
             _InlineLink(
-              key: const Key('lgpl-third-party-link'),
+              buttonKey: const Key('lgpl-third-party-link'),
               label: l10n.lgplThirdPartyLink,
               icon: Icons.open_in_new,
               onTap: () => _launch(context, _thirdPartyNoticesUrl),
             ),
             _InlineLink(
-              key: const Key('lgpl-full-text-link'),
+              buttonKey: const Key('lgpl-full-text-link'),
               label: l10n.lgplFullTextLink,
               icon: Icons.chevron_right,
               onTap: () {
@@ -110,37 +113,31 @@ class LgplNoticeSection extends StatelessWidget {
 
 class _InlineLink extends StatelessWidget {
   const _InlineLink({
-    super.key,
+    required this.buttonKey,
     required this.label,
     required this.icon,
     required this.onTap,
   });
+  final Key buttonKey;
   final String label;
   final IconData icon;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final Color accent = Theme.of(context).colorScheme.primary;
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6),
-        child: Row(
-          children: <Widget>[
-            Icon(icon, size: 16, color: accent),
-            const SizedBox(width: 6),
-            Flexible(
-              child: Text(
-                label,
-                style: TextStyle(
-                  color: accent,
-                  decoration: TextDecoration.underline,
-                ),
-              ),
-            ),
-          ],
+    return SizedBox(
+      width: double.infinity,
+      child: TextButton.icon(
+        key: buttonKey,
+        style: TextButton.styleFrom(
+          alignment: Alignment.centerLeft,
+          minimumSize: const Size(0, AppSizes.minTouchTarget),
+          padding: EdgeInsets.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
+        onPressed: onTap,
+        icon: Icon(icon, size: 18),
+        label: Text(label, softWrap: true),
       ),
     );
   }

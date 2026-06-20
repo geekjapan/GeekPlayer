@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/theme/tokens.dart';
 import '../../../l10n/app_localizations.dart';
 import '../data/oss_license_repository.dart';
 import '../domain/license_entry.dart';
@@ -81,36 +82,28 @@ class _ApacheNoticeCard extends StatelessWidget {
             const SizedBox(height: 4),
             SelectableText(l10n.ossLicensesApacheNoticeBody),
             const SizedBox(height: 8),
-            InkWell(
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => LicenseDetailScreen(
-                      title: l10n.aboutLicenseScreenTitle,
-                      assetPath: 'assets/legal/LICENSE',
-                    ),
-                  ),
-                );
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6),
-                child: Row(
-                  children: <Widget>[
-                    Icon(
-                      Icons.chevron_right,
-                      size: 16,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      l10n.aboutLinkLicense,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        decoration: TextDecoration.underline,
+            SizedBox(
+              width: double.infinity,
+              child: TextButton.icon(
+                key: const Key('apache-license-link'),
+                style: TextButton.styleFrom(
+                  alignment: Alignment.centerLeft,
+                  minimumSize: const Size(0, AppSizes.minTouchTarget),
+                  padding: EdgeInsets.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => LicenseDetailScreen(
+                        title: l10n.aboutLicenseScreenTitle,
+                        assetPath: 'assets/legal/LICENSE',
                       ),
                     ),
-                  ],
-                ),
+                  );
+                },
+                icon: const Icon(Icons.chevron_right, size: 18),
+                label: Text(l10n.aboutLinkLicense, softWrap: true),
               ),
             ),
           ],
