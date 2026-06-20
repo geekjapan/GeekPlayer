@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:geekplayer/core/theme/tokens.dart';
+import 'package:geekplayer/features/about/presentation/license_detail_screen.dart';
 import 'package:geekplayer/features/about/presentation/license_screen.dart';
 import 'package:geekplayer/l10n/app_localizations.dart';
 
@@ -65,5 +67,54 @@ void main() {
           (w.key as ValueKey<String>).value.startsWith('license-entry-'),
     );
     expect(entries, findsWidgets);
+  });
+
+  testWidgets('notice links use at least a 48dp touch target', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(800, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    for (final Key key in const <Key>[
+      Key('lgpl-upstream-link'),
+      Key('lgpl-third-party-link'),
+      Key('lgpl-full-text-link'),
+      Key('apache-license-link'),
+    ]) {
+      expect(find.byKey(key), findsOneWidget);
+      expect(
+        tester.getSize(find.byKey(key)).height,
+        greaterThanOrEqualTo(AppSizes.minTouchTarget),
+      );
+      expect(tester.widget(find.byKey(key)), isA<TextButton>());
+    }
+  });
+
+  testWidgets('bundled notice license links keep detail navigation', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(800, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('apache-license-link')));
+    await tester.pumpAndSettle();
+    expect(find.byType(LicenseDetailScreen), findsOneWidget);
+
+    Navigator.of(tester.element(find.byType(LicenseDetailScreen))).pop();
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('lgpl-full-text-link')));
+    await tester.pumpAndSettle();
+    expect(find.byType(LicenseDetailScreen), findsOneWidget);
   });
 }

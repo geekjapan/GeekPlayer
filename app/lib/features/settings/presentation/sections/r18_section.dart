@@ -57,6 +57,7 @@ class _R18SectionState extends ConsumerState<R18Section> {
           ),
           FilledButton(
             key: const Key('r18-reset-confirm-button'),
+            style: destructiveFilledButtonStyle(ctx),
             onPressed: () => Navigator.of(ctx).pop(true),
             child: Text(l10n.actionReset),
           ),
@@ -93,7 +94,10 @@ class _R18SectionState extends ConsumerState<R18Section> {
         ListTile(
           key: const Key('r18-reset'),
           title: Text(l10n.settingsR18Reset),
-          trailing: const Icon(Icons.restart_alt),
+          trailing: Icon(
+            Icons.restart_alt,
+            color: Theme.of(context).colorScheme.error,
+          ),
           onTap: _reset,
         ),
       ],

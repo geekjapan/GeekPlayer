@@ -92,6 +92,7 @@ class _OnlineServicesSectionState extends ConsumerState<OnlineServicesSection> {
           ),
           FilledButton(
             key: Key('revoke-delete-${site.code}'),
+            style: destructiveFilledButtonStyle(ctx),
             onPressed: () => Navigator.of(ctx).pop(true),
             child: Text(l10n.settingsRevokeDeleteCache),
           ),

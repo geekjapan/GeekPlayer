@@ -67,6 +67,7 @@ class _CacheSectionState extends ConsumerState<CacheSection> {
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context)!;
+    final Color errorColor = Theme.of(context).colorScheme.error;
     final int? capMb = ref.watch(
       appSettingsProvider.select(
         (AsyncValue<AppSettings> s) => s.value?.novelCacheCapMb,
@@ -155,10 +156,12 @@ class _CacheSectionState extends ConsumerState<CacheSection> {
           ListTile(
             key: Key('cache-clear-$site'),
             title: Text(l10n.settingsCacheClearSite(_siteLabel(l10n, site))),
-            trailing: const Icon(Icons.delete_outline),
+            trailing: Icon(Icons.delete_outline, color: errorColor),
             onTap: () => _confirmAndClear(
               context,
               l10n: l10n,
+              dialogKey: Key('cache-clear-$site-confirm'),
+              confirmButtonKey: Key('cache-clear-$site-confirm-button'),
               title: l10n.settingsCacheClearSiteConfirmTitle(
                 _siteLabel(l10n, site),
               ),
@@ -168,10 +171,12 @@ class _CacheSectionState extends ConsumerState<CacheSection> {
         ListTile(
           key: const Key('cache-clear-all'),
           title: Text(l10n.settingsCacheClearAll),
-          trailing: const Icon(Icons.delete_sweep),
+          trailing: Icon(Icons.delete_sweep, color: errorColor),
           onTap: () => _confirmAndClear(
             context,
             l10n: l10n,
+            dialogKey: const Key('cache-clear-all-confirm'),
+            confirmButtonKey: const Key('cache-clear-all-confirm-button'),
             title: l10n.settingsCacheClearAllConfirmTitle,
             run: _clearAll,
           ),
@@ -183,12 +188,15 @@ class _CacheSectionState extends ConsumerState<CacheSection> {
   Future<void> _confirmAndClear(
     BuildContext context, {
     required AppLocalizations l10n,
+    required Key dialogKey,
+    required Key confirmButtonKey,
     required String title,
     required Future<void> Function() run,
   }) async {
     final bool? ok = await showDialog<bool>(
       context: context,
       builder: (BuildContext ctx) => AlertDialog(
+        key: dialogKey,
         title: Text(title),
         content: Text(l10n.settingsClearHistoryIrreversible),
         actions: <Widget>[
@@ -197,6 +205,8 @@ class _CacheSectionState extends ConsumerState<CacheSection> {
             child: Text(l10n.actionCancel),
           ),
           FilledButton(
+            key: confirmButtonKey,
+            style: destructiveFilledButtonStyle(ctx),
             onPressed: () => Navigator.of(ctx).pop(true),
             child: Text(l10n.actionDelete),
           ),

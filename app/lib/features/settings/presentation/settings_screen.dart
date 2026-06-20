@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/theme/tokens.dart';
 import '../../../l10n/app_localizations.dart';
 import '../domain/app_settings.dart';
 import 'app_settings_notifier.dart';
@@ -16,12 +17,12 @@ import 'sections/playback_section.dart';
 import 'sections/r18_section.dart';
 import 'sections/video_section.dart';
 
-/// Top-level settings screen. Renders 10 sections in the fixed order
+/// Top-level settings screen. Renders sections in the fixed order
 /// declared by spec `app-settings` Requirement "Settings screen
 /// accessible from the home screen":
 ///
 ///   表示 / 再生 / 動画 / 音楽 / 小説 / ライブラリ / キャッシュ /
-///   オンラインサービス / R18 / About
+///   オンラインサービス / R18 / 実験的機能 / About
 ///
 /// Flushes any pending writes from [AppSettingsNotifier] on dispose so
 /// debounced changes survive a quick "back" press.
@@ -60,7 +61,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ),
         data: (_) => ListView(
           key: const Key('settings-list'),
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
           children: const <Widget>[
             DisplaySection(),
             PlaybackSection(),
@@ -97,18 +98,30 @@ class SettingsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
     return Padding(
       key: Key('section-$id'),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.xs,
+      ),
       child: Card(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.md,
+                AppSpacing.lg,
+                AppSpacing.xs,
+              ),
               child: Text(
                 title,
-                style: Theme.of(context).textTheme.titleMedium,
+                key: Key('section-$id-title'),
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
               ),
             ),
             ...children,
@@ -117,6 +130,14 @@ class SettingsSection extends StatelessWidget {
       ),
     );
   }
+}
+
+ButtonStyle destructiveFilledButtonStyle(BuildContext context) {
+  final ColorScheme colorScheme = Theme.of(context).colorScheme;
+  return FilledButton.styleFrom(
+    backgroundColor: colorScheme.error,
+    foregroundColor: colorScheme.onError,
+  );
 }
 
 /// Subtle helper text shown under tiles whose policy is "next launch only".

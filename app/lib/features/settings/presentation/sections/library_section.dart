@@ -24,6 +24,7 @@ class LibrarySection extends ConsumerWidget {
         (AsyncValue<AppSettings> s) => s.value?.recentItemsCap ?? 50,
       ),
     );
+    final Color errorColor = Theme.of(context).colorScheme.error;
 
     return SettingsSection(
       id: 'library',
@@ -55,7 +56,7 @@ class LibrarySection extends ConsumerWidget {
         ListTile(
           key: const Key('clear-history'),
           title: Text(l10n.settingsClearHistory),
-          trailing: const Icon(Icons.delete_sweep_outlined),
+          trailing: Icon(Icons.delete_sweep_outlined, color: errorColor),
           onTap: () => _confirmClear(context, ref, l10n),
         ),
       ],
@@ -81,6 +82,7 @@ class LibrarySection extends ConsumerWidget {
           ),
           FilledButton(
             key: const Key('clear-history-confirm-button'),
+            style: destructiveFilledButtonStyle(ctx),
             onPressed: () => Navigator.of(ctx).pop(true),
             child: Text(l10n.actionDelete),
           ),
