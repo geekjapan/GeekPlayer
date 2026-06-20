@@ -2,9 +2,12 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/errors/app_error.dart';
+import '../../../core/errors/error_messages.dart';
 import '../../../core/novel/models/site.dart';
 import '../../../core/novel/models/work_id.dart';
 import '../../../core/novel/novel_repository.dart';
+import '../../../core/novel/utils/novel_date_formatter.dart';
 import '../../novel/data/library_repository.dart';
 import '../data/kakuyomu_novel_repository.dart';
 import '../data/kakuyomu_providers.dart';
@@ -87,9 +90,11 @@ class _KakuyomuWorkDetailScreenState
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('追加に失敗: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(ErrorMessages.localize(UnknownError(e), context)),
+          ),
+        );
       }
     } finally {
       if (mounted) {
@@ -126,7 +131,7 @@ class _KakuyomuWorkDetailScreenState
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text('エラー: $err'),
+                      Text(ErrorMessages.localize(UnknownError(err), context)),
                       const SizedBox(height: 8),
                       FilledButton(onPressed: _load, child: const Text('再試行')),
                     ],
@@ -198,9 +203,10 @@ class _KakuyomuWorkDetailScreenState
                       subtitle: detail.episodes[i].publishedAt == null
                           ? null
                           : Text(
-                              detail.episodes[i].publishedAt!
-                                  .toLocal()
-                                  .toIso8601String(),
+                              formatNovelDate(
+                                detail.episodes[i].publishedAt,
+                                context,
+                              ),
                             ),
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute<void>(

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/errors/app_error.dart';
+import '../../../core/errors/error_messages.dart';
 import '../data/kakuyomu_providers.dart';
 import '../domain/exceptions.dart';
 import '../domain/kakuyomu_episode.dart';
@@ -91,7 +93,7 @@ class _KakuyomuReaderScreenState extends ConsumerState<KakuyomuReaderScreen> {
             }
             return Padding(
               padding: const EdgeInsets.all(16),
-              child: Text('エラー: $err'),
+              child: Text(ErrorMessages.localize(UnknownError(err), context)),
             );
           }
           final KakuyomuEpisodeBody body = snap.data!;

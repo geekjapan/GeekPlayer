@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/novel/utils/novel_date_formatter.dart';
 import '../data/kakuyomu_providers.dart';
 import '../domain/kakuyomu_feed_item.dart';
 import 'work_detail_screen.dart';
@@ -94,7 +95,7 @@ class _KakuyomuLatestFeedScreenState
                           if (it.author != null && it.author!.isNotEmpty)
                             it.author,
                           if (it.publishedAt != null)
-                            it.publishedAt!.toLocal().toIso8601String(),
+                            formatNovelDate(it.publishedAt, context),
                         ].whereType<String>().join(' · '),
                       ),
                       onTap: it.workId.isEmpty

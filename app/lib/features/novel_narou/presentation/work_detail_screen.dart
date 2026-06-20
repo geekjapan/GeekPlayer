@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../core/errors/app_error.dart';
+import '../../../core/errors/error_messages.dart';
 import '../../../core/novel/models/episode.dart';
 import '../../../core/novel/models/site.dart';
 import '../../../core/novel/models/work_id.dart';
@@ -163,9 +165,11 @@ class NarouWorkDetailScreen extends ConsumerWidget {
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('追加に失敗しました: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(ErrorMessages.localize(UnknownError(e), context)),
+          ),
+        );
       }
     }
   }

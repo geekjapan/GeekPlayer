@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/errors/app_error.dart';
+import '../../../core/errors/error_messages.dart';
 import '../data/kakuyomu_providers.dart';
 import '../domain/exceptions.dart';
 import '../domain/kakuyomu_feed_item.dart';
@@ -142,7 +144,7 @@ class _ErrorCard extends StatelessWidget {
         ? 'カクヨムが混雑しています。時間を置いて再試行してください。'
         : err is SiteConsentDeniedException
         ? 'カクヨムへの同意が必要です。設定画面から有効化してください。'
-        : 'エラーが発生しました: $err';
+        : ErrorMessages.localize(UnknownError(err), context);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
