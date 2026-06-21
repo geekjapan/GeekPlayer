@@ -16,9 +16,12 @@ context: |
   Online novels: 公式 API for narou/noctune, RSS + HTML parse for kakuyomu
   under the responsible-scraping policy (ADR-0001).
 
-  UI language: ja-first (v0.1 ships ja only; en scaffold present via intl).
-  State management: Riverpod v2. Storage: single drift SQLite DB.
+  UI language: ja-first with en localization scaffold via intl/ARB.
+  State management: Riverpod v3 with codegen. Storage: single drift SQLite DB, current schema v6.
   Distribution: OSS only, GitHub Releases — no App Store / Play Store.
+
+  Planning source of truth: GitHub Milestones and Issues. Local OpenSpec changes mirror GitHub planning into concrete proposal/design/tasks artifacts. Default mapping is one GitHub Issue -> one OpenSpec change -> one feature branch/PR, unless a smaller CI/review batch is explicitly documented.
+  Tool split: GitHub management and local repository management may occur in separate chats. Local-only artifacts must not invent Issue numbers; use GitHub Issue: TBD when the Issue is not visible.
 
   Commit style: conventional commits (feat: / fix: / chore: / docs: / refactor: / test:).
 
@@ -26,5 +29,7 @@ rules:
   proposal:
     - "Always include a \"Non-goals\" section"
     - "Cite affected files with file_path:line_number references"
+    - "Record the related GitHub Issue/Milestone when known; use GitHub Issue: TBD when not visible from the local-only chat"
   tasks:
     - "Use checkbox list, toggle [ ] -> [x] one at a time as work completes"
+    - "Include local validation commands and, when Flutter/Dart is unavailable locally, the GitHub Actions validation path to be recorded in the PR"
