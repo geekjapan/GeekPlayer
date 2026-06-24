@@ -177,15 +177,6 @@ class _EmptyPlaceholder extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(AppLocalizations.of(context)!.novelLibraryEmpty),
-          const SizedBox(height: 8),
-          // The search screen is contributed by site-specific changes
-          // (add-narou-novel-reader / add-kakuyomu-novel-reader). Disabled
-          // for now per spec scenario "Empty Library shows placeholder".
-          const OutlinedButton(
-            key: Key('open-search-disabled'),
-            onPressed: null,
-            child: Text('検索画面を開く (後続 change で有効化)'),
-          ),
         ],
       ),
     );

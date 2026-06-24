@@ -67,17 +67,14 @@ void main() {
 
   tearDown(() => db.close());
 
-  testWidgets('empty state shows placeholder and disabled search button', (
+  testWidgets('empty state shows placeholder and no disabled search button', (
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(_hosted(db));
     await tester.pumpAndSettle();
 
     expect(find.text('Library に小説はまだありません。'), findsOneWidget);
-    final Finder button = find.byKey(const Key('open-search-disabled'));
-    expect(button, findsOneWidget);
-    final OutlinedButton btnWidget = tester.widget(button);
-    expect(btnWidget.onPressed, isNull);
+    expect(find.byKey(const Key('open-search-disabled')), findsNothing);
   });
 
   testWidgets('renders site filter chips for all + 3 sites', (
