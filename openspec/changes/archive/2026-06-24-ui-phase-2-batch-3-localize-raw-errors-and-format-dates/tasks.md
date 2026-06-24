@@ -25,4 +25,4 @@
 
 ## 5. CI 検証
 
-- [ ] 5.1 PR を作成して GitHub Actions の `analyze-and-test` ジョブが green になることを確認する（`dart format`・`flutter analyze --fatal-infos`・`flutter test` の全パス）
+- [x] 5.1 PR を作成して GitHub Actions の `analyze-and-test` ジョブが green になることを確認する（`dart format`・`flutter analyze --fatal-infos`・`flutter test` の全パス）— PR #54 で実施、`analyze-and-test` green、2026-06-20 に main へマージ済み（commit 2bbea2e）
