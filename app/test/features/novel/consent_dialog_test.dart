@@ -140,4 +140,33 @@ void main() {
     await tester.tap(find.byKey(const Key('consent-deny-all')));
     await tester.pumpAndSettle();
   });
+
+  testWidgets('dialog body omits the policyVersion debug string', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      _harness(
+        db: db,
+        child: Builder(
+          builder: (BuildContext context) {
+            return Center(
+              child: ElevatedButton(
+                onPressed: () => ConsentDialog.show(context),
+                child: const Text('open'),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(ConsentDialog), findsOneWidget);
+    expect(find.textContaining('policyVersion'), findsNothing);
+
+    // Clean up.
+    await tester.tap(find.byKey(const Key('consent-deny-all')));
+    await tester.pumpAndSettle();
+  });
 }

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/novel/models/site.dart';
-import '../../../core/novel/policy_version.dart';
 import '../../../l10n/app_localizations.dart';
 import '../data/consent_repository.dart';
 
@@ -15,8 +14,8 @@ import '../data/consent_repository.dart';
 ///     no back-button close in this dialog).
 ///
 /// The dialog persists three rows to `site_consents` on confirmation,
-/// stamped with [kPolicyVersion]. Callers should pop their navigator
-/// after `await showDialog<bool>(...)` resolves.
+/// stamped with the current policy version. Callers should pop their
+/// navigator after `await showDialog<bool>(...)` resolves.
 class ConsentDialog extends ConsumerStatefulWidget {
   const ConsentDialog({super.key, this.policyUpdated = false});
 
@@ -85,11 +84,6 @@ class _ConsentDialogState extends ConsumerState<ConsentDialog> {
                       ? null
                       : (bool? v) => setState(() => _checked[s] = v ?? false),
                 ),
-              const SizedBox(height: 4),
-              Text(
-                'policyVersion: $kPolicyVersion',
-                style: theme.textTheme.bodySmall,
-              ),
             ],
           ),
         ),
