@@ -90,7 +90,13 @@ Flutter のセットアップは [Flutter 公式インストールガイド](htt
 
 このプロジェクトは [OpenSpec](https://github.com/openspec) の spec-driven workflow を
 採用しています。非自明な変更は `proposal → design → tasks → implementation → archive`
-のフローを経ます。詳細は [`CLAUDE.md`](CLAUDE.md) と [`AGENTS.md`](AGENTS.md) を参照。
+のフローを経ます。
+
+計画管理は **GitHub Milestone / Issue を正本**とし、ローカルリポジトリでは対応する
+OpenSpec change、実装、テスト、設計ドキュメントを管理します。チャット運用上は GitHub
+管理とローカルリポジトリ管理を分離し、Codex が実装、このリポジトリ管理チャットが介入・
+レビュー・指示を担当します。詳細は [`docs/WORKFLOW.md`](docs/WORKFLOW.md)、
+[`CLAUDE.md`](CLAUDE.md)、[`AGENTS.md`](AGENTS.md) を参照してください。
 
 主なスラッシュコマンド（Claude Code / Codex / π 互換）:
 

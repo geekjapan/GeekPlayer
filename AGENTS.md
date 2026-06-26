@@ -2,20 +2,20 @@
 
 ## Project Structure & Module Organization
 
-GeekPlayer is currently a greenfield repository. There is no application source tree, build system, or test suite yet.
+GeekPlayer is an active Flutter/Dart application. Do not treat it as a greenfield scaffold.
 
-- `README.md` contains the placeholder project name.
-- `CLAUDE.md` documents the current agent workflow and repository status.
-- `openspec/config.yaml` declares the `spec-driven` OpenSpec workflow.
-- `openspec/changes/` will hold active change proposals, designs, and task lists.
-- `openspec/specs/` will hold accepted capability specs as the product takes shape.
-- `.claude/`, `.codex/`, and `.pi/` contain agent workflow definitions and should stay aligned when workflow skills change.
+- `app/` contains the Flutter project, application code, tests, platform scaffolding, packaging helpers, and generated localization/license files.
+- `docs/` contains conventions, ADRs, release notes, roadmap, handoff material, and the multi-chat development workflow (`docs/WORKFLOW.md`).
+- `CONTEXT.md` defines project domain language and should be kept aligned with design decisions.
+- `openspec/config.yaml` declares the `spec-driven` OpenSpec workflow and project-wide artifact rules.
+- `openspec/changes/` holds active change proposals, designs, and task lists.
+- `openspec/specs/` holds accepted capability specs and should be updated through OpenSpec archive/sync flows, not ad hoc edits.
+- `.github/workflows/` contains CI and release workflows.
+- `.agents/`, `.claude/`, `.codex/`, and `.pi/` contain agent workflow definitions and should stay aligned when workflow skills change.
 
-When adding code, introduce conventional top-level directories such as `src/`, `tests/`, and `assets/` only as part of an approved change.
+When adding code, follow the existing `app/lib/core/...` and `app/lib/features/<feature>/{data,domain,presentation}` layout unless an approved OpenSpec change or ADR says otherwise.
 
 ## Build, Test, and Development Commands
-
-No language toolchain is defined yet, so there are currently no repository build, test, lint, or dev-server commands.
 
 Use OpenSpec for non-trivial work:
 
@@ -23,8 +23,16 @@ Use OpenSpec for non-trivial work:
 - `openspec new change "<kebab-case-name>"` creates a change scaffold.
 - `openspec status --change "<name>" --json` checks artifact status.
 - `openspec instructions apply --change "<name>" --json` retrieves implementation instructions.
+- `openspec validate --all --strict` validates OpenSpec artifacts.
 
-Once a stack is selected, document its commands here before relying on them.
+Flutter/Dart commands, when the toolchain is available:
+
+- `cd app && dart format --output=none --set-exit-if-changed .`
+- `cd app && flutter analyze --fatal-infos`
+- `cd app && flutter test`
+- `cd app && dart run build_runner build --delete-conflicting-outputs` when generated Riverpod/drift/localization code must be refreshed.
+
+Some local environments do not have Flutter/Dart installed. In that case, record the local limitation and rely on GitHub Actions for Flutter format/analyze/test, while still running `openspec validate --all --strict` and `git diff --check` locally.
 
 ## Coding Style & Naming Conventions
 
@@ -42,7 +50,9 @@ Before reporting completion, run relevant tests, lint/typecheck commands if avai
 
 Always create a dedicated feature branch before starting feature/change work (e.g., `feature/<kebab-name>`); never commit feature work directly to `main`. Use one branch per OpenSpec change (or per coherent group of sequenced changes) and merge back via PR.
 
-GitHub Milestones and Issues are the project planning surface. Before starting non-trivial development, documentation, release, or workflow work, make sure there is a GitHub Issue assigned to the appropriate Milestone. Link the Issue from the related OpenSpec change and reference it in the PR.
+GitHub Milestones and Issues are the project planning source of truth. Before starting non-trivial development, documentation, release, or workflow work, make sure there is a GitHub Issue assigned to the appropriate Milestone in the GitHub management chat. Link the Issue from the related OpenSpec change and reference it in the PR. If this local-only chat cannot verify the Issue number, record `GitHub Issue: TBD` locally rather than guessing.
+
+Default mapping: one GitHub Issue → one OpenSpec change → one feature branch / PR. Split larger Issues into smaller OpenSpec changes only when the batch boundary, parent Issue, and validation reason are documented.
 
 Use short imperative subjects such as `Add OpenSpec contributor guide`.
 
@@ -50,7 +60,9 @@ Pull requests should include the related OpenSpec change when applicable, a conc
 
 ## Agent-Specific Instructions
 
-OpenSpec is authoritative for specifications, tasks, and acceptance criteria. For implementation, use a test-first loop when behavior is clear. For bugs or unexplained failures, reproduce and diagnose before changing code.
+OpenSpec is authoritative for local specifications, tasks, and acceptance criteria; GitHub Issues/Milestones are authoritative for planning and prioritization. `docs/WORKFLOW.md` defines the current multi-chat split: the GitHub management chat manages Issues/PRs/CI metadata, this local repository chat manages `~/dev/projects/GeekPlayer`, and Codex implementation sessions perform implementation under review.
+
+For implementation, use a test-first loop when behavior is clear. For bugs or unexplained failures, reproduce and diagnose before changing code. Codex should implement against the linked Issue/OpenSpec tasks and should not widen scope without returning to the reviewer/instruction chat.
 
 ## graphify
 

@@ -4,7 +4,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository status
 
-GeekPlayer is a greenfield project. The repo currently contains no source code, build system, test suite, or language toolchain — only OpenSpec workflow scaffolding and a placeholder `README.md`. When the user asks to build features, expect to be establishing the stack and conventions from scratch rather than fitting into an existing codebase.
+GeekPlayer is an active Flutter/Dart application, not a greenfield scaffold. The app source lives under `app/`; tests, CI workflows, OpenSpec artifacts, ADRs, release docs, and cross-agent workflow files already exist. Before changing behavior, inspect the existing code, accepted specs, active OpenSpec changes, and relevant ADRs rather than assuming conventions need to be created from scratch.
+
+Current project coordination is documented in `docs/WORKFLOW.md`. Treat that file, this file, and `AGENTS.md` as the local repository workflow baseline.
+
+## Workflow: multi-chat governance
+
+GitHub Milestones and Issues are the project planning source of truth. This local repository is the implementation/specification/review surface that mirrors GitHub decisions into OpenSpec artifacts, code, tests, and documentation.
+
+Because the operating chat may not expose DevSpace and GitHub tools together, split responsibilities deliberately:
+
+- GitHub management chat: maintain Milestones, Issues, PR metadata, CI/release status.
+- Local repository management chat: manage `~/dev/projects/GeekPlayer`, update local docs/OpenSpec/code, review diffs, and issue implementation instructions.
+- Codex implementation sessions: implement tasks, run available checks, and report concrete diffs/results. Codex should not independently widen scope beyond the linked Issue/OpenSpec change.
+
+When a GitHub Issue number or Milestone is not visible from the local-only chat, do not invent it. Mark it as `TBD` locally and let the GitHub management chat reconcile it.
 
 ## Workflow: OpenSpec (spec-driven)
 
@@ -17,7 +31,7 @@ Slash commands (defined in `.claude/commands/opsx/`):
 - `/opsx:apply [name]` — implements pending tasks from a change's `tasks.md`, ticking checkboxes as it goes.
 - `/opsx:archive [name]` — moves a completed change into `openspec/changes/archive/`.
 
-The same four skills are mirrored under `.codex/skills/` and `.pi/skills/` so other agent harnesses (Codex, π) see the same workflow. Keep these three directories in sync when modifying a skill.
+The OpenSpec commands/skills are mirrored under `.agents/`, `.claude/`, `.codex/`, and `.pi/` so agent harnesses see the same workflow. Keep these directories in sync when modifying workflow skills.
 
 ### OpenSpec CLI
 
@@ -48,12 +62,13 @@ When following `openspec instructions` output, the JSON's `context` and `rules` 
 - `openspec/changes/` — active changes, each in its own subdirectory with proposal/design/tasks artifacts.
 - `openspec/changes/archive/` — completed changes.
 - `openspec/specs/` — capability specs (created as changes land).
-- `.claude/`, `.codex/`, `.pi/` — per-harness skill and command definitions; identical OpenSpec skills under each.
+- `.agents/`, `.claude/`, `.codex/`, `.pi/` — per-harness skill and command definitions; identical OpenSpec skills under each.
 
 ## Conventions
 
 - **Branch per feature (always)**: before starting any feature/change implementation, create a dedicated feature branch off the default branch (e.g., `feature/<kebab-name>`). Never commit feature work directly to `main`. One branch per OpenSpec change (or per coherent group of sequenced changes); merge back via PR.
-- **GitHub Milestone / Issue tracking (always for non-trivial work)**: roadmap and development work is tracked through GitHub Milestones and Issues. Before starting non-trivial implementation, docs, release, or workflow work, confirm or create the matching GitHub Issue and assign it to the appropriate Milestone. Link that Issue from the related OpenSpec change and reference it in the PR.
+- **GitHub Milestone / Issue tracking (always for non-trivial work)**: roadmap and development work is tracked through GitHub Milestones and Issues. Before starting non-trivial implementation, docs, release, or workflow work, confirm or create the matching GitHub Issue and assign it to the appropriate Milestone in the GitHub management chat. Link that Issue from the related OpenSpec change and reference it in the PR. If the local-only chat cannot verify the Issue, record `GitHub Issue: TBD` rather than guessing.
+- **Issue → OpenSpec → branch/PR alignment**: default to one GitHub Issue per OpenSpec change and one branch/PR per change. Split only when a CI-friendly or review-friendly batch boundary is explicitly documented.
 - Change names are kebab-case (e.g., `add-user-auth`), derived from a short description of the work.
 - Task checkboxes in `tasks.md` are toggled `- [ ]` → `- [x]` immediately on completion, one at a time.
 - `openspec/config.yaml` is the right place to record project-wide context (tech stack, domain, commit style) once decided — it propagates into every artifact's generation context.
