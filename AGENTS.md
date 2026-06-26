@@ -11,7 +11,11 @@ GeekPlayer is an active Flutter/Dart application. Do not treat it as a greenfiel
 - `openspec/changes/` holds active change proposals, designs, and task lists.
 - `openspec/specs/` holds accepted capability specs and should be updated through OpenSpec archive/sync flows, not ad hoc edits.
 - `.github/workflows/` contains CI and release workflows.
-- `.agents/`, `.claude/`, `.codex/`, and `.pi/` contain agent workflow definitions and should stay aligned when workflow skills change.
+- `.agents/`, `.claude/`, `.codex/`, and `.pi/` contain per-harness skill and command definitions (identical OpenSpec skills under each). Keep these in sync when modifying workflow skills.
+- `openspec/config.yaml` — schema declaration and per-artifact rules.
+- `openspec/changes/` — active changes, each in its own subdirectory.
+- `openspec/changes/archive/` — completed changes.
+- `openspec/specs/` — capability specs (created as changes land).
 
 When adding code, follow the existing `app/lib/core/...` and `app/lib/features/<feature>/{data,domain,presentation}` layout unless an approved OpenSpec change or ADR says otherwise.
 
