@@ -1,7 +1,5 @@
 # Repository Guidelines
 
-dev-gear: G3 — spec-driven (OpenSpec). Trivial かつ可逆な単発修正のみ G2 の軽量ループで可。(gear 定義は user-scope CLAUDE.md)
-
 ## Project Structure & Module Organization
 
 GeekPlayer is an active Flutter/Dart application. Do not treat it as a greenfield scaffold. Before changing behavior, inspect the existing code, accepted specs, active OpenSpec changes, and relevant ADRs.
