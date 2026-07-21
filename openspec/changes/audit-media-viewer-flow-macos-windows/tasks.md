@@ -6,17 +6,17 @@
 
 ## 2. 対象面ごとの操作フロー精読
 
-- [ ] 2.1 動画再生（`app/lib/features/video/presentation/player_screen.dart`）: 「戻る」導線の可視条件、オーバーレイ自動非表示ロジック、再表示手段を確認し所見 F1 として記録する
-- [ ] 2.2 漫画/コミックビューア（`app/lib/features/manga/presentation/manga_viewer_screen.dart`）: コントロール可視条件とページ送りタップ領域の可視条件の関係を確認し所見 F2 として記録する
+- [ ] 2.1 動画再生（`app/lib/features/video/presentation/player_screen.dart`）: `Icons.arrow_back` と `Navigator.of(context).maybePop()` が実装済みであることを確認したうえで、オーバーレイ自動非表示後にデスクトップ上で戻る導線が見えず効かない状態、映像面クリックによる再表示経路を再現し、所見 F1 に `file_path:line_number` の証拠を付けて記録する（戻る操作が存在しないとは記録しない）
+- [ ] 2.2 漫画/コミックビューア（`app/lib/features/manga/presentation/manga_viewer_screen.dart`）: `_controlsVisible` が実装済み AppBar（戻る導線を含む）とページ送りタップ領域をゲートすることを確認したうえで、非表示中のデスクトップ端部クリックが効かず中央クリックが表示復帰だけになる状態を再現し、所見 F2 に `file_path:line_number` の証拠を付けて記録する（コントロールが存在しないとは記録しない）
 - [ ] 2.3 書籍(PDF/EPUB)リーダー（`app/lib/features/book/presentation/book_reader_screen.dart`）: AppBar 常時可視性とキーボードページ送りの有無を確認し所見 F4 として記録する
 - [ ] 2.4 音声プレーヤー（フル: `app/lib/features/audio/presentation/player_screen.dart`、ミニ: `app/lib/features/audio/presentation/mini_player.dart`）: 戻る導線・遷移構造を確認し所見 F4 に含める
 - [ ] 2.5 オンライン小説リーダー（`app/lib/features/novel_kakuyomu/presentation/reader_screen.dart`, `app/lib/features/novel_narou/presentation/reader_screen.dart`）: 戻る導線・前後エピソード送りを確認し所見 F4 に含める
 
 ## 3. 所見の整理と後続 change への引き継ぎ準備
 
-- [ ] 3.1 `design.md` の所見一覧（F1〜F4）に影響度（trap / discoverability / 低 / 構造的所見）を付与し、修正要否の初期判断を記載する
+- [ ] 3.1 `design.md` の所見一覧（F1〜F4）に影響度（trap / discoverability / 低 / 構造的所見）を付与し、修正要否の初期判断を記載する。F1/F2 は実装済みコントロールが隠れる／条件付きで効かない問題として、修正前の再現結果と根拠行を記載する
 - [ ] 3.2 各所見が既存 spec（`local-video-playback` 等）のどの要求と関係するかを整理し、修正時に spec delta が必要になりそうな所見を明記する
-- [ ] 3.3 本 change の PR 説明に、所見ごとの後続 GitHub Issue 起票方針（優先度含む）を記載する（Issue 番号は本 change の時点では確定しないため TBD 表記でよい）
+- [ ] 3.3 本 change の PR 説明に、所見ごとの後続 GitHub Issue 起票方針（優先度含む）を記載する（Issue 番号は本 change の時点では確定しないため TBD 表記でよい）。PR 本文の Issue 関係は `Relates #50` のみとし、監査で修正前の証拠を提示してから後続 Issue を起票する
 - [ ] 3.4 監査という成果物自体を spec 化した ADDED capability `specs/media-viewer-flow-audit/spec.md` が、所見のトレーサビリティとアプリケーションコード非変更の 2 点を要求していることを確認する
 
 ## 4. 検証
