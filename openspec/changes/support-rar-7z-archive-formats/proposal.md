@@ -5,7 +5,7 @@
 ## What Changes
 
 - 7z/CB7 形式のフルサポートを追加する。解凍バックエンドには `libarchive`（BSD-3-Clause、寛容ライセンス）を FFI 経由で採用し、既存の `ArchiveInspector`（`app/lib/core/manga/archive_inspector.dart`）が担う安全性チェック（パストラバーサル拒否、隠しファイル除外、対応画像拡張子フィルタ、エントリ数/展開後バイト数上限、自然順ソート）を新形式でも同一に適用できるよう、フォーマット判定と解凍処理を抽象化する（バックエンドをフォーマットごとに切り替えるインターフェースを導入し、ZIP は既存の `archive` パッケージ実装のまま温存）。
-- RAR/CBR の**完全な解凍サポートは本 change では見送り、フォローアップ change に委ねる**。理由はライセンス上の懸念（下記 design.md の Decisions 参照）。ただし本 change では `.rar`/`.cbr` 拡張子を明示的に検出し、汎用の `UnsupportedFormatError` ではなく「RAR/CBR は現時点で未対応（Issue #52 でライセンス互換の実装を検討中）」であることが分かるメッセージ・ラベルに更新する（Issue #52 のチェックリスト「Update user-facing labels/errors so unsupported archive formats are explained clearly」に対応）。
+- RAR/CBR の**完全な解凍サポートは本 change では見送り、ライセンス互換性と実装可能性の評価だけを行ったうえで、フォローアップ GitHub Issue に委ねる**。ただし本 change では `.rar`/`.cbr` 拡張子を明示的に検出し、汎用の `UnsupportedFormatError` ではなく「RAR/CBR は現時点で未対応（Issue #52 からリンクするフォローアップ Issue で実装を検討中）」であることが分かるメッセージ・ラベルに更新する（Issue #52 のチェックリスト「Update user-facing labels/errors so unsupported archive formats are explained clearly」に対応）。
 - ファイルピッカーの `allowedExtensions`（`app/lib/features/manga/presentation/manga_home_section.dart:43`）に `7z`/`cb7` を追加する（`rar`/`cbr` は追加しない＝ピッカーでは選択不可のままとし、既存の明示的拒否シナリオを維持）。
 - `manga_metadata` テーブルの `format` 列（`app/lib/core/storage/tables/manga_metadata.dart:16`）と `MangaArchive.format`（`app/lib/features/manga/domain/manga_archive.dart:28`）が保持しうる値に `'7z'`/`'cb7'` を追加する（マイグレーション不要、文字列列の許容値追加のみ）。
 - `manga-archive-safety` capability に、7z バックエンドでも同一の安全性不変条件（パストラバーサル拒否・隠しメタデータ除外・対応画像拡張子・エントリ数/サイズ上限・宣言サイズと実サイズの両方を検証する解凍爆弾対策）が適用されることを明記する。
@@ -22,7 +22,7 @@
 
 ## Non-goals
 
-- RAR/CBR アーカイブの完全な解凍サポート（本 change では見送り。ライセンス互換の実装が確定次第、別 change で対応）。
+- RAR/CBR アーカイブの完全な解凍サポート（本 change では評価のみ。ライセンス互換の実装方針が確定次第、Issue #52 からリンクするフォローアップ Issue で対応）。
 - 7z/RAR 以外の追加アーカイブ形式（tar.gz、ACE、LHA 等）への対応。
 - 既存 ZIP/CBZ 経路（`archive` パッケージ利用）の置き換えやリファクタリング。
 - Manga Viewer の UI/UX（ページ送り、ズーム、しおり等）の変更。

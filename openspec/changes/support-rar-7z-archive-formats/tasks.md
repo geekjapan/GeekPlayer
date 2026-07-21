@@ -3,7 +3,7 @@
 - [ ] 1.1 既存の Dart/Flutter 向け `libarchive` FFI パッケージの有無を調査し、自作バインディングと比較する。
 - [ ] 1.2 macOS/Windows/Android 向け `libarchive` プリビルドバイナリの入手・同梱方法を検証する（Homebrew/vcpkg/NDK 経由 or ソースからビルド）。
 - [ ] 1.3 代表的な 7z/CB7 コミックアーカイブでベンチマーク（展開時間・メモリ使用量）を取り、既存 ZIP/CBZ の体感と比較する。
-- [ ] 1.4 `libarchive` の RAR5 対応状況を調査し、フォローアップ change 起票時の判断材料としてメモを残す（本 change では実装しない）。
+- [ ] 1.4 `libarchive` の RAR5 対応状況とライセンス互換性を評価し、フォローアップ GitHub Issue 起票時の判断材料としてメモを残す（本 change では RAR/CBR を実装しない）。
 
 ## 2. 安全性レイヤーの共通化
 
@@ -21,7 +21,7 @@
 
 ## 4. RAR/CBR 未対応メッセージの改善
 
-- [ ] 4.1 `.rar`/`.cbr` 拡張子を検出した際に、汎用 `UnsupportedFormatError` ではなく「現時点で未対応（Issue #52 参照）」であることが分かる専用メッセージ/エラーコードを追加する。
+- [ ] 4.1 `.rar`/`.cbr` 拡張子を検出した際に、汎用 `UnsupportedFormatError` ではなく「現時点で未対応（Issue #52 からリンクするフォローアップ Issue で検討中）」であることが分かる専用メッセージ/エラーコードを追加する。
 - [ ] 4.2 `app/lib/l10n/app_ja.arb` / `app/lib/l10n/app_en.arb` に新しいエラーメッセージの文言を追加する。
 
 ## 5. テスト
@@ -34,7 +34,7 @@
 
 - [ ] 6.1 `openspec/specs/local-manga-zip-viewer/spec.md` の MODIFIED delta を確定する（本 change の `specs/local-manga-zip-viewer/spec.md`）。
 - [ ] 6.2 `openspec/specs/manga-archive-safety/spec.md` の MODIFIED delta を確定する（本 change の `specs/manga-archive-safety/spec.md`）。
-- [ ] 6.3 RAR/CBR 完全対応のフォローアップ GitHub Issue を起票し、本 Issue #52 からリンクする。
+- [ ] 6.3 RAR/CBR 完全対応のフォローアップ GitHub Issue を起票し、評価結果を記載して本 Issue #52 からリンクする。
 
 ## 7. 検証コマンド
 

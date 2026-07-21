@@ -2,7 +2,7 @@
 
 ### Requirement: Archive entries are inspected safely
 
-The system SHALL inspect ZIP/CBZ and 7z/CB7 entries without extracting them to arbitrary filesystem paths, regardless of container format. Entries with absolute paths, `..` path traversal, hidden metadata directories, macOS resource forks, or directory-only records MUST NOT be treated as image pages in any supported archive format.
+The system SHALL inspect ZIP/CBZ and 7z/CB7 entries without extracting them to arbitrary filesystem paths. Entries with absolute paths, `..` path traversal, hidden metadata directories, macOS resource forks, or directory-only records MUST NOT be treated as image pages in either supported archive format.
 
 #### Scenario: Path traversal entry is ignored (ZIP/CBZ)
 
