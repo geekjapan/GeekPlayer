@@ -17,4 +17,4 @@
 ## 4. 検証
 
 - [x] 4.1 `openspec validate --all --strict` が pass することを確認する
-- [ ] 4.2 PR を作成して GitHub Actions の `analyze-and-test` ジョブが green になることを確認する（`dart format`・`flutter analyze --fatal-infos`・`flutter test` の全パス）
+- [x] 4.2 Issue #43 を解決する PR #59（<https://github.com/geekjapan/GeekPlayer/pull/59>）が 2026-06-24 に merge 済み（merge commit `9d0ad4839d79e863b7f8cf834d41da1470ba6b5d`）であることを確認し、GitHub Actions CI run [28079497453](https://github.com/geekjapan/GeekPlayer/actions/runs/28079497453) の `analyze-and-test`（`dart format`・`flutter analyze --fatal-infos`・`flutter test`）および全 platform jobs が pass していることを確認した

@@ -70,12 +70,12 @@ The system SHALL persist a `Work` and all of its `Episode` bodies into the `nove
 
 ### Requirement: NovelHomeSection on the home screen
 
-The home screen SHALL display a `NovelHomeSection` that lists Library entries grouped or filterable by `Site`. Each entry MUST show at minimum the `Work` title, author, site badge, and current bookmark position. The section MUST render an empty-state placeholder when the Library has no Works.
+The home screen SHALL display a `NovelHomeSection` that lists Library entries grouped or filterable by `Site`. Each entry MUST show at minimum the `Work` title, author, site badge, and current bookmark position. The section MUST render an empty-state placeholder when the Library has no Works. The empty-state placeholder MUST NOT render a permanently disabled action button as a feature placeholder.
 
 #### Scenario: Empty Library shows placeholder
 
 - **WHEN** the home screen is displayed and `novel_works` is empty
-- **THEN** the `NovelHomeSection` shows the placeholder "Library に小説はまだありません" and a disabled "検索画面を開く" button
+- **THEN** the `NovelHomeSection` shows the placeholder "Library に小説はまだありません" and no permanently disabled "検索画面を開く" button
 
 #### Scenario: Site filter chips narrow the listing
 
@@ -107,4 +107,3 @@ The system SHALL persist exactly one "current reading position" per `Work` in th
 - **GIVEN** `novel_bookmarks` contains `(site='kakuyomu', externalId='abc', episodeIndex=7, scrollFraction=0.42)`
 - **WHEN** the user reopens that Work from the home screen
 - **THEN** the reader opens episode 7 and scrolls to 42% of the episode body
-
