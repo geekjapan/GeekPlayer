@@ -1,6 +1,6 @@
 ## Context
 
-現在の実装は `pubspec.yaml:65` の `archive: ^4.0.9`（純 Dart 実装）に依存し、`ArchiveInspector`（`app/lib/core/manga/archive_inspector.dart`）が唯一の解凍経路を担う。
+現在の実装は `app/pubspec.yaml:65` の `archive: ^4.0.9`（純 Dart 実装）に依存し、`ArchiveInspector`（`app/lib/core/manga/archive_inspector.dart`）が唯一の解凍経路を担う。
 
 - `inspect()`（`archive_inspector.dart:71-172`）: 拡張子を `.zip`/`.cbz` に限定（`:84-89`）→ `ZipDecoder().decodeBytes(bytes)`（`:100`）でヘッダのみ解析 → エントリごとにパストラバーサル拒否（`:124`, `_hasPathTraversal` `:216-221`）、隠しメタデータ除外（`:127`, `_isHiddenOrMetadata` `:223-233`）、対応画像拡張子フィルタ（`:130-134`, `kSupportedImageExtensions` `:16-22`）、単一エントリ上限（`kMaxSingleEntryBytes` `:13`）、総展開バイト数上限（`kMaxTotalUncompressedBytes` `:12`）、エントリ数上限（`kMaxEntryCount` `:11`）を適用し、自然順ソート（`_naturalCompare` `:237-257`）で確定順に整列する。
 - `readPageBytes()`（`:177-210`）: 該当エントリの `content` を都度取得（`archive` パッケージは central directory のみ先に解析し、`.content` アクセス時に遅延展開するため、`inspect()` はページ内容を実際には展開しない＝爆弾対策として機能している）。
@@ -18,7 +18,7 @@
 - RAR/CBR について、ライセンス上安全に実装できる方式が定まるまでは実装を保留し、利用者には「未対応」だと明確に伝える。
 
 **Non-Goals:**
-- 本 change で RAR/CBR の解凍を実装すること（評価結果に基づき、フォローアップ GitHub Issue に委ねる）。
+- 本 change で RAR/CBR の解凍を実装すること（評価結果に基づき、フォローアップ GitHub Issue #69 に委ねる）。
 - Android/iOS/iPadOS 向けの `libarchive` ネイティブバイナリ配布パイプラインを本 change で完成させること（フィージビリティ検討のみ行う）。
 - `archive` パッケージ（ZIP 経路）の置き換え。
 
@@ -34,11 +34,11 @@
 
 ### D2: RAR/CBR の完全実装は本 change では見送る
 
-- Issue #52 は RAR 対応を明示的に要望しているが、以下の理由で本 change のスコープからは外し、評価結果を添えてフォローアップ GitHub Issue に切り出す:
+- Issue #52 は RAR 対応を明示的に要望しているが、以下の理由で本 change のスコープからは外し、評価結果をフォローアップ GitHub Issue #69 に引き継ぐ:
   1. RARLab の公式 unrar は「UnRAR ライセンス」下で、ソース改変・再配布や RAR 互換アーカイバへの利用を制限しており、Apache-2.0 かつストア配布なし・GitHub Releases のみという OSS 配布方針と摩擦がある。
   2. `libarchive` の RAR リーダーは独自実装で BSD ライセンスだが、RAR5 の一部圧縮方式（特に最新の RAR5 高度モード）の網羅性・保守状況を実装前に検証する必要があり、本 change の調査だけでは確証が持てない。
   3. RAR/CBR はモバイル配布まで見据えると `libarchive` の Android/iOS 同梱という追加のフィージビリティ課題を抱えており、7z 単独導入より検証項目が多い。
-- 対応: `.rar`/`.cbr` はファイルピッカーでは引き続き選択不可（`allowedExtensions` に追加しない）とし、`ArchiveInspector` 相当のフォーマット判定層で `.rar`/`.cbr` を検出した場合は汎用 `UnsupportedFormatError` ではなく「RAR/CBR は現時点で未対応（Issue #52 からリンクするフォローアップ Issue で検討中）」だと分かるメッセージ・エラーコードに更新する。本 change は評価結果をその Issue に引き継ぎ、RAR/CBR の解凍実装は行わない。
+- 対応: `.rar`/`.cbr` はファイルピッカーでは引き続き選択不可（`allowedExtensions` に追加しない）とし、`ArchiveInspector` 相当のフォーマット判定層で `.rar`/`.cbr` を検出した場合は汎用 `UnsupportedFormatError` ではなく「RAR/CBR は現時点で未対応（Issue #69 で検討中）」だと分かる専用メッセージ・エラーコードに更新する。本 change は評価結果を Issue #69 に引き継ぎ、RAR/CBR の解凍実装は行わない。
 
 ### D3: 安全性チェックを形式非依存の共通レイヤーに抽出する
 
@@ -55,9 +55,9 @@
 ## Risks / Trade-offs
 
 - **[Risk] libarchive の FFI バインディングとプラットフォーム別バイナリ同梱の実装コストが見積もりより大きい** → Mitigation: 本 change ではデスクトップ（macOS/Windows）優先とし、Android 対応は後続 change でフィージビリティ検証してから着手する。既存の保守された Dart/Flutter 向け libarchive ラッパーが実装フェーズで見つかった場合はそちらを優先する。
-- **[Risk] RAR 対応を見送ることで Issue #52 の主要な要望（RAR）が未達のまま close されるという印象を与える** → Mitigation: proposal.md に理由を明記し、評価結果を添えたフォローアップ GitHub Issue の起票と #52 からのリンクを tasks.md に含める。ユーザー向けメッセージで「検討中」であることを明示する。
+- **[Risk] RAR 対応を見送ることで Issue #52 の主要な要望（RAR）が未達のまま close されるという印象を与える** → Mitigation: proposal.md に理由を明記し、評価結果を Issue #69 に追記して #52 からのリンクを確認するタスクを含める。ユーザー向けメッセージで「Issue #69 で検討中」であることを明示する。
 - **[Risk] 7z の LZMA/LZMA2 展開は ZIP の deflate より CPU/メモリ負荷が高く、モバイル端末での展開時間・メモリ使用量が既存 UX 基準を悪化させる可能性** → Mitigation: design 検証時にベンチマーク（代表的なコミック 1 巻サイズ相当の 7z）を実施し、`kMaxTotalUncompressedBytes` 等の上限値がそのまま適用可能か再確認する。
-- **[Risk] libarchive の RAR リーダーが将来的に RAR5 の一部圧縮方式を完全サポートしない場合、フォローアップ Issue でも同じライセンス制約に直面する** → Mitigation: フォローアップ Issue 起票時に libarchive の RAR5 対応状況を再調査し、対応不十分なら「RAR4 のみ対応」等の縮小スコープを検討する。
+- **[Risk] libarchive の RAR リーダーが将来的に RAR5 の一部圧縮方式を完全サポートしない場合、Issue #69 でも同じライセンス制約に直面する** → Mitigation: Issue #69 の実装着手時に libarchive の RAR5 対応状況を再調査し、対応不十分なら「RAR4 のみ対応」等の縮小スコープを検討する。
 
 ## Validation
 
