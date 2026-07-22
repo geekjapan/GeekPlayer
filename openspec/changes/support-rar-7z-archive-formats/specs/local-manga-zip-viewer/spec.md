@@ -2,7 +2,7 @@
 
 ### Requirement: User can open ZIP, CBZ, and 7z/CB7 manga archives
 
-The system SHALL allow the user to choose a local `.zip`, `.cbz`, `.7z`, or `.cb7` archive from the OS file picker and open it in a Manga Viewer screen when the archive contains at least one supported image page. Unsupported extensions other than `.rar` and `.cbr` MUST be rejected with an `UnsupportedFormatError`. For `.rar` and `.cbr` paths received through a direct-open request, the system MUST instead return a dedicated not-yet-supported error code/message that identifies Issue #69 and MUST NOT use the generic `UnsupportedFormatError` message.
+The system SHALL allow the user to choose a local `.zip`, `.cbz`, `.7z`, or `.cb7` archive from the OS file picker and open it in a Manga Viewer screen when the archive contains at least one supported image page. Unsupported extensions other than `.rar` and `.cbr` MUST be rejected with an `UnsupportedFormatError`. Any `.rar` or `.cbr` path MUST instead return a dedicated not-yet-supported error code/message that identifies Issue #69 and MUST NOT use the generic `UnsupportedFormatError` message.
 
 #### Scenario: CBZ archive opens
 
@@ -31,5 +31,5 @@ The system SHALL allow the user to choose a local `.zip`, `.cbz`, `.7z`, or `.cb
 
 #### Scenario: RAR/CBR archive is rejected with a clear not-yet-supported message
 
-- **WHEN** the app receives a `.rar` or `.cbr` path through a direct-open request
+- **WHEN** the app attempts to open a `.rar` or `.cbr` path
 - **THEN** the app shows the dedicated RAR/CBR not-yet-supported message referencing Issue #69 and does not open the Manga Viewer screen
