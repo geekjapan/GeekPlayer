@@ -29,8 +29,7 @@
 - [ ] 4.1 `openspec validate --all --strict` を実行し、エラーがないことを確認する。
 - [ ] 4.2 `git diff --check` を実行し、空白エラーがないことを確認する。
 - [ ] 4.3 Flutter/Dart コード変更を伴わないため `flutter analyze` / `flutter test` は対象外（本 change は
-      ドキュメント/計画のみ）。ローカルに Flutter がない場合も GitHub Actions 側の実行は不要である旨を
-      PR 説明に記載する。
+      ドキュメント/計画のみ）。ローカル実行は不要とし、GitHub Actions の結果を正として PR 説明に記載する。
 
 ## 5. GitHub 連携
 
