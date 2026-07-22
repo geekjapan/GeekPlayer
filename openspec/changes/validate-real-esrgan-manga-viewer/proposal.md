@@ -1,6 +1,6 @@
 ## Why
 
-v1.0 の画像アップスケーリング経路（`OnnxImageUpscaler` + Real-ESRGAN x4plus_anime_6B、`app/lib/core/ml/onnx_image_upscaler.dart`, `app/lib/core/ml/upscale_model_catalog.dart:103-140`）は、公開リリースからの実 DL → 検証 → 2x/4x 推論の E2E 確認まで完了している（`docs/roadmap.md:111`）。しかし実機の manga viewer（`app/lib/features/manga/presentation/manga_viewer_screen.dart`）で **目視による画質確認**は未実施であり、タイルサイズは 256px が「暫定既定（実測で確定）」のまま据え置かれている（`openspec/changes/archive/2026-06-08-add-upscale-model-selection/design.md` D3: 「128 は継ぎ目/オーバーヘッド過多、512 は 4x 出力〔2048px〕でモバイルメモリ負荷大。256px を暫定既定とし…実測で確定する」）。実測なしに Experimental フラグを卒業させる判断はできず、継ぎ目・アーティファクト・メモリ圧迫・レイテンシが許容範囲かも未検証のため、今のタイミングで検証する。
+v1.0 の画像アップスケーリング経路（`OnnxImageUpscaler` + Real-ESRGAN x4plus_anime_6B、`app/lib/core/ml/onnx_image_upscaler.dart`, `app/lib/core/ml/upscale_model_catalog.dart:103-140`）は、公開リリースからの実 DL → 検証 → 2x/4x 推論の E2E 確認まで完了している（`docs/roadmap.md` の画像アップスケーリング検証項目）。しかし実機の manga viewer（`app/lib/features/manga/presentation/manga_viewer_screen.dart`）で **目視による画質確認**は未実施であり、タイルサイズは 256px が「暫定既定（実測で確定）」のまま据え置かれている（`openspec/changes/archive/2026-06-08-add-upscale-model-selection/design.md` D3: 「128 は継ぎ目/オーバーヘッド過多、512 は 4x 出力〔2048px〕でモバイルメモリ負荷大。256px を暫定既定とし…実測で確定する」）。実測なしに Experimental フラグを卒業させる判断はできず、継ぎ目・アーティファクト・メモリ圧迫・レイテンシが許容範囲かも未検証のため、今のタイミングで検証する。
 
 GitHub Issue: #46
 Milestone: #3 (v1.0: image upscaling validation)
@@ -36,5 +36,5 @@ Milestone: #3 (v1.0: image upscaling validation)
 ## Impact
 
 - **コード変更**: なし（検証作業）。実測により追加の GitHub Issue / OpenSpec change が必要と判明した場合、その change 側で `app/lib/core/ml/upscale_model_catalog.dart`, `app/lib/core/ml/onnx_image_upscaler.dart`, `app/lib/core/ml/upscale_tiling.dart` 等に触れる可能性がある。
-- **成果物**: 本 change の `design.md` に実測手順・環境・所見を記録する。必要なら `docs/roadmap.md` の該当行（`docs/roadmap.md:111`）を検証済みに更新する archive 時のフォローアップとする。
+- **成果物**: 本 change の `design.md` に実測手順・環境・所見を記録する。必要なら `docs/roadmap.md` の画像アップスケーリング検証項目を検証済みに更新する archive 時のフォローアップとする。
 - **影響を受ける既存 capability（参照のみ、変更なし）**: `ai-image-upscaler`, `upscale-image-tiling`, `upscale-model-distribution`, `ai-upscaler-settings`, `ml-runtime`, `gpu-execution-providers`, `local-manga-zip-viewer`。

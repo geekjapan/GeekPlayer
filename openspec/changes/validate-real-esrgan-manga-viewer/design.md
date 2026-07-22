@@ -1,6 +1,6 @@
 ## Context
 
-`ai-image-upscaler` / `onnx-upscaler-runtime` / `upscale-model-distribution` / `gpu-execution-providers` / `upscale-image-tiling` の各 capability により、Real-ESRGAN x4plus_anime_6B（BSD-3-Clause、opset 17 / IR 9、固定 256px タイル）を用いた 2x/4x on-device 推論の配線は完了している（`docs/roadmap.md:106-112`）。`ADR-0007` は AI 画像アップスケーリングを **Experimental・既定 OFF・opt-in** として位置付け、卒業判断（既定 ON 化・品質保証）は「品質・性能の実測後に別途行う」としている。
+`ai-image-upscaler` / `onnx-upscaler-runtime` / `upscale-model-distribution` / `gpu-execution-providers` / `upscale-image-tiling` の各 capability により、Real-ESRGAN x4plus_anime_6B（BSD-3-Clause、opset 17 / IR 9、固定 256px タイル）を用いた 2x/4x on-device 推論の配線は完了している（`docs/roadmap.md` の画像アップスケーリング検証項目）。`ADR-0007` は AI 画像アップスケーリングを **Experimental・既定 OFF・opt-in** として位置付け、卒業判断（既定 ON 化・品質保証）は「品質・性能の実測後に別途行う」としている。
 
 タイルサイズ 256px は `openspec/changes/archive/2026-06-08-add-upscale-model-selection/design.md` の D3 で「暫定既定、実測で確定」と明記されており、export 時にタイルサイズが固定化されるため変更には再 export を伴う（`app/tool/export_real_realesrgan_x4.py`）。現時点で実機での目視確認・タイルサイズ実測は未実施（`docs/HANDOFF.md` 「実モデルの視覚確認」候補項目、GitHub Issue #46）。
 
@@ -27,7 +27,7 @@ manga viewer 側の呼び出し経路は `app/lib/features/manga/presentation/ma
 
 ### D1: 本 change はコード変更を伴わない「検証記録」として扱い、スペックデルタは "検証プロセス上の制約" 1件に限定する
 
-- **選択**: proposal.md の Non-goals どおり、本 change では `app/lib/core/ml/**` のコードを変更しない。実測結果・所見・判断（維持 or 別 change 起票）を `design.md`（本ファイル）の追記、または archive 時に `docs/roadmap.md:111` を更新する形で記録する。OpenSpec スキーマは「change には最低 1 件の delta が必要」という制約があるため（`openspec validate --all --strict` が deltas なしを ERROR にする）、`upscale-model-distribution` に **プロセス上の制約**（tileSize は実機検証記録を伴わない限り暫定既定として扱う、Experimental 既定 ON 化の根拠に使わない）を ADDED Requirement として 1 件追加する。この要件は `tileSize` の値や実装を変えるものではなく、「検証記録の有無」という運用上の縛りを明文化するものである。
+- **選択**: proposal.md の Non-goals どおり、本 change では `app/lib/core/ml/**` のコードを変更しない。実測結果・所見・判断（維持 or 別 change 起票）を `design.md`（本ファイル）の追記、または archive 時に `docs/roadmap.md` の画像アップスケーリング検証項目を更新する形で記録する。OpenSpec スキーマは「change には最低 1 件の delta が必要」という制約があるため（`openspec validate --all --strict` が deltas なしを ERROR にする）、`upscale-model-distribution` に **プロセス上の制約**（tileSize は実機検証記録を伴わない限り暫定既定として扱う、Experimental 既定 ON 化の根拠に使わない）を ADDED Requirement として 1 件追加する。この要件は `tileSize` の値や実装を変えるものではなく、「検証記録の有無」という運用上の縛りを明文化するものである。
 - **代替案 1**: 本 change 内でタイルサイズ変更まで一気に実施する。→ 却下。Issue #46 の Notes が「Keep this as validation unless the result clearly requires a separate OpenSpec change」と明記しており、実測前に defaults 変更を決め打ちするのは spec-driven ワークフローの proposal→design→tasks の順序と矛盾する。
 - **代替案 2**: 本 change でスペックデルタ（`ai-image-upscaler` 等の既存 Requirements の MODIFIED）を先に書いておく。→ 却下。実測結果が出るまで、既存要件（256px 既定、Experimental 既定 OFF）が変わるかどうか未定であり、確定していない挙動をスペックに先出しすると archive 時に整合しない。
 - **代替案 3**: spec デルタを一切書かず `openspec validate --all --strict` のエラーを無視する。→ 却下。プロジェクト規約でこのコマンドをローカル検証の必須項目としており、エラーを残したままコミットしない。

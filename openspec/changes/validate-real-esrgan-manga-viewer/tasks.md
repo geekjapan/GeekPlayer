@@ -28,7 +28,7 @@
 
 - [ ] 5.1 実測結果に基づき、現行既定（256px タイル・Experimental 既定 OFF）を維持してよいかを判断する。
 - [ ] 5.2 維持できない場合、defaults 変更・再 export を扱う follow-up の GitHub Issue（milestone #3 配下）を起票し、本 change の記録からリンクする。
-- [ ] 5.3 `docs/roadmap.md:111`（「残: 実機 manga viewer での視覚確認・タイルサイズ実測」の記述）を検証結果に応じて更新する下書きを用意する（実際の反映は本 change の archive 時、または別 docs change として実施）。
+- [ ] 5.3 `docs/roadmap.md` の画像アップスケーリング検証項目（「残: 実機 manga viewer での視覚確認・タイルサイズ実測」の記述）を検証結果に応じて更新する下書きを用意する（実際の反映は本 change の archive 時、または別 docs change として実施）。
 
 ## 6. 検証コマンド
 
