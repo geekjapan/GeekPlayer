@@ -1,6 +1,6 @@
 ## 1. 現状調査
 
-- [ ] 1.1 `docs/roadmap.md:113-118` の動画 AI パイプライン記述と、milestone #4 / Issue #48 の Scope
+- [ ] 1.1 `docs/roadmap.md:113-118` の動画 AI パイプライン記述と、milestone \#4 / Issue #48 の Scope
       チェックリストを突き合わせ、齟齬がないか確認する。
 - [ ] 1.2 既存 ADR（`docs/adr/0002-hybrid-media-engine.md`, `docs/adr/0007-ai-upscaling-runtime-strategy.md`）
       および既存 capability（`ml-runtime`, `ai-image-upscaler`, `onnx-upscaler-runtime`,
