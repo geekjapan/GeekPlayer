@@ -8,7 +8,7 @@ Milestone: #3 (v1.0: image upscaling validation)
 ## What Changes
 
 - 実機（少なくとも 1 台、可能なら複数 OS/デバイス）でアプリを起動し、設定の Experimental ゲートを有効化して AI 画像アップスケーラを ON にする（`app/lib/core/ml/providers.dart`, `ai-upscaler-settings` capability）。
-- manga viewer で任意のページに対して 2x・4x 双方の「高画質化」アクション（`app/lib/features/manga/presentation/manga_viewer_screen.dart:140-189`, `Icons.auto_fix_high` ボタン）を実行し、Real-ESRGAN x4plus_anime_6B（`OnnxImageUpscaler` 経由、固定 256px タイル）の出力を目視で確認する。
+- manga viewer で任意のページに対して 2x・4x 双方の「高画質化」アクション（`app/lib/features/manga/presentation/manga_viewer_screen.dart` の `_upscaleCurrentPage` と `Icons.auto_fix_high` ボタン）を実行し、Real-ESRGAN x4plus_anime_6B（`OnnxImageUpscaler` 経由、固定 256px タイル）の出力を目視で確認する。
 - 現行の固定 256px タイル（`app/lib/core/ml/upscale_model_catalog.dart:122,134`、タイル分割・再合成は `app/lib/core/ml/upscale_tiling.dart`）が実機で許容できる品質・性能・メモリかを実測する: タイル継ぎ目の有無、推論所要時間、メモリ使用量の体感、バッテリー/発熱の粗い所感。
 - 使用したデバイス・OS・ランタイム（effective backend: CPU EP / CoreML EP / NNAPI EP のいずれか、`ADR-0007`）、代表ページの before/after 所見を本 change 内に記録として残す（新規ドキュメント成果物、コード変更なし）。
 - 結果に応じて次のいずれかを判断する: (a) 現行既定（256px タイル、Experimental 既定 OFF）を維持して良いと記録する、または (b) アーティファクト・メモリ圧迫・レイテンシが許容できない場合、defaults 変更や再 export を扱う **別の OpenSpec change / GitHub Issue** を起票する（本 change ではそれらの変更自体は実施しない）。
@@ -28,7 +28,7 @@ Milestone: #3 (v1.0: image upscaling validation)
 ## Non-goals
 
 - タイルサイズ（256px）や Experimental 既定 OFF などの既定値・実装を本 change 内で変更すること（実測の結果、変更が必要と判明した場合は別 change に切り出す）。
-- 新しいモデルの選定・再 export・`tool/export_real_realesrgan_x4.py` の変更。
+- 新しいモデルの選定・再 export・`app/tool/export_real_realesrgan_x4.py` の変更。
 - GPU EP（CoreML/NNAPI）自体の新規実装や、Windows DirectML 対応（`ADR-0007` amendment で既知の制約、別トラック）。
 - 動画系（Anime4K リアルタイム／Real-ESRGAN 動画変換／RIFE 補間）の検証。これらは `docs/roadmap.md` v1.0 の別項目。
 - 自動化されたベンチマークツール・CI 計測基盤の新規構築（本 change は手動実測の記録に留める。自動計測が必要になった場合は別途検討）。
