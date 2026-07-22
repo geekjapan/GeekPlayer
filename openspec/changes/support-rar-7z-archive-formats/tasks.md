@@ -8,16 +8,16 @@
 ## 2. 安全性レイヤーの共通化
 
 - [ ] 2.1 `ArchiveInspector`（`app/lib/core/manga/archive_inspector.dart`）から、パストラバーサル判定・隠しファイル除外・画像拡張子フィルタ・自然順ソートを形式非依存の共通関数として抽出する。
-- [ ] 2.2 エントリ数/サイズ上限チェックを「宣言サイズでの事前チェック」と「実展開中の累積チェック」の二段防御に対応できるインターフェースに拡張する。
+- [ ] 2.2 エントリ数をヘッダ列挙中に検査し、サイズ上限を「宣言サイズでの事前チェック」と「アーカイブセッション内で初回展開した各エントリの実測サイズを累積するチェック」の二段防御に対応できるインターフェースに拡張する（同一エントリの再読込は二重計上しない）。
 - [ ] 2.3 フォーマット判定・解凍処理をバックエンドごとに切り替えられるように抽象化し、既存 ZIP 経路（`archive` パッケージ）を新インターフェースに適合させる（挙動・パフォーマンスは変えない）。
 
 ## 3. 7z/CB7 バックエンド実装
 
 - [ ] 3.1 `libarchive` FFI バインディングを追加し、`app/pubspec.yaml` に依存関係を登録する。
-- [ ] 3.2 7z バックエンドで、宣言サイズ + 実展開中の累積サイズの両方を検証しながらエントリ一覧を取得する処理を実装する。
+- [ ] 3.2 7z バックエンドで、ヘッダ列挙中に宣言サイズを検証し、ページ読込中はバックエンドセッションが実展開サイズを検証・累積する処理を実装する。
 - [ ] 3.3 `MangaRepositoryImpl.openArchive()`（`app/lib/features/manga/data/manga_repository_impl.dart:64-100`）が `.7z`/`.cb7` 拡張子を `format` 列に保存できるようにする。
 - [ ] 3.4 ファイルピッカーの `allowedExtensions`（`app/lib/features/manga/presentation/manga_home_section.dart:43`）に `7z`/`cb7` を追加する。
-- [ ] 3.5 `app/lib/oss_licenses.dart` に `libarchive`（BSD-3-Clause）のライセンス通知を追加する。
+- [ ] 3.5 依存関係追加後に `cd app && dart run flutter_oss_licenses:generate -o lib/oss_licenses.dart -i flutter` を実行し、生成された `libarchive`（BSD-3-Clause）のライセンス通知をコミットする。
 
 ## 4. RAR/CBR 未対応メッセージの改善
 
