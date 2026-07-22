@@ -117,6 +117,14 @@ v0.2 の change は次の順に apply した。順序には実装上の依存が
 4. **フレーム補間**:
    - RIFE による補間（オフライン書き出し）
 
+> **状態 (2026-07-07)**: 上記 3 項目（動画リアルタイム / オフライン書き出し / フレーム補間）は
+> `decompose-v1x-video-ai-pipeline`（Issue #48）でアーキテクチャ分解を実施し、
+> **[ADR-0008](adr/0008-video-ai-pipeline-rendering-strategy.md)**（proposed: リアルタイムシェーダと
+> オフラインバッチ処理は別設計軸、Decision 確定は各後続 change の design 段階）を起票。
+> 後続 OpenSpec change を `add-anime4k-realtime-shader` / `add-realesrgan-video-export` /
+> `add-rife-frame-interpolation`（いずれも仮称、共通オフラインジョブ基盤の要否は
+> `add-realesrgan-video-export` の design で判断）に分割する計画。実装はこれらの follow-up。
+
 **運用方針**:
 
 - AI 機能は **opt-in モジュール**として配布（バイナリサイズが膨らむため）
