@@ -18,14 +18,35 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final _sectionKeys = <String, GlobalKey>{};
+  String? _destination;
+  bool _positioning = false;
+  bool _correctionScheduled = false;
 
   void _jumpTo(String id) {
-    final context = _sectionKeys[id]?.currentContext;
+    _destination = id;
+    _revealDestination();
+  }
+
+  void _revealDestination() {
+    final context = _sectionKeys[_destination]?.currentContext;
     if (context == null) return;
-    Scrollable.ensureVisible(
-      context,
-      duration: const Duration(milliseconds: 250),
-    );
+    _positioning = true;
+    try {
+      Scrollable.ensureVisible(context);
+    } finally {
+      _positioning = false;
+    }
+  }
+
+  bool _onSectionResize(SizeChangedLayoutNotification notification) {
+    if (_destination != null && !_correctionScheduled) {
+      _correctionScheduled = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _correctionScheduled = false;
+        if (mounted) _revealDestination();
+      });
+    }
+    return false;
   }
 
   @override
@@ -43,23 +64,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         children: [
           HomeQuickJumpBar(sections: sections, onSelected: _jumpTo),
           Expanded(
-            child: ListView(
-              children: [
-                // Keep distant section anchors mounted for ensureVisible.
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+            child: NotificationListener<ScrollStartNotification>(
+              onNotification: (notification) {
+                if (notification.depth == 0 && !_positioning) {
+                  _destination = null;
+                }
+                return false;
+              },
+              child: NotificationListener<SizeChangedLayoutNotification>(
+                onNotification: _onSectionResize,
+                child: ListView(
                   children: [
-                    for (final section in sections)
-                      KeyedSubtree(
-                        key: _sectionKeys.putIfAbsent(
-                          section.id,
-                          GlobalKey.new,
-                        ),
-                        child: section.build(context, ref),
-                      ),
+                    // Keep distant section anchors mounted for ensureVisible.
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        for (final section in sections)
+                          SizeChangedLayoutNotifier(
+                            key: _sectionKeys.putIfAbsent(
+                              section.id,
+                              GlobalKey.new,
+                            ),
+                            child: section.build(context, ref),
+                          ),
+                      ],
+                    ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
         ],

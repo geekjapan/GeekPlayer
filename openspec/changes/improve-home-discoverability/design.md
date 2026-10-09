@@ -47,9 +47,11 @@
 選択肢:
 
 - (A) 各セクションの高さを事前計算し、`ScrollController.animateTo(offset)` で固定オフセットへスクロールする。
-- (B) 各セクションのルート widget に `GlobalKey` を割り当て、chip タップ時に対象 key の `BuildContext` に対して `Scrollable.ensureVisible(context, duration: ..., alignment: 0)` を呼ぶ。**← 採用**
+- (B) 各セクションのルート widget に `GlobalKey` を割り当て、chip タップ時に対象 key の `BuildContext` に対して `Scrollable.ensureVisible(context, alignment: 0)` を呼ぶ。**← 採用**
 
 理由: オンライン小説セクションはサイトフィルタ・作品数・consent 状態(`FutureBuilder`)によって高さが動的に変わり(`novel_home_section.dart:90-106`)、メディアライブラリセクションも最近再生件数によって高さが変わる。固定オフセット計算は実行時の実高さとずれるため信頼できない。`Scrollable.ensureVisible` は対象ウィジェットの実際のレイアウト位置を使うため、動的な高さ変化に対して頑健。実装コストも `GlobalKey` を `ListView` の各アイテムラッパーに割り当てるだけで小さい。
+
+選択したアンカーは各セクションの `SizeChangedLayoutNotification` 後に再配置する。読み込み完了で前方のセクションが伸びても見出しを可視領域に保つため、通知をまとめてレイアウト完了後に位置を補正する。ジャンプと補正は即時に行い、ユーザーのドラッグ・ホイール・PageDown等による本文スクロールが始まったら追従を終了する。
 
 ### D3. MiniPlayer(order 100)にはジャンプ chip を用意しない
 
@@ -70,7 +72,7 @@ MiniPlayer は「機能セクション」ではなく常時表示のトランス
 ## Risks / Trade-offs
 
 - **[Risk]** 静的マップ(D1)が `HomeSection.id` の実際の登録内容と乖離する(例: 将来 feature が id を変更したのにマップを更新し忘れる) → **Mitigation**: ウィジェットテストで「仕様が列挙した6つの登録済みセクションに対応する chip が存在すること」を検証し、id の不一致があればテストが失敗するようにする。
-- **[Risk]** `ListView(children: ...)` も画面外の要素を遅延構築するため、未表示セクションの `GlobalKey.currentContext` が null となりジャンプが失敗する。900dp のセクションを並べたウィジェットテストで再現した。**Mitigation**: 既存の縦 `ListView` 内にセクションをまとめる `Column` を1つ置き、全セクションのアンカーを構築する。各 feature の内部レイアウトと表示順は維持する。初期構築の対象が増えるため、大量の項目を扱う場合は feature 内の表示上限や遅延構築を維持する。
+- **[Risk]** `ListView(children: ...)` も画面外の要素を遅延構築するため、未表示セクションの `GlobalKey.currentContext` が null となりジャンプが失敗する。900dp のセクションを並べたウィジェットテストで再現した。**Mitigation**: 既存の縦 `ListView` 内にセクションをまとめる `Column` を1つ置き、全セクションのアンカーを構築する。各 feature の内部レイアウトと表示順は維持する。既存の小説ライブラリは全件をWrapで構築するため、従来なら画面外にあった場合も初期構築するコストがある。短いホーム画面では従来も小説セクションが初期viewport/cache内に入り、このコストは新規ではない。大規模ライブラリでの追加コストは未計測であり、feature側の上限・仮想化は別changeとする。
 - **[Risk]** chip 列を追加することで、AppBar 直下の縦スペースが圧迫され小画面(モバイル/タブレット幅)で窮屈になる可能性 → **Mitigation**: chip 列は横スクロール可能な 1 行に収め、`ui-design-system` capability の spacing/touch-target トークン(`AppSizes.minTouchTarget`, `AppSpacing`)を流用してレイアウト崩れを防ぐ。
 - **[Trade-off]** メディアライブラリの並べ替え(D4)を見送ったことで、「最近の続きを見る」までの到達コストはクイックジャンプ chip 経由でも変わらず 1 タップ + 該当セクションまでのスクロールが必要(0 タップにはならない)。発見性の抜本改善は次バッチに持ち越す。
 

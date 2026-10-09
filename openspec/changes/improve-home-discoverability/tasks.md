@@ -32,6 +32,6 @@
 
 ## 検証記録
 
-- 2026-10-09: ローカルの format / analyze / 全636テスト / OpenSpec全49項目 / `git diff --check` が成功。詳細は [verification.md](verification.md)。
-- 6.2: 今回の変更のpush・PR作成・CIは未実施。
+- 2026-10-09: ローカルの format / analyze / 全639テスト / OpenSpec全49項目 / `git diff --check` が成功。詳細は [verification.md](verification.md)。
+- 6.2: PR #71を作成済み。初回CIは成功し、レビュー修正版のCI結果を待つ。
 - 6.3: Xcode本体が未インストールのため変更後アプリのmacOSビルドができず、実機確認は保留。配布版 v0.1.1 のComputer Use確認は今回の変更の合格証拠に含めない。Windows実機確認はユーザー指示によりSKIP。

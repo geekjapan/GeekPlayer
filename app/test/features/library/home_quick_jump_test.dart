@@ -28,16 +28,33 @@ class _Section extends HomeSection {
   );
 }
 
+class _LoadingSection extends _Section {
+  const _LoadingSection(this.height) : super('novel');
+
+  final ValueNotifier<double> height;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => ValueListenableBuilder(
+    valueListenable: height,
+    builder: (_, value, _) => SizedBox(height: value),
+  );
+}
+
 Future<void> _pumpHome(
   WidgetTester tester, {
   Locale locale = const Locale('ja'),
   List<String> ids = _ids,
+  List<HomeSection>? sections,
 }) async {
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
         homeSectionsProvider.overrideWith(
-          (_) => [const _Section('audio.miniPlayer'), ...ids.map(_Section.new)],
+          (_) => [
+            const _Section('audio.miniPlayer'),
+            ...?sections,
+            if (sections == null) ...ids.map(_Section.new),
+          ],
         ),
         homeAppBarActionsProvider.overrideWith((_) => []),
       ],
@@ -124,4 +141,58 @@ void main() {
         .map((chip) => (chip.label as Text).data);
     expect(labels, ['Comics', 'Video']);
   });
+
+  testWidgets(
+    'keeps the destination visible when earlier content finishes loading',
+    (tester) async {
+      final height = ValueNotifier<double>(40);
+      addTearDown(height.dispose);
+      await _pumpHome(
+        tester,
+        sections: [
+          _LoadingSection(height),
+          const _Section('book'),
+          const _Section('manga'),
+        ],
+      );
+      await tester.tap(find.widgetWithText(ActionChip, '書籍へ'));
+      await tester.pumpAndSettle();
+      height.value = 2400;
+      await tester.pumpAndSettle();
+      _expectHeadingVisible(tester, 'book');
+    },
+  );
+
+  for (final input in ['drag', 'PageDown']) {
+    testWidgets('stops tracking the destination after user $input scrolling', (
+      tester,
+    ) async {
+      final height = ValueNotifier<double>(40);
+      addTearDown(height.dispose);
+      await _pumpHome(
+        tester,
+        sections: [
+          _LoadingSection(height),
+          const _Section('book'),
+          const _Section('manga'),
+        ],
+      );
+      await tester.tap(find.widgetWithText(ActionChip, '書籍へ'));
+      await tester.pumpAndSettle();
+      if (input == 'drag') {
+        await tester.drag(find.byType(ListView), const Offset(0, -200));
+      } else {
+        await tester.sendKeyEvent(LogicalKeyboardKey.pageDown);
+      }
+      await tester.pumpAndSettle();
+      final top = tester.getTopLeft(find.text('Heading book')).dy;
+      expect(top, lessThan(tester.getRect(find.byType(ListView)).top));
+      height.value += 40;
+      await tester.pumpAndSettle();
+      expect(
+        tester.getTopLeft(find.text('Heading book')).dy,
+        closeTo(top + 40, 0.1),
+      );
+    });
+  }
 }
