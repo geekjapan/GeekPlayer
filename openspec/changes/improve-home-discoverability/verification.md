@@ -25,12 +25,26 @@
 
 ## 変更後アプリの実機確認
 
-- 環境: macOS 27.0.1 / arm64、Flutter 3.44.0 / Dart 3.12.0。
-- Orca Computer UseのAccessibility・スクリーンキャプチャ権限は利用可能。
-- Xcode本体は未インストール。`xcodebuild -version` は有効な開発ディレクトリが `/Library/Developer/CommandLineTools` であるため失敗した。
-- このため、今回の変更を含むmacOSアプリでのポインタ・キーボード操作は未確認。task 6.3は未完了のまま保持する。
-- Windows実機確認はユーザーの明示指示によりSKIP。成功扱いにはしない。
-- PR #71を作成済み。初回CI（37898563465）と手動ビルド（37898564838）は成功し、レビュー修正版で再実行する。通常CIのmacOSジョブはビルドのみでアプリを保存しない。実機確認用のDMGは既存の `Release Artifacts` workflowを対象ブランチで手動実行すると取得できる。ブランチでの手動実行はGitHub Releaseを作成しない。
+- 対象: `49d94b0813627aa2e1911a1f2bec6d649d165936`、[PR #71](https://github.com/geekjapan/GeekPlayer/pull/71)。アプリ内のコンパイル済みバージョン文字列でも同じSHAを確認した。
+- 環境: macOS 27.0.1 / arm64、800×628論理ピクセルのウィンドウ。ローカルのFlutterは3.44.0 / Dart 3.12.0。
+- [CI 37899490460](https://github.com/geekjapan/GeekPlayer/actions/runs/37899490460): analyze-and-test、Android debug、Windows、macOS、Linux、iOSの全6ジョブ成功。
+- [Release Artifacts 37899491126](https://github.com/geekjapan/GeekPlayer/actions/runs/37899491126): 4プラットフォームのビルド成功。対象ブランチでの手動実行なのでGitHub Releaseへの公開はSKIP。
+- 検証物: `geekplayer-macos-unsigned` artifact内の `GeekPlayer-macos-run-7-unsigned.dmg`。SHA256: `e875d89813b4c0a5a477061e15d66eea6b99ceeceaf605175c2e6501c2fa2b92`。
+- Xcode本体がローカルにないため、上記DMGを読み取り専用でマウントして実行した。Orca Computer Useで操作し、各操作後の画面を目視確認した。
+
+| 操作 | 観測 |
+|---|---|
+| 動画・音楽・小説・書籍・漫画・ライブラリの各チップをクリック | 対応する見出しが可視領域に入る。ライブラリから動画への復帰も成功 |
+| Tabによる前方向の移動 | 動画→音楽→小説→書籍→漫画→ライブラリの順にフォーカス表示を確認 |
+| 各チップでEnter | 対応する見出しが表示される。音楽・小説へのスクロールも確認 |
+| 末尾の書籍・漫画・ライブラリ | スクロール上限に達するため上端には揃わないが、各見出しは可視 |
+| Windows実機 | ユーザーの明示指示によりSKIP。成功扱いにはしない |
+
+画面は音楽チップにキーボードフォーカスがあり、Enterで音楽セクションへ移動した状態。既存メディアのファイル名が映る他の画面はリポジトリに保存していない。
+
+![macOSで音楽セクションへ移動した状態](evidence/macos-quick-jump.png)
+
+追加で試したShift+Tabの合成入力は、期待したフォーカス移動を確認できなかった。フォルダ選択ダイアログをキャンセルし、アプリを再起動した。逆方向の実機操作は合格範囲に含めない。360×640の狭い画面と遅延読み込みはwidget testで検証したもので、実機での再現結果ではない。
 
 ## 配布版でのComputer Use観測
 

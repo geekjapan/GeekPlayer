@@ -3,7 +3,7 @@
 このドキュメントは、後続の人 / 後続のエージェントが **対話履歴を読まずに**
 すぐ作業を再開できるよう、リポジトリの現状・進捗・次の作業を集約したものです。
 
-最終更新: 2026-10-09（active changes は7件。#51の実装・ローカル検証が完了し、PR/CIと変更後アプリのmacOS確認が残る）。
+最終更新: 2026-10-09（active changes は7件。#51の実装・CI・macOS確認が完了。PR #71はレビュー待ち）。
 
 ---
 
@@ -44,7 +44,7 @@ GeekPlayer は **動画 / 音楽 / 書籍 / 漫画ZIP / オンライン小説**�
 ### OpenSpec
 
 - **アクティブ changes**: 7 件
-  - `improve-home-discoverability` (#51, 12/14) — 専用ブランチ `feature/improve-home-discoverability` で実装済み。PR/CIと変更後アプリのmacOS確認待ち。Windows実機確認はユーザー指示でSKIP。
+  - `improve-home-discoverability` (#51, 14/14) — [PR #71](https://github.com/geekjapan/GeekPlayer/pull/71)で実装・CI・macOSのComputer Use確認が完了。レビューとマージ後のarchiveが残る。Windows実機確認はユーザー指示でSKIP。[検証記録](../openspec/changes/improve-home-discoverability/verification.md)。
   - `support-rar-7z-archive-formats` (#52, 0/24) — 7z対応とRAR実現性調査。RAR完全対応は #69。
   - `decompose-v1x-video-ai-pipeline` (#48, 0/13) — ADRと後続changeの設計分割。
   - `audit-media-viewer-flow-macos-windows` (#50, 0/15) — 操作フロー監査。
@@ -131,7 +131,7 @@ GitHub: **https://github.com/geekjapan/GeekPlayer** (PRIVATE)
 
 2026-10-09確認時点でFlutter 3.44.0 / Dart 3.12.0が利用可能です。format、analyze、testをローカルで実行できます。初回は `flutter pub get` と `dart run build_runner build` で依存関係・生成コードを準備してください。
 
-Xcode本体は未インストールで、`xcodebuild -version` はCommand Line Toolsのみの環境として失敗します。macOS実機で今回の変更を確認するには、Xcodeを備えた環境でビルドしたアプリが必要です。Orca Computer UseのAccessibility/Screen Recording権限は利用可能です。
+Xcode本体は未インストールで、`xcodebuild -version` はCommand Line Toolsのみの環境として失敗します。macOS実機確認には `Release Artifacts` の手動実行で取得したDMGを使いました。ブランチでの手動実行はGitHub Releaseを作成しません。Orca Computer UseのAccessibility/Screen Recording権限は利用可能です。
 
 CI の注意点:
 - ゲートは順番に失敗する: (1) `dart format` → (2) `flutter analyze` → (3) `flutter test`。1 つ直すと次のエラーが出る。
@@ -262,7 +262,7 @@ Phase 2a バッチ1（なろうエピソード一覧 + ホームエラー色）�
 
 | 優先 | Change | 状態 | 次の確認 |
 |---|---|---|---|
-| 1 | `improve-home-discoverability` (#51) | 12/14 | PR/CIと変更後アプリのmacOS操作確認。Windows実機確認はSKIP |
+| 1 | `improve-home-discoverability` (#51) | 14/14 | PR #71のレビュー・マージ、その後archive。Windows実機確認はSKIP |
 | 2 | `support-rar-7z-archive-formats` (#52) | 0/24 | 展開方式・ライセンス・安全性の確認から着手 |
 | 並行可 | `decompose-v1x-video-ai-pipeline` (#48) | 0/13 | ADRと後続changeの分割 |
 | 保留 | `release-all-platform-installers` (#44) | 13/14 | Linux実機でAppImage起動確認。物理Linux環境が必要 |

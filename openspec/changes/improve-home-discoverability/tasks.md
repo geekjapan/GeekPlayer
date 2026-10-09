@@ -27,11 +27,11 @@
 ## 6. 検証
 
 - [x] 6.1 `openspec validate --all --strict` が pass することを確認する
-- [ ] 6.2 PR を作成して GitHub Actions の `analyze-and-test` ジョブが green になることを確認する(`dart format`・`flutter analyze --fatal-infos`・`flutter test` の全パス)
-- [ ] 6.3 macOS でクイックジャンプ chip の実機動作確認(ポインタ操作 + キーボードフォーカス移動)を行う。Windows 実機確認は2026-10-09のユーザー指示により SKIP
+- [x] 6.2 PR を作成して GitHub Actions の `analyze-and-test` ジョブが green になることを確認する(`dart format`・`flutter analyze --fatal-infos`・`flutter test` の全パス)
+- [x] 6.3 macOS でクイックジャンプ chip の実機動作確認(ポインタ操作 + キーボードフォーカス移動)を行う。Windows 実機確認は2026-10-09のユーザー指示により SKIP
 
 ## 検証記録
 
 - 2026-10-09: ローカルの format / analyze / 全639テスト / OpenSpec全49項目 / `git diff --check` が成功。詳細は [verification.md](verification.md)。
-- 6.2: PR #71を作成済み。初回CIは成功し、レビュー修正版のCI結果を待つ。
-- 6.3: Xcode本体が未インストールのため変更後アプリのmacOSビルドができず、実機確認は保留。配布版 v0.1.1 のComputer Use確認は今回の変更の合格証拠に含めない。Windows実機確認はユーザー指示によりSKIP。
+- 6.2: [PR #71](https://github.com/geekjapan/GeekPlayer/pull/71)、修正版 `49d94b0` の[CI全6ジョブ](https://github.com/geekjapan/GeekPlayer/actions/runs/37899490460)が成功。
+- 6.3: 同じコミットのCI製DMGを使い、Computer Useで6項目のクリック、Tab順のフォーカス表示、Enter操作を確認。詳細・画面は [verification.md](verification.md)。Windows実機確認はユーザー指示によりSKIP。
