@@ -1,6 +1,6 @@
 ## Context
 
-`HomeScreen`(`app/lib/features/library/home_screen.dart:11-32`)は ADR-0004「HomeScreen をセクションレジストリ方式で構成する」に従い、`homeSectionsProvider`(`app/lib/features/library/home_section_registry.dart`)が集約する `List<HomeSection>` を `order` 昇順に `ListView` へ並べているだけの薄い集約コンテナである。現在の登録済みセクションと `order`(ADR-0004 の予約表):
+`HomeScreen`(`app/lib/features/library/home_screen.dart:11-32`)は ADR-0004「HomeScreen をセクションレジストリ方式で構成する」に従い、`homeSectionsProvider`(`app/lib/features/library/home_section_registry.dart`)が集約する `List<HomeSection>` を `order` 昇順に `ListView` へ並べているだけの薄い集約コンテナである。現在の登録済みセクションと `order`:
 
 | order | セクション | 実装ファイル |
 |---|---|---|
@@ -8,13 +8,14 @@
 | 200 | 動画 | `app/lib/features/video/presentation/home_section.dart` |
 | 300 | 音楽 | `app/lib/features/audio/presentation/home_section.dart` |
 | 400 | オンライン小説(なろう検索/ランキング/R18 導線 + サイト別ライブラリグリッドを内包) | `app/lib/features/novel/presentation/novel_home_section.dart` |
+| 410 | カクヨム(独立した登録セクション) | `app/lib/features/novel_kakuyomu/presentation/kakuyomu_home_section.dart` |
 | 500 | 書籍 | `app/lib/features/book/presentation/book_home_section.dart` |
 | 600 | 漫画 | `app/lib/features/manga/presentation/manga_home_section.dart` |
 | 700 | メディアライブラリ(横断的な最近再生/お気に入り件数 + フォルダスキャン) | `app/lib/features/media_library/presentation/media_library_home_section.dart` |
 
 観測された発見性の問題(issue #51):
 
-- 6 セクションが縦一列に積まれているだけで、目的のセクションに行くには前段を毎回スクロールして通過する必要がある。特にオンライン小説セクションはサイトフィルタ chip・なろうショートカット・作品グリッドを内包し縦に長く、それより下の書籍・漫画・メディアライブラリへの到達コストを押し上げている。
+- 各セクションが縦一列に積まれているだけで、目的のセクションに行くには前段を毎回スクロールして通過する必要がある。特にオンライン小説セクションはサイトフィルタ chip・なろうショートカット・作品グリッドを内包し縦に長く、それより下の書籍・漫画・メディアライブラリへの到達コストを押し上げている。
 - 各セクションの見出し様式が不揃い(動画/音楽は `Card` + `titleLarge`、小説/書籍/漫画/メディアライブラリは `Card` なしの `Padding` + `titleMedium` または `titleLarge` 混在)なため、スクロール中に「今どのセクションにいるか」を素早く判別しづらい。これは本 change の Non-goals(視覚様式の統一)に含めるが、クイックジャンプの chip 自体は独立した見出し的役割を果たすため一定の緩和になる。
 
 ## Goals / Non-Goals
@@ -52,7 +53,7 @@
 
 ### D3. MiniPlayer(order 100)にはジャンプ chip を用意しない
 
-MiniPlayer は「機能セクション」ではなく常時表示のトランスポートバーであり、ユーザーが「ジャンプして到達したい先」には該当しない。ジャンプ chip は 動画・音楽・小説・書籍・漫画・メディアライブラリ の 6 個とする。
+MiniPlayer は「機能セクション」ではなく常時表示のトランスポートバーであり、ユーザーが「ジャンプして到達したい先」には該当しない。ジャンプ chip は 動画・音楽・小説・書籍・漫画・メディアライブラリ の 6 個とする。カクヨムも独立した登録セクションだが、本 change では spec が列挙した6個の導線に限定し、カクヨムの表示位置・内容は維持する。
 
 ### D4. `HomeSection.order` の並べ替えは行わない(non-goal として明記)
 
@@ -68,8 +69,8 @@ MiniPlayer は「機能セクション」ではなく常時表示のトランス
 
 ## Risks / Trade-offs
 
-- **[Risk]** 静的マップ(D1)が `HomeSection.id` の実際の登録内容と乖離する(例: 将来 feature が id を変更したのにマップを更新し忘れる) → **Mitigation**: ウィジェットテストで「登録済み全セクションに対応する chip が存在すること」を検証し、id の不一致があればテストが失敗するようにする。
-- **[Risk]** `Scrollable.ensureVisible` はターゲット widget がまだビルドされていない(スクロール未到達で `ListView` が遅延構築中の)場合に正しく動作しない可能性がある → **Mitigation**: `HomeScreen` の `body` は `ListView`(非 `.builder`、`home_screen.dart:26`)であり全セクションが常に一括ビルドされるため、この懸念は現状の実装では発生しない。将来 `ListView.builder`化する場合は再検討が必要である旨をコードコメントに残す。
+- **[Risk]** 静的マップ(D1)が `HomeSection.id` の実際の登録内容と乖離する(例: 将来 feature が id を変更したのにマップを更新し忘れる) → **Mitigation**: ウィジェットテストで「仕様が列挙した6つの登録済みセクションに対応する chip が存在すること」を検証し、id の不一致があればテストが失敗するようにする。
+- **[Risk]** `ListView(children: ...)` も画面外の要素を遅延構築するため、未表示セクションの `GlobalKey.currentContext` が null となりジャンプが失敗する。900dp のセクションを並べたウィジェットテストで再現した。**Mitigation**: 既存の縦 `ListView` 内にセクションをまとめる `Column` を1つ置き、全セクションのアンカーを構築する。各 feature の内部レイアウトと表示順は維持する。初期構築の対象が増えるため、大量の項目を扱う場合は feature 内の表示上限や遅延構築を維持する。
 - **[Risk]** chip 列を追加することで、AppBar 直下の縦スペースが圧迫され小画面(モバイル/タブレット幅)で窮屈になる可能性 → **Mitigation**: chip 列は横スクロール可能な 1 行に収め、`ui-design-system` capability の spacing/touch-target トークン(`AppSizes.minTouchTarget`, `AppSpacing`)を流用してレイアウト崩れを防ぐ。
 - **[Trade-off]** メディアライブラリの並べ替え(D4)を見送ったことで、「最近の続きを見る」までの到達コストはクイックジャンプ chip 経由でも変わらず 1 タップ + 該当セクションまでのスクロールが必要(0 タップにはならない)。発見性の抜本改善は次バッチに持ち越す。
 

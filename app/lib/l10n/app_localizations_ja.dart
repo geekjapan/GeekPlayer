@@ -9,6 +9,27 @@ class AppLocalizationsJa extends AppLocalizations {
   AppLocalizationsJa([String locale = 'ja']) : super(locale);
 
   @override
+  String get homeQuickJumpVideo => '動画へ';
+
+  @override
+  String get homeQuickJumpAudio => '音楽へ';
+
+  @override
+  String get homeQuickJumpNovel => '小説へ';
+
+  @override
+  String get homeQuickJumpBook => '書籍へ';
+
+  @override
+  String get homeQuickJumpManga => '漫画へ';
+
+  @override
+  String get homeQuickJumpMediaLibrary => 'ライブラリへ';
+
+  @override
+  String get homeQuickJumpSemanticLabel => 'セクションへ移動';
+
+  @override
   String get errorNetworkUnreachable => 'ネットワークに接続できません。接続を確認してください。';
 
   @override

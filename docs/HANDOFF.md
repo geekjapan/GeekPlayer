@@ -3,7 +3,7 @@
 このドキュメントは、後続の人 / 後続のエージェントが **対話履歴を読まずに**
 すぐ作業を再開できるよう、リポジトリの現状・進捗・次の作業を集約したものです。
 
-最終更新: 2026-07-22（**active changes は 1 件。次は Linux 実機確認の整理**）。
+最終更新: 2026-10-09（active changes は7件。#51の実装・ローカル検証が完了し、PR/CIと変更後アプリのmacOS確認が残る）。
 
 ---
 
@@ -29,9 +29,9 @@ GeekPlayer は **動画 / 音楽 / 書籍 / 漫画ZIP / オンライン小説**�
 ノクターンノベルズ / カクヨム）を 1 つのアプリで扱う Flutter 製クロスプラットフォーム・
 マルチメディアプレイヤー。AI 高画質化機能（Real-ESRGAN + ONNX Runtime）を搭載済み（Experimental、既定 OFF）。
 
-## 2. 現在の権威ある状態 (2026-06-21)
+## 2. 現在の状態 (2026-10-09)
 
-このセクションが **唯一の権威あるベースライン** です。
+計画はGitHub Issue/Milestone、実装進捗は各OpenSpecの `tasks.md` を正本とします。以下は再開用のスナップショットです。
 
 ### リリース
 
@@ -43,7 +43,13 @@ GeekPlayer は **動画 / 音楽 / 書籍 / 漫画ZIP / オンライン小説**�
 
 ### OpenSpec
 
-- **アクティブ changes**: 1 件
+- **アクティブ changes**: 7 件
+  - `improve-home-discoverability` (#51, 12/14) — 専用ブランチ `feature/improve-home-discoverability` で実装済み。PR/CIと変更後アプリのmacOS確認待ち。Windows実機確認はユーザー指示でSKIP。
+  - `support-rar-7z-archive-formats` (#52, 0/24) — 7z対応とRAR実現性調査。RAR完全対応は #69。
+  - `decompose-v1x-video-ai-pipeline` (#48, 0/13) — ADRと後続changeの設計分割。
+  - `audit-media-viewer-flow-macos-windows` (#50, 0/15) — 操作フロー監査。
+  - `validate-real-esrgan-manga-viewer` (#46, 0/23) — 実機の画質・性能検証。
+  - `plan-production-distribution-hardening` (#49, 0/14) — 配布・署名方針の判断。
   - `release-all-platform-installers` (13/14) — task 5.4（Linux 実機 AppImage 起動確認）のみ pending。物理 Linux 環境が必要で当面未実施。
 - **アーカイブ**: 34 件（`openspec/changes/archive/`）
 - **capability specs**: 42 件（`openspec/specs/`）
@@ -105,7 +111,7 @@ GeekPlayer/
 │   └── HANDOFF.md                    # このファイル
 ├── openspec/
 │   ├── config.yaml                   # context + rules
-│   ├── changes/                      # active: 1 / archive/: 34
+│   ├── changes/                      # active: 7 / archive/: 34
 │   └── specs/                        # 42 capability specs
 ├── .github/workflows/
 │   ├── ci.yaml                       # analyze-and-test + 6 builds
@@ -121,11 +127,11 @@ GitHub: **https://github.com/geekjapan/GeekPlayer** (PRIVATE)
 
 ## 4. 開発環境
 
-### 重要: ローカルに Flutter/Dart はない
+### ローカル環境
 
-このローカル環境には **Flutter/Dart がインストールされていません**。
-`flutter analyze` / `dart format` / `flutter test` はローカルで実行できず、
-**GitHub Actions の `analyze-and-test` ジョブが唯一のチェッカー** です。
+2026-10-09確認時点でFlutter 3.44.0 / Dart 3.12.0が利用可能です。format、analyze、testをローカルで実行できます。初回は `flutter pub get` と `dart run build_runner build` で依存関係・生成コードを準備してください。
+
+Xcode本体は未インストールで、`xcodebuild -version` はCommand Line Toolsのみの環境として失敗します。macOS実機で今回の変更を確認するには、Xcodeを備えた環境でビルドしたアプリが必要です。Orca Computer UseのAccessibility/Screen Recording権限は利用可能です。
 
 CI の注意点:
 - ゲートは順番に失敗する: (1) `dart format` → (2) `flutter analyze` → (3) `flutter test`。1 つ直すと次のエラーが出る。
@@ -256,7 +262,10 @@ Phase 2a バッチ1（なろうエピソード一覧 + ホームエラー色）�
 
 | 優先 | Change | 状態 | 次の確認 |
 |---|---|---|---|
-| 1 | `release-all-platform-installers` | 13/14 | Linux 実機で AppImage 起動確認。物理 Linux 環境が必要 |
+| 1 | `improve-home-discoverability` (#51) | 12/14 | PR/CIと変更後アプリのmacOS操作確認。Windows実機確認はSKIP |
+| 2 | `support-rar-7z-archive-formats` (#52) | 0/24 | 展開方式・ライセンス・安全性の確認から着手 |
+| 並行可 | `decompose-v1x-video-ai-pipeline` (#48) | 0/13 | ADRと後続changeの分割 |
+| 保留 | `release-all-platform-installers` (#44) | 13/14 | Linux実機でAppImage起動確認。物理Linux環境が必要 |
 
 ### その他の候補
 
@@ -273,7 +282,7 @@ Phase 2a バッチ1（なろうエピソード一覧 + ホームエラー色）�
 - drift schema を触る場合は latest+1（現行 v6 → v7）
 - 新規ユーザー可視文字列は `AppLocalizations` 経由（日英）
 - `dart format` / `flutter analyze --fatal-infos` / `flutter test` を tasks に含める
-- **ローカルに Flutter が無い** ことを前提に、CI サイクルを見込んだバッチ設計にする
+- ローカルのformat/analyze/testと、CIのプラットフォーム別ビルドを分けて記録する
 
 ## 8. 既知の宿題 / 注意点
 

@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:geekplayer/core/storage/database.dart';
 import 'package:geekplayer/core/storage/providers.dart';
 import 'package:geekplayer/features/library/home_screen.dart';
+import 'package:geekplayer/features/library/home_quick_jump.dart';
 import 'package:geekplayer/l10n/app_localizations.dart';
 
 void main() {
@@ -37,6 +38,14 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('GeekPlayer'), findsOneWidget);
+    expect(find.byType(HomeQuickJumpBar), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(HomeQuickJumpBar),
+        matching: find.byType(ActionChip),
+      ),
+      findsNWidgets(6),
+    );
     // Video section
     expect(find.text('動画'), findsOneWidget);
     expect(find.text('動画を開く'), findsOneWidget);
