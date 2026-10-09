@@ -9,6 +9,27 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get homeQuickJumpVideo => 'Video';
+
+  @override
+  String get homeQuickJumpAudio => 'Music';
+
+  @override
+  String get homeQuickJumpNovel => 'Online novels';
+
+  @override
+  String get homeQuickJumpBook => 'Books';
+
+  @override
+  String get homeQuickJumpManga => 'Comics';
+
+  @override
+  String get homeQuickJumpMediaLibrary => 'Media library';
+
+  @override
+  String get homeQuickJumpSemanticLabel => 'Jump to a section';
+
+  @override
   String get errorNetworkUnreachable =>
       'Cannot connect to the network. Please check your connection.';
 

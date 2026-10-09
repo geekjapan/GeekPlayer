@@ -1,5 +1,12 @@
 {
   "@@locale": "en",
+  "homeQuickJumpVideo": "Video",
+  "homeQuickJumpAudio": "Music",
+  "homeQuickJumpNovel": "Online novels",
+  "homeQuickJumpBook": "Books",
+  "homeQuickJumpManga": "Comics",
+  "homeQuickJumpMediaLibrary": "Media library",
+  "homeQuickJumpSemanticLabel": "Jump to a section",
   "errorNetworkUnreachable": "Cannot connect to the network. Please check your connection.",
   "errorRateLimit": "Too many requests. Please retry in {seconds} seconds.",
   "errorSiteConsentRequired": "Using {site} requires site-specific consent. Please grant consent in Settings.",

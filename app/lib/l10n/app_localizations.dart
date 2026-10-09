@@ -98,6 +98,48 @@ abstract class AppLocalizations {
     Locale('ja'),
   ];
 
+  /// Home quick-jump destination: Video.
+  ///
+  /// In ja, this message translates to:
+  /// **'動画へ'**
+  String get homeQuickJumpVideo;
+
+  /// Home quick-jump destination: Audio.
+  ///
+  /// In ja, this message translates to:
+  /// **'音楽へ'**
+  String get homeQuickJumpAudio;
+
+  /// Home quick-jump destination: Novel.
+  ///
+  /// In ja, this message translates to:
+  /// **'小説へ'**
+  String get homeQuickJumpNovel;
+
+  /// Home quick-jump destination: Book.
+  ///
+  /// In ja, this message translates to:
+  /// **'書籍へ'**
+  String get homeQuickJumpBook;
+
+  /// Home quick-jump destination: Manga.
+  ///
+  /// In ja, this message translates to:
+  /// **'漫画へ'**
+  String get homeQuickJumpManga;
+
+  /// Home quick-jump destination: MediaLibrary.
+  ///
+  /// In ja, this message translates to:
+  /// **'ライブラリへ'**
+  String get homeQuickJumpMediaLibrary;
+
+  /// Accessible name for the home section navigation.
+  ///
+  /// In ja, this message translates to:
+  /// **'セクションへ移動'**
+  String get homeQuickJumpSemanticLabel;
+
   /// Shown when a network call fails because the device is offline or the host is unreachable.
   ///
   /// In ja, this message translates to:

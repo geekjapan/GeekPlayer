@@ -1,5 +1,33 @@
 {
   "@@locale": "ja",
+  "homeQuickJumpVideo": "動画へ",
+  "@homeQuickJumpVideo": {
+    "description": "Home quick-jump destination: Video."
+  },
+  "homeQuickJumpAudio": "音楽へ",
+  "@homeQuickJumpAudio": {
+    "description": "Home quick-jump destination: Audio."
+  },
+  "homeQuickJumpNovel": "小説へ",
+  "@homeQuickJumpNovel": {
+    "description": "Home quick-jump destination: Novel."
+  },
+  "homeQuickJumpBook": "書籍へ",
+  "@homeQuickJumpBook": {
+    "description": "Home quick-jump destination: Book."
+  },
+  "homeQuickJumpManga": "漫画へ",
+  "@homeQuickJumpManga": {
+    "description": "Home quick-jump destination: Manga."
+  },
+  "homeQuickJumpMediaLibrary": "ライブラリへ",
+  "@homeQuickJumpMediaLibrary": {
+    "description": "Home quick-jump destination: MediaLibrary."
+  },
+  "homeQuickJumpSemanticLabel": "セクションへ移動",
+  "@homeQuickJumpSemanticLabel": {
+    "description": "Accessible name for the home section navigation."
+  },
   "errorNetworkUnreachable": "ネットワークに接続できません。接続を確認してください。",
   "@errorNetworkUnreachable": {
     "description": "Shown when a network call fails because the device is offline or the host is unreachable."
